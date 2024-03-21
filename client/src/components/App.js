@@ -1,25 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
-import Login from './login';
-import Signup from './signup';
+import NavBar from './NavBar';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [signInAccount, setSignInAccount] = useState(null);
+
+  console.log('in App, signInAccount: ', signInAccount);
 
   useEffect(() => {
     fetch('/authenticate')
     .then(r => {
       if (r.ok)
-        r.json().then(data => setUser(data));
+        r.json().then(data => setSignInAccount(data));
+      else
+        // => it is added because I can't set signInAccount to null in Signout component without outlet.
+        // => when outlet is applied, I may need to delete this...
+        setSignInAccount(null);
       console.log('r: ', r);
     });
   }, [])
 
   return (
     <>
-      {/* <h1>Project Client, User:  {user ? `${user.username}` : '-'}</h1>
-      <Login user={user} onSetUser={setUser} /> */}
-      <Signup onSetUser={setUser} />
+      <header>
+        <NavBar signInAccount={signInAccount}/>
+      </header>
+      <main>
+        <h1>Welcome Back!!</h1>
+      </main>
     </>
   );
 }

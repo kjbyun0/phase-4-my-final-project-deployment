@@ -22,9 +22,9 @@ def index():
 class Authenticate(Resource):
     # login
     def post(self):
-        login_dict = request.get_json()
-        user = User.query.filter_by(username=login_dict.get('username')).first()
-        if user:
+        signin_dict = request.get_json()
+        user = User.query.filter_by(username=signin_dict.get('username')).first()
+        if user and user.authenticate(signin_dict.get('password')):
             session['user_id'] = user.id
             return make_response(user.to_dict(), 200)
         return make_response({
@@ -49,6 +49,7 @@ class Signup(Resource):
     def post(self):
         account_req_dict = request.get_json()
         print(f'account_req_dict: {account_req_dict}')
+        # => need to include Constraints and validates
         new_user = User(
             username=account_req_dict.get('username'),
             password_hash=account_req_dict.get('password'),

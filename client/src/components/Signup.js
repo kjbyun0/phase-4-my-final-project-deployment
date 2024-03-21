@@ -1,7 +1,9 @@
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
-function Signup({ onSetUser }) {
+function Signup({ onSetSignInAccount }) {
+    const navigate = useNavigate()
 
     const formSchema = yup.object().shape({
         name: yup.string().required('Must enter a name'),
@@ -37,8 +39,11 @@ function Signup({ onSetUser }) {
             .then(r => {
                 if (r.ok) {
                     console.log('new account created: ', r.json());
-                    r.json().then(data => onSetUser(data));
-                    // => redirect to an appropriate page.
+                    // => maybe later, I want to set new user here again.
+                    // => if so, I need to use outlet to get setUser function.
+                    // r.json().then(data => onSetSignInAccount(data));
+                    
+                    navigate('/');
                 } else {
                     // => add a funciton to display errors and enable submit button.
                 }
