@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 function Signin() {
     const [account, setAccount] = useState({
         username: '',
         password: '',
+        firstTime: true, 
     });
     const navigate = useNavigate();
+    const { signInAccount, onSetSignInAccount } = useOutletContext();
 
     function handleChange(e) {
         setAccount({
@@ -25,15 +27,21 @@ function Signin() {
             },
             body: JSON.stringify(account),
         })
-        .then(r => r.json())
-        .then(data => {
-                console.log('user: ', data)
-                // => maybe later, I want to set new user here again.
-                // => if so, I need to use outlet to get setUser function.
-                // onSetSignInAccount(signInAccount);
-                navigate('/');
+        .then(r => {
+            if (r.ok) {
+                r.json().then(data => {
+                    console.log('user: ', data);
+                    onSetSignInAccount(data);
+                    navigate('/');
+                });
+            } else {
+                setAccount({
+                    username: '',
+                    password: '',
+                    firstTime: false,
+                });
             }
-        );
+        });
     }
 
     function handleSignUpClick(e) {
@@ -50,6 +58,7 @@ function Signin() {
                 <input id='password' name='password' type='password' value={account.password} onChange={handleChange} />
                 <br />
                 <input type='submit' value='Submit' />
+                <p style={{color: 'red'}}>{account.firstTime ? null : 'Invalid username or password. Please, try again.'}</p>
             </form>
             <button type='button' onClick={handleSignUpClick}>Create new account</button>
         </>

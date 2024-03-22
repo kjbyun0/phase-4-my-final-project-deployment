@@ -1,24 +1,23 @@
-import { useNavigate } from 'react-router-dom';
+import { useOutletContext, Navigate } from 'react-router-dom';
 
 // => This code need to be changed to nav menu
 function Signout() {
-    const navigate = useNavigate()
+    const { signInAccount, onSetSignInAccount } = useOutletContext();
 
     function handleSignout() {
         fetch('/authenticate', { 
             method: 'DELETE',
         })
         .then(r => {
-            // if (r.ok)
-            //     onSetSignInAccount(null)
-            console.log('In handleSignout, navigate back to App')
-            navigate('/');
+            // The server can't  fail logging out. So, don't need to check the return status.
+            onSetSignInAccount(null);
         })
     }
 
     return (
         <>
             {handleSignout()}
+            <Navigate to='/' />
         </>
     )
 }

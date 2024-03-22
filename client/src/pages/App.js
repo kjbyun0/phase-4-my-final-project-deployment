@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Route } from "react-router-dom";
-import NavBar from './NavBar';
+// import { Switch, Route } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
+import NavBar from '../components/NavBar';
 
 function App() {
   const [signInAccount, setSignInAccount] = useState(null);
@@ -25,9 +26,10 @@ function App() {
       <header>
         <NavBar signInAccount={signInAccount}/>
       </header>
-      <main>
-        <h1>Welcome Back!!</h1>
-      </main>
+      <Outlet context={{
+        signInAccount: signInAccount, 
+        onSetSignInAccount: setSignInAccount,
+      }} />
     </>
   );
 }
