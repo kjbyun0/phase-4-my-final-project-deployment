@@ -23,8 +23,7 @@ if __name__ == '__main__':
         u1 = User(
             username = 'test0',
             password_hash = 'test0',
-            first_name = 'FirstName0',
-            last_name = 'LastName0',
+            name = 'name0',
             email = 'test0@gmail.com',
             mobile = '000)000-0000',
             phone = '000)000-0000',
@@ -37,8 +36,7 @@ if __name__ == '__main__':
         u2 = User(
             username = 'test1',
             password_hash = 'test1',
-            first_name = 'FirstName1',
-            last_name = 'LastName1',
+            name = 'name1',
             email = 'test1@gmail.com',
             mobile = '111)111-1111',
             phone = '111)111-1111',
@@ -51,8 +49,7 @@ if __name__ == '__main__':
         u3 = User(
             username = 'test2',
             password_hash = 'test2',
-            first_name = 'FirstName2',
-            last_name = 'LastName2',
+            name = 'name2',
             email = 'test2@gmail.com',
             mobile = '222)222-2222',
             phone = '222)222-2222',

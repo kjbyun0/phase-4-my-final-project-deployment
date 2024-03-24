@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User
+from models import User, JobCategory, JobOpening
 
 app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 
@@ -53,8 +53,7 @@ class Signup(Resource):
             new_user = User(
                 username = account_req_dict.get('username'),
                 password_hash = account_req_dict.get('password'),
-                first_name = account_req_dict.get('firstName'),
-                last_name = account_req_dict.get('lastName'),
+                name = account_req_dict.get('name'),
                 email = account_req_dict.get('email'),
                 mobile = account_req_dict.get('mobile'),
                 phone = account_req_dict.get('phone'),
@@ -74,9 +73,18 @@ class Signup(Resource):
         session['user_id'] = new_user.id
         return make_response(new_user.to_dict(), 201)
 
+class JobOpenings(Resource):
+    def get(self):
+        job_openings = [job_opening.to_dict() for job_opening in JobOpening.query.all()]
+        return make_response(job_openings, 200)
+    
+    # def post(self):
+    #     request_dict = request.get_json()
+
+
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
-
+api.add_resource(JobOpenings, '/jobopenings')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -8,8 +8,7 @@ function Signup() {
     const { onSetSignInAccount } = useOutletContext();
 
     const formSchema = yup.object().shape({
-        firstName: yup.string().required('Must enter a first name'),
-        lastName: yup.string().required('Must enter a last name'),
+        name: yup.string().required('Must enter a name'),
         username: yup.string().required('Must enter a username')
                     .min(5, 'Must be between 5 and 50 characters')
                     .max(20, 'Must be between 5 and 50 characters'),
@@ -26,8 +25,7 @@ function Signup() {
 
     const formik = useFormik({
         initialValues: {
-            firstName: '',
-            lastName: '',
+            name: '',
             username: '',
             password: '',
             email: '',
@@ -68,16 +66,10 @@ function Signup() {
     return (
         <Form onSubmit={formik.handleSubmit}>
             <FormField>
-            <Label htmlFor='firstName'>Fist name:</Label>
-            <Input id='firstName' name='firstName' type='text' value={formik.values.firstName} 
+            <Label htmlFor='name'>Name:</Label>
+            <Input id='name' name='name' type='text' value={formik.values.name} 
                 onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.firstName ? formik.errors.firstName : null}</p>
-            </FormField>
-            <FormField>
-            <Label htmlFor='lastName'>Last name:</Label>
-            <Input id='lastName' name='lastName' type='text' value={formik.values.lastName} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.lastName ? formik.errors.lastName : null}</p>
+            <p style={{ color: 'red'}}>{formik.touched.name ? formik.errors.name : null}</p>
             </FormField>
             <FormField>
             <Label htmlFor='username'>Username:</Label>
