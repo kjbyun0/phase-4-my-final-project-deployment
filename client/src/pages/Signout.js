@@ -2,7 +2,7 @@ import { useOutletContext, Navigate } from 'react-router-dom';
 
 // => This code need to be changed to nav menu
 function Signout() {
-    const { signInAccount, onSetSignInAccount } = useOutletContext();
+    const { onSetSignInAccount } = useOutletContext();
 
     function handleSignout() {
         fetch('/authenticate', { 

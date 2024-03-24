@@ -49,16 +49,27 @@ class Signup(Resource):
     def post(self):
         account_req_dict = request.get_json()
         print(f'account_req_dict: {account_req_dict}')
-        # => need to include Constraints and validates
-        new_user = User(
-            username=account_req_dict.get('username'),
-            password_hash=account_req_dict.get('password'),
-            name=account_req_dict.get('name'),
-            email=account_req_dict.get('email'),
-            mobile=account_req_dict.get('mobile')
-        )
-        db.session.add(new_user)
-        db.session.commit()
+        try:
+            new_user = User(
+                username = account_req_dict.get('username'),
+                password_hash = account_req_dict.get('password'),
+                first_name = account_req_dict.get('firstName'),
+                last_name = account_req_dict.get('lastName'),
+                email = account_req_dict.get('email'),
+                mobile = account_req_dict.get('mobile'),
+                phone = account_req_dict.get('phone'),
+                street_1 = account_req_dict.get('street1'),
+                street_2 = account_req_dict.get('street2'),
+                city = account_req_dict.get('city'),
+                state = account_req_dict.get('state'),
+                zip_code = account_req_dict.get('zipCode'),
+            )
+            db.session.add(new_user)
+            db.session.commit()
+        except Exception as exc:
+            return make_response({
+                'message': f'{exc}'
+            }, 400)
 
         session['user_id'] = new_user.id
         return make_response(new_user.to_dict(), 201)

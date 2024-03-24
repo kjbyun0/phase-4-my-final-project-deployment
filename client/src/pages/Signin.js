@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Form, FormField, Label, Input, Button } from 'semantic-ui-react';
 
 function Signin() {
     const [account, setAccount] = useState({
@@ -50,17 +51,19 @@ function Signin() {
 
     return (
         <>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor='username'>Username: </label>
-                <input id='username' name='username' type='text' value={account.username} onChange={handleChange} />
-                <br />
-                <label htmlFor='password'>Password: </label>
-                <input id='password' name='password' type='password' value={account.password} onChange={handleChange} />
-                <br />
-                <input type='submit' value='Submit' />
+            <Form onSubmit={handleSubmit}>
+                <FormField>
+                    <Label htmlFor='username'>Username: </Label>
+                    <Input id='username' name='username' type='text' value={account.username} onChange={handleChange} />
+                </FormField>
+                <FormField>
+                    <Label htmlFor='password'>Password: </Label>
+                    <Input id='password' name='password' type='password' value={account.password} onChange={handleChange} />
+                </FormField>
+                <Button type='submit'>Submit</Button>
                 <p style={{color: 'red'}}>{account.firstTime ? null : 'Invalid username or password. Please, try again.'}</p>
-            </form>
-            <button type='button' onClick={handleSignUpClick}>Create new account</button>
+            </Form>
+            <Button type='button' onClick={handleSignUpClick}>Create new account</Button>
         </>
     );
 }

@@ -1,12 +1,13 @@
 import { NavLink } from "react-router-dom";
+import './NavBar.css';
 
 function NavBar({ signInAccount }) {
     return (
         <nav>
             <NavLink to='/'>Home</NavLink>
             {signInAccount ? 
-                <NavLink to='/signout'>Sign Out</NavLink> :
-                <NavLink to='/signin'>Sign In</NavLink>
+                <NavLink to='/signout' className='nav-link'>Sign Out</NavLink> :
+                <NavLink to='/signin' className='nav-link'>Sign In</NavLink>
             }
         </nav>
     );
