@@ -79,8 +79,8 @@ class JobOpening(db.Model, SerializerMixin):
     description = db.Column(db.String)
     salary = db.Column(db.Float, nullable=False)
     job_type = db.Column(db.String) # => full,partime,contract
-    location = db.Column(db.String, nullable=False)
-    remote = db.Column(db.String, nullable=False)
+    location = db.Column(db.String, nullable=False) 
+    remote = db.Column(db.String, nullable=False)   # => On Site, Remote, Hybrid
     isActive = db.Column(db.Boolean, nullable=False)
 
     job_category_id = db.Column(db.Integer, db.ForeignKey('job_categories.id'))

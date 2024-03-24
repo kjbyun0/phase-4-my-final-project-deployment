@@ -20,79 +20,133 @@ if __name__ == '__main__':
         JobOpening.query.delete()
         db.session.commit()
 
-        u1 = User(
-            username = 'test0',
-            password_hash = 'test0',
-            name = 'name0',
-            email = 'test0@gmail.com',
-            mobile = '000)000-0000',
-            phone = '000)000-0000',
-            street_1 = '00000 Westwood Blvd',
-            street_2 = 'Apt# 000',
-            city = 'Huston',
-            state = 'TX',
-            zip_code = '00000'
-        )
-        u2 = User(
-            username = 'test1',
-            password_hash = 'test1',
-            name = 'name1',
-            email = 'test1@gmail.com',
-            mobile = '111)111-1111',
-            phone = '111)111-1111',
-            street_1 = '11111 Westwood Blvd',
-            street_2 = 'Apt# 111',
-            city = 'Huston',
-            state = 'TX',
-            zip_code = '11111'
-        )
-        u3 = User(
-            username = 'test2',
-            password_hash = 'test2',
-            name = 'name2',
-            email = 'test2@gmail.com',
-            mobile = '222)222-2222',
-            phone = '222)222-2222',
-            street_1 = '22222 Westwood Blvd',
-            street_2 = 'Apt# 222',
-            city = 'Huston',
-            state = 'TX',
-            zip_code = '22222'
-        )
-        db.session.add_all([u1, u2, u3,])
+        users = []
+        for i in range(20):
+            users.append(User(
+                username = f'test{i}',
+                password_hash = f'test{i}',
+                name = f'name{i}',
+                email = f'test{i}@gmail.com',
+                mobile = f'{i%10}{i%10}{i%10})000-0000',
+                phone = f'{i%10}{i%10}{i%10})000-0000',
+                street_1 = f'{i%10}{i%10}{i%10}{i%10}{i%10} Westwood Blvd',
+                street_2 = f'Apt# {i%10}{i%10}{i%10}',
+                city = 'Huston',
+                state = 'TX',
+                zip_code = f'{i%10}{i%10}{i%10}{i%10}{i%10}'
+            ))
+        db.session.add_all(users)
 
-        jc1 = JobCategory(
-            category = 'Cleaner'
-        )
+        job_category_list = ['Cleaner', 'Server', 'Tutor', 'Babysitter', 'Brand ambassador', 
+                          'Sales associate', 'dog walker', 'personal trainer', 'Administrative assistant', 
+                          'Bank teller', 'Barista', 'Delivery Driver', 'Bartender', 'Bookkeeper', 
+                          'Graphic Designer', 'Real estate agent', 'Receptionist', 'Tour guide', 
+                          'Dental hygienist', 'Phlebotomist', 'Speech and language therapist']
+        job_categories = []
+        for i in range(20):
+            job_categories.append(JobCategory(
+                category = job_category_list[i]
+            ))
+        db.session.add_all(job_categories)
 
-        jc2 = JobCategory(
-            category = 'Server'
-        )
-        db.session.add_all([jc1, jc2,])
-
-        jo1 = JobOpening(
-            title = 'HouseKeeper',
-            description = 'cleaning a residential house',
-            salary = 20.00,
-            job_type = 'Part time', # => full,partime,contract
-            location = 'an address',
-            remote = 'On Site',
-            isActive = True,
-            job_category = jc1,
-            employer = u2
-        )
-
-        jo2 = JobOpening(
-            title = 'Server',
-            description = 'a waiter',
-            salary = 14.00,
-            job_type = 'Part time', # => full,partime,contract
-            location = 'an address',
-            remote = 'On Site',
-            isActive = True,
-            job_category = jc2,
-            employer = u3
-        )
-        db.session.add_all([jo1, jo2,])
-
+        job_types = ['Part time', 'Contract', 'Full time']
+        remotes = ['On Site', 'Remote', 'Hybrid']
+        job_openings = []
+        for i in range(20):
+            job_openings.append(JobOpening(
+                title = f'{job_categories[i].category}-{i}',
+                description = 'describing sentence',
+                salary = 1.00 * i,
+                job_type = job_types[i % len(job_types)], # => full,partime,contract
+                location = 'an address',
+                remote = remotes[i % len(remotes)],
+                isActive = True,
+                job_category = job_categories[i],
+                employer = users[i]
+            ))
+        db.session.add_all(job_openings)
         db.session.commit()
+
+
+
+        # u1 = User(
+        #     username = 'test0',
+        #     password_hash = 'test0',
+        #     name = 'name0',
+        #     email = 'test0@gmail.com',
+        #     mobile = '000)000-0000',
+        #     phone = '000)000-0000',
+        #     street_1 = '00000 Westwood Blvd',
+        #     street_2 = 'Apt# 000',
+        #     city = 'Huston',
+        #     state = 'TX',
+        #     zip_code = '00000'
+        # )
+        # u2 = User(
+        #     username = 'test1',
+        #     password_hash = 'test1',
+        #     name = 'name1',
+        #     email = 'test1@gmail.com',
+        #     mobile = '111)111-1111',
+        #     phone = '111)111-1111',
+        #     street_1 = '11111 Westwood Blvd',
+        #     street_2 = 'Apt# 111',
+        #     city = 'Huston',
+        #     state = 'TX',
+        #     zip_code = '11111'
+        # )
+        # u3 = User(
+        #     username = 'test2',
+        #     password_hash = 'test2',
+        #     name = 'name2',
+        #     email = 'test2@gmail.com',
+        #     mobile = '222)222-2222',
+        #     phone = '222)222-2222',
+        #     street_1 = '22222 Westwood Blvd',
+        #     street_2 = 'Apt# 222',
+        #     city = 'Huston',
+        #     state = 'TX',
+        #     zip_code = '22222'
+        # )
+        # db.session.add_all([u1, u2, u3,])
+
+
+        # jc1 = JobCategory(
+        #     category = 'Cleaner'
+        # )
+
+        # jc2 = JobCategory(
+        #     category = 'Server'
+        # )
+
+        # jc3 = JobCategory(
+        #     category = 'tutor'
+        # )
+        # db.session.add_all([jc1, jc2,])
+
+
+        # jo1 = JobOpening(
+        #     title = 'HouseKeeper',
+        #     description = 'cleaning a residential house',
+        #     salary = 20.00,
+        #     job_type = 'Part time',
+        #     location = 'an address',
+        #     remote = 'On Site',
+        #     isActive = True,
+        #     job_category = jc1,
+        #     employer = u2
+        # )
+
+        # jo2 = JobOpening(
+        #     title = 'Server',
+        #     description = 'a waiter',
+        #     salary = 14.00,
+        #     job_type = 'Part time',
+        #     location = 'an address',
+        #     remote = 'On Site',
+        #     isActive = True,
+        #     job_category = jc2,
+        #     employer = u3
+        # )
+        # db.session.add_all([jo1, jo2,])
+    
