@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { CardGroup, Card, CardContent, CardHeader, CardMeta } from 'semantic-ui-react';
+import { CardGroup, Card, CardContent, CardHeader, CardMeta,
+        Grid, GridColumn } from 'semantic-ui-react';
 
 function Home() {
     const [jobOpenings, setJobOpenings] = useState([]);
@@ -13,7 +14,7 @@ function Home() {
     console.log('jobOpenings: ', jobOpenings)
 
     const jobCards = jobOpenings.map(jobOpening => 
-        <Card>
+        <Card key={jobOpening.id}>
             <CardContent>
                 <CardHeader>{jobOpening.title}</CardHeader>
                 <CardMeta>{jobOpening.employer.name}</CardMeta>
@@ -29,12 +30,17 @@ function Home() {
     )
 
     return (
-        <>
-            <h1>Welcome home</h1>
-            <CardGroup itemsPerRow={1}>
+        <Grid style={{ display: 'flex', flexFlow: 'row', height: '100%', overflow: 'hidden', padding: '15px'}} >
+            <GridColumn style={{ flex: '1 1', height: '100%', overflowY: 'scroll' }} >
+                <CardGroup itemsPerRow={1}>
+                    {jobCards}
+                </CardGroup>
+            </GridColumn>
+            <GridColumn style={{ flex: '2 1', height: '100%', overflowY: 'scroll' }} >
+                {/* <p>Right Column</p> */}
                 {jobCards}
-            </CardGroup>
-        </>
+            </GridColumn>
+        </Grid>
     );
 }
 

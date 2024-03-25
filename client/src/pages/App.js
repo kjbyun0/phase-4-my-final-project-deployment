@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import { Switch, Route } from "react-router-dom";
 import { Outlet } from 'react-router-dom';
+import { useWindowSize } from '@react-hook/window-size';
 import NavBar from '../components/NavBar';
 
 function App() {
@@ -21,16 +22,21 @@ function App() {
     });
   }, [])
 
+  const [width, height] = useWindowSize()
+
   return (
-    <>
-      <header>
+    <div style={{ display: 'flex', flexFlow: 'column', justifyContent: 'center', 
+                  overflow: 'hidden',height: height }}>
+      <header style={{ flex: '0 1 auto', height: 'auto' }}>
         <NavBar signInAccount={signInAccount}/>
       </header>
-      <Outlet context={{
-        signInAccount: signInAccount, 
-        onSetSignInAccount: setSignInAccount,
-      }} />
-    </>
+      <main style={{ flex: '1 1', overflow: 'hidden'}}>
+        <Outlet context={{
+          signInAccount: signInAccount, 
+          onSetSignInAccount: setSignInAccount,
+        }} />
+      </main>
+    </div>
   );
 }
 
