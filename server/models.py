@@ -83,6 +83,8 @@ class JobOpening(db.Model, SerializerMixin):
     remote = db.Column(db.String, nullable=False)   # => On Site, Remote, Hybrid
     isActive = db.Column(db.Boolean, nullable=False)
 
+    # skills,
+
     job_category_id = db.Column(db.Integer, db.ForeignKey('job_categories.id'))
     employer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
