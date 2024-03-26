@@ -1,5 +1,5 @@
 import App from './pages/App';
-import Home from './pages/Home';
+import JobOpenings from './pages/JobOpenings';
 import Signup from './pages/Signup';
 import Signin from './pages/Signin';
 import Signout from './pages/Signout';
@@ -12,7 +12,7 @@ const routes = [
         children: [
             {
                 path: '/',
-                element: <Home />
+                element: <JobOpenings />
             },
             {
                 path: '/signup',

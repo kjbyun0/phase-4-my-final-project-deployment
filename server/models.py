@@ -9,22 +9,22 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-_password_hash', '-job_openings.employer',)
+    serialize_rules = ('-_password_hash', '-employer.user',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     _password_hash = db.Column(db.String, nullable=False)
-    name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    mobile = db.Column(db.String)
     phone = db.Column(db.String)
     street_1 = db.Column(db.String)
     street_2 = db.Column(db.String)
     city = db.Column(db.String)
     state = db.Column(db.String)
-    zip_code = db.Column(db.String) # => Maybe want to validate it
+    zip_code = db.Column(db.String)
 
-    job_openings = db.relationship('JobOpening', back_populates='employer', cascade='all, delete-orphan')
+    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+
+    employer = db.relationship('Employer', back_populates='user')
 
     def __repr__(self):
         return f'<User {self.id}, {self.username}>'
@@ -41,12 +41,12 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
     
-    @validates('email', 'mobile', 'phone', 'zip_code')
+    @validates('email', 'phone', 'zip_code')
     def validate(self, key, value):
         if key == 'email':
             if '@' not in value:
                 raise ValueError('Server validation Error: Invalid email address')
-        elif key == 'mobile' or key == 'phone':
+        elif key == 'phone':
             if len(value) != 0 and (len(value) != 12 or value.find(')') != 3 or \
                 value.find('-') != 7 or not value[:3].isdecimal() or 
                 not value[4:7].isdecimal() or not value[-4:].isdecimal()):
@@ -55,6 +55,21 @@ class User(db.Model, SerializerMixin):
             if len(value) != 5 or not value.isdecimal():
                 raise ValueError('Server validation error: Invalid zip code')
         return value
+    
+class Employer(db.Model, SerializerMixin):
+    __tablename__ = 'employers'
+
+    serialize_rules = ('-user.employer', '-job_openings.employer',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+
+    user = db.relationship('User', uselist=False, back_populates='employer', )
+    job_openings = db.relationship('JobOpening', back_populates='employer', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<Employer {self.id}, {self.name}>'
+
 
 class JobCategory(db.Model, SerializerMixin):
     __tablename__ = 'job_categories'
@@ -79,17 +94,15 @@ class JobOpening(db.Model, SerializerMixin):
     description = db.Column(db.String)
     salary = db.Column(db.Float, nullable=False)
     job_type = db.Column(db.String) # => full,partime,contract
-    location = db.Column(db.String, nullable=False) 
-    remote = db.Column(db.String, nullable=False)   # => On Site, Remote, Hybrid
-    isActive = db.Column(db.Boolean, nullable=False)
-
-    # skills,
+    remote = db.Column(db.String, nullable=False)   # => On-Site, Remote, Hybrid
+    is_active = db.Column(db.Boolean, nullable=False)
+    # requited skills,
 
     job_category_id = db.Column(db.Integer, db.ForeignKey('job_categories.id'))
-    employer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
 
     job_category = db.relationship('JobCategory', back_populates='job_openings')
-    employer = db.relationship('User', back_populates='job_openings')
+    employer = db.relationship('Employer', back_populates='job_openings')
     
     def __repr__(self):
         return f'<JobOpening {self.id} {self.title}>'

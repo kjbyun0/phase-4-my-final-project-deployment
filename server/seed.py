@@ -8,7 +8,7 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, JobCategory, JobOpening
+from models import db, User, Employer, JobCategory, JobOpening
 
 if __name__ == '__main__':
     fake = Faker()
@@ -16,25 +16,33 @@ if __name__ == '__main__':
         print("Starting seed...")
         # Seed code goes here!
         User.query.delete()
+        Employer.query.delete()
         JobCategory.query.delete()
         JobOpening.query.delete()
         db.session.commit()
 
         users = []
+        employers = []
         for i in range(20):
+            if i < 5:
+                employers.append(Employer(
+                    name = f'company name{i}'
+                ))
+            
             users.append(User(
                 username = f'test{i}',
                 password_hash = f'test{i}',
-                name = f'name{i}',
                 email = f'test{i}@gmail.com',
-                mobile = f'{i%10}{i%10}{i%10})000-0000',
                 phone = f'{i%10}{i%10}{i%10})000-0000',
                 street_1 = f'{i%10}{i%10}{i%10}{i%10}{i%10} Westwood Blvd',
                 street_2 = f'Apt# {i%10}{i%10}{i%10}',
                 city = 'Huston',
                 state = 'TX',
-                zip_code = f'{i%10}{i%10}{i%10}{i%10}{i%10}'
+                zip_code = f'{i%10}{i%10}{i%10}{i%10}{i%10}',
+
+                employer = employers[-1] if i < 5 else None
             ))
+        db.session.add_all(employers)
         db.session.add_all(users)
 
         job_category_list = ['Cleaner', 'Server', 'Tutor', 'Babysitter', 'Brand ambassador', 
@@ -50,19 +58,18 @@ if __name__ == '__main__':
         db.session.add_all(job_categories)
 
         job_types = ['Part time', 'Contract', 'Full time']
-        remotes = ['On Site', 'Remote', 'Hybrid']
+        remotes = ['On-Site', 'Remote', 'Hybrid']
         job_openings = []
         for i in range(20):
             job_openings.append(JobOpening(
                 title = f'{job_categories[i].category}-{i}',
                 description = 'describing sentence',
                 salary = 1.00 * i,
-                job_type = job_types[i % len(job_types)], # => full,partime,contract
-                location = 'an address',
+                job_type = job_types[i % len(job_types)], # => full,part time,contract
                 remote = remotes[i % len(remotes)],
-                isActive = True,
+                is_active = True,
                 job_category = job_categories[i],
-                employer = users[i]
+                employer = employers[i % 5]
             ))
         db.session.add_all(job_openings)
         db.session.commit()

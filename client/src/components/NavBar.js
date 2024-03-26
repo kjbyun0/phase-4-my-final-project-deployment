@@ -4,7 +4,7 @@ import './NavBar.css';
 function NavBar({ signInAccount }) {
     return (
         <nav>
-            <NavLink to='/'>Home</NavLink>
+            <NavLink to='/'>Jobs</NavLink>
             {signInAccount ? 
                 <NavLink to='/signout' className='nav-link'>Sign Out</NavLink> :
                 <NavLink to='/signin' className='nav-link'>Sign In</NavLink>

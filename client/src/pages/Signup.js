@@ -15,7 +15,7 @@ function Signup() {
         // => add more constraints later. think about making custom constraints
         password: yup.string().required('Must enter a password'),
         email: yup.string().required('Must enter your email').email('Invalid email format'),
-        mobile: yup.string(),
+        // mobile: yup.string(),
         // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
         // phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
         phone: yup.string(),
@@ -25,11 +25,14 @@ function Signup() {
 
     const formik = useFormik({
         initialValues: {
+            // isEmployer: false,
             name: '',
+            // firstName: '',
+            // lastName: '',
             username: '',
             password: '',
             email: '',
-            mobile: '',
+            // mobile: '',
             phone: '',
             street1: '',
             street2: '',
@@ -90,12 +93,12 @@ function Signup() {
             <p style={{ color: 'red'}}>{formik.touched.email ? formik.errors.email : null}</p>
             </FormField>
             <FormField>
-            <Label htmlFor='mobile'>Mobile:</Label>
+            {/* <Label htmlFor='mobile'>Mobile:</Label>
             <Input id='mobile' name='mobile' type='tel' value={formik.values.mobile} 
                 onChange={formik.handleChange} onBlur={formik.handleBlur} />
             <p style={{ color: 'red'}}>{formik.touched.mobile ? formik.errors.mobile : null}</p>
             </FormField>
-            <FormField>
+            <FormField> */}
             <Label htmlFor='phone'>Phone:</Label>
             <Input id='phone' name='phone' type='tel' value={formik.values.phone} 
                 onChange={formik.handleChange} onBlur={formik.handleBlur} />

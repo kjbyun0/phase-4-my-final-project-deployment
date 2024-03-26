@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CardGroup, Card, CardContent, CardHeader, CardMeta,
         Grid, GridColumn, GridRow, Button } from 'semantic-ui-react';
 
-function Home() {
+function JobOpenings() {
     const [jobOpenings, setJobOpenings] = useState([]);
     const [focusedCardIdx, setFocusedCardIdx] = useState(0);
 
@@ -80,4 +80,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default JobOpenings;

@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, JobCategory, JobOpening
+from models import User, Employer, JobCategory, JobOpening
 
 app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 
@@ -50,18 +50,26 @@ class Signup(Resource):
         account_req_dict = request.get_json()
         print(f'account_req_dict: {account_req_dict}')
         try:
+            # if this new account is for employer
+            # new_employer = None
+            # if account_req_dict.get('isEmployer'): # => Must be added to Sigup.js in the client side
+            new_employer = Employer(
+                name = account_req_dict.get('name')
+            )
+            db.session.add(new_employer)
+
             new_user = User(
                 username = account_req_dict.get('username'),
                 password_hash = account_req_dict.get('password'),
-                name = account_req_dict.get('name'),
                 email = account_req_dict.get('email'),
-                mobile = account_req_dict.get('mobile'),
                 phone = account_req_dict.get('phone'),
                 street_1 = account_req_dict.get('street1'),
                 street_2 = account_req_dict.get('street2'),
                 city = account_req_dict.get('city'),
                 state = account_req_dict.get('state'),
                 zip_code = account_req_dict.get('zipCode'),
+
+                employer = new_employer
             )
             db.session.add(new_user)
             db.session.commit()
