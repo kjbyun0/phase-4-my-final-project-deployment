@@ -19,6 +19,7 @@ app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 def index():
     return '<h1>Project Server</h1>'
 
+
 class Authenticate(Resource):
     # login
     def post(self):
@@ -44,6 +45,7 @@ class Authenticate(Resource):
     def delete(self):
         session['user_id'] = None
         return make_response({}, 204)
+
 
 class Signup(Resource):
     def post(self):
@@ -81,18 +83,42 @@ class Signup(Resource):
         session['user_id'] = new_user.id
         return make_response(new_user.to_dict(), 201)
 
+
 class JobOpenings(Resource):
     def get(self):
         job_openings = [job_opening.to_dict() for job_opening in JobOpening.query.all()]
         return make_response(job_openings, 200)
     
-    # def post(self):
-    #     request_dict = request.get_json()
+    def post(self):
+        new_job_dict = request.get_json()
+        new_job_category = JobCategory.query.filter_by(category=new_job_dict.get('category')).first()
+        user = User.query.filter_by(id=session['user_id']).first()
+        employer = user.employer
+        new_job = JobOpening(
+            title = new_job_dict.get('title'),
+            description = new_job_dict.get('description'),
+            salary = new_job_dict.get('salary'),
+            job_type = new_job_dict.get('job_type'),
+            remote = new_job_dict.get('remote'),
+            is_active = new_job_dict.get('is_active'),
+            job_category = new_job_category,
+            employer = employer
+        )
+        db.session.add(new_job)
+        db.session.commit()
+        return make_response(new_job.to_dict(), 201)
+
+
+class JobCategories(Resource):
+    def get(self):
+        job_categories = [job_category.to_dict() for job_category in JobCategory.query.all()]
+        return make_response(job_categories, 200)
 
 
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
 api.add_resource(JobOpenings, '/jobopenings')
+api.add_resource(JobCategories, '/jobcategories')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
