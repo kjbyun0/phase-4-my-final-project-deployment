@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Employer, JobCategory, JobOpening
+from models import User, Employer, JobCategory, JobPosting
 
 app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 
@@ -84,17 +84,17 @@ class Signup(Resource):
         return make_response(new_user.to_dict(), 201)
 
 
-class JobOpenings(Resource):
+class JobPostings(Resource):
     def get(self):
-        job_openings = [job_opening.to_dict() for job_opening in JobOpening.query.all()]
-        return make_response(job_openings, 200)
+        job_postings = [job_posting.to_dict() for job_posting in JobPosting.query.all()]
+        return make_response(job_postings, 200)
     
     def post(self):
         new_job_dict = request.get_json()
         new_job_category = JobCategory.query.filter_by(category=new_job_dict.get('category')).first()
         user = User.query.filter_by(id=session['user_id']).first()
         employer = user.employer
-        new_job = JobOpening(
+        new_job = JobPosting(
             title = new_job_dict.get('title'),
             description = new_job_dict.get('description'),
             salary = new_job_dict.get('salary'),
@@ -117,7 +117,7 @@ class JobCategories(Resource):
 
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
-api.add_resource(JobOpenings, '/jobopenings')
+api.add_resource(JobPostings, '/jobpostings')
 api.add_resource(JobCategories, '/jobcategories')
 
 if __name__ == '__main__':

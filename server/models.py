@@ -59,13 +59,13 @@ class User(db.Model, SerializerMixin):
 class Employer(db.Model, SerializerMixin):
     __tablename__ = 'employers'
 
-    serialize_rules = ('-user.employer', '-job_openings.employer',)
+    serialize_rules = ('-user.employer', '-job_postings.employer',)
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
     user = db.relationship('User', uselist=False, back_populates='employer', )
-    job_openings = db.relationship('JobOpening', back_populates='employer', cascade='all, delete-orphan')
+    job_postings = db.relationship('JobPosting', back_populates='employer', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Employer {self.id}, {self.name}>'
@@ -74,20 +74,20 @@ class Employer(db.Model, SerializerMixin):
 class JobCategory(db.Model, SerializerMixin):
     __tablename__ = 'job_categories'
 
-    serialze_rules = ('-job_openings.job_category',)
+    serialze_rules = ('-job_postings.job_category',)
 
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String, nullable=False)
     
-    job_openings = db.relationship('JobOpening', back_populates='job_category', cascade='all, delete-orphan')
+    job_postings = db.relationship('JobPosting', back_populates='job_category', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<JobCategory {self.id}, {self.category}>'
     
-class JobOpening(db.Model, SerializerMixin):
-    __tablename__ = 'job_openings'
+class JobPosting(db.Model, SerializerMixin):
+    __tablename__ = 'job_postings'
 
-    serialize_rules = ('-job_category.job_openings', '-employer.job_openings')
+    serialize_rules = ('-job_category.job_postings', '-employer.job_postings')
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -101,9 +101,9 @@ class JobOpening(db.Model, SerializerMixin):
     job_category_id = db.Column(db.Integer, db.ForeignKey('job_categories.id'))
     employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
 
-    job_category = db.relationship('JobCategory', back_populates='job_openings')
-    employer = db.relationship('Employer', back_populates='job_openings')
+    job_category = db.relationship('JobCategory', back_populates='job_postings')
+    employer = db.relationship('Employer', back_populates='job_postings')
     
     def __repr__(self):
-        return f'<JobOpening {self.id} {self.title}>'
+        return f'<JobPosting {self.id} {self.title}>'
 

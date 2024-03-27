@@ -8,7 +8,7 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, Employer, JobCategory, JobOpening
+from models import db, User, Employer, JobCategory, JobPosting
 
 if __name__ == '__main__':
     fake = Faker()
@@ -18,7 +18,7 @@ if __name__ == '__main__':
         User.query.delete()
         Employer.query.delete()
         JobCategory.query.delete()
-        JobOpening.query.delete()
+        JobPosting.query.delete()
         db.session.commit()
 
         users = []
@@ -59,9 +59,9 @@ if __name__ == '__main__':
 
         job_types = ['Part time', 'Contract', 'Full time']
         remotes = ['On-Site', 'Remote', 'Hybrid']
-        job_openings = []
+        job_postings = []
         for i in range(20):
-            job_openings.append(JobOpening(
+            job_postings.append(JobPosting(
                 title = f'{job_categories[i].category}-{i}',
                 description = 'describing sentence',
                 salary = 1.00 * i,
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 job_category = job_categories[i],
                 employer = employers[i % 5]
             ))
-        db.session.add_all(job_openings)
+        db.session.add_all(job_postings)
         db.session.commit()
 
 

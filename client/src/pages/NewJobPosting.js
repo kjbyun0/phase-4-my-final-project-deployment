@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Form, FormField, Input, Dropdown, TextArea, Button } from 'semantic-ui-react';
 
-function JobCreation() {
+function NewJobPosting() {
     const [ categories, setCagetories ] = useState([]);
     const { signInAccount, onSetSignInAccount } = useOutletContext();
 
@@ -32,7 +32,7 @@ function JobCreation() {
         },
         validationSchema: formSchema,
         onSubmit: (values) => {
-            fetch('/jobopenings', {
+            fetch('/jobpostings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,17 +41,13 @@ function JobCreation() {
             })
             .then(r => {
                 if (r.ok) {
-                    alert('New Job Opening Posted');
+                    alert('New Job Posted');
                     // formik.resetForm();
                 } else
-                    alert('Error creating the new job opening');
+                    alert('Error posting the new job');
             });
         },
     });
-
-    function handleSelectChange(e) {
-        console.log('in handleSelectChange, value: ', e.target.value);  
-    }
 
     return (
         <Form onSubmit={formik.handleSubmit}>
@@ -111,4 +107,4 @@ function JobCreation() {
     );
 }
 
-export default JobCreation;
+export default NewJobPosting;
