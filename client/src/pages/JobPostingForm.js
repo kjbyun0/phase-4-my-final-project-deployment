@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Form, FormField, Input, Dropdown, TextArea, Button } from 'semantic-ui-react';
 
-function NewJobPosting() {
+function JobPostingForm() {
     const [ categories, setCagetories ] = useState([]);
-    const { userAccount, onSetUserAccount } = useOutletContext();
+    const { userAccount } = useOutletContext();
+
+    // RBAC
+    const navigate = useNavigate();
+    if (userAccount) {
+        if (!userAccount.employer) 
+            navigate('/');
+    } else 
+        navigate('/signin')
 
     // => I need to move this to app.js and share it usig useOutletContext...
     useEffect(() => {
@@ -107,4 +115,4 @@ function NewJobPosting() {
     );
 }
 
-export default NewJobPosting;
+export default JobPostingForm;

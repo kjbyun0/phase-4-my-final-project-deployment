@@ -8,7 +8,7 @@ function NavBar({ userAccount }) {
         <nav>
             <NavLink to='/'>Jobs</NavLink>
             {userAccount && userAccount.employer ? 
-                <NavLink to='new_job_posting'>Post Job</NavLink> :
+                <NavLink to='job_posting_form'>Post Job</NavLink> :
                 null
             }
             {userAccount ? 

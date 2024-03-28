@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { CardGroup, Card, CardContent, CardHeader, CardMeta,
         Grid, GridColumn, GridRow, Button } from 'semantic-ui-react';
 
 function JobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
     const [focusedCardIdx, setFocusedCardIdx] = useState(0);
+    const {userAccount} = useOutletContext();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch('/jobpostings')
@@ -40,8 +44,13 @@ function JobPostings() {
                 <GridRow style={{ flex: '2 1', width: '100%', overflow: 'hidden'}}>
                     <div>
                         <h1>{jobPostings[focusedCardIdx].title}</h1>
-                        <p>{jobPostings[focusedCardIdx].employer.name} · {jobPostings[focusedCardIdx].employer.city}, {jobPostings[focusedCardIdx].employer.state}</p>
+                        <p>{jobPostings[focusedCardIdx].employer.name} · {jobPostings[focusedCardIdx].employer.user.city}, {jobPostings[focusedCardIdx].employer.user.state}</p>
                     </div>
+                    {
+                        userAccount && userAccount.employer ? 
+                        null : 
+                        <Button onClick={() => navigate(`/job_applications/${jobPostings[focusedCardIdx].id}`)}>Apply</Button>
+                    }
                 </GridRow>
                 <GridRow style={{ flex: '10 1', width: '100%', overflowY: 'scroll'}}>
                     <ul>
@@ -52,13 +61,13 @@ function JobPostings() {
                             {jobPostings[focusedCardIdx].description}
                         </li>
                         <li>Address: 
-                            <p>{jobPostings[focusedCardIdx].employer.street_1},<br/>
-                                {jobPostings[focusedCardIdx].employer.street_2},<br/>
-                                {jobPostings[focusedCardIdx].employer.city}, {jobPostings[focusedCardIdx].employer.state}<br/>
-                                {jobPostings[focusedCardIdx].employer.zipCode}</p>
+                            <p>{jobPostings[focusedCardIdx].employer.user.street_1},<br/>
+                                {jobPostings[focusedCardIdx].employer.user.street_2},<br/>
+                                {jobPostings[focusedCardIdx].employer.user.city}, {jobPostings[focusedCardIdx].employer.state}<br/>
+                                {jobPostings[focusedCardIdx].employer.user.zipCode}</p>
                         </li>
-                        <li>Tel: {jobPostings[focusedCardIdx].employer.phone}</li>
-                        <li>Email: {jobPostings[focusedCardIdx].employer.email}</li>
+                        <li>Tel: {jobPostings[focusedCardIdx].employer.user.phone}</li>
+                        <li>Email: {jobPostings[focusedCardIdx].employer.user.email}</li>
                     </ul>
                 </GridRow>
             </Grid>

@@ -150,6 +150,7 @@ class JobApplication(db.Model, SerializerMixin):
     education = db.Column(db.String)
     experience = db.Column(db.String)
     certificate = db.Column(db.String)
+    # => consider adding a column for more things to talk abut...
     status = db.Column(db.String, nullable=False)   # => new, accepted, rejected
 
     job_posting_id = db.Column(db.Integer, db.ForeignKey('job_postings.id'))

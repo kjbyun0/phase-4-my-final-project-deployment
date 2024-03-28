@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Employer, JobCategory, JobPosting
+from models import User, Employer, Applicant, JobCategory, JobPosting, JobApplication
 
 app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 
@@ -84,6 +84,12 @@ class Signup(Resource):
         return make_response(new_user.to_dict(), 201)
 
 
+class JobCategories(Resource):
+    def get(self):
+        job_categories = [job_category.to_dict() for job_category in JobCategory.query.all()]
+        return make_response(job_categories, 200)
+
+
 class JobPostings(Resource):
     def get(self):
         job_postings = [job_posting.to_dict() for job_posting in JobPosting.query.all()]
@@ -109,16 +115,40 @@ class JobPostings(Resource):
         return make_response(new_job.to_dict(), 201)
 
 
-class JobCategories(Resource):
-    def get(self):
-        job_categories = [job_category.to_dict() for job_category in JobCategory.query.all()]
-        return make_response(job_categories, 200)
+class JobPosting_by_id(Resource):
+    def get(self, id):
+        job_posting = JobPosting.query.filter_by(id=id).first()
 
+        if job_posting:
+            return make_response(job_posting.to_dict(), 200)
+        return make_response({
+            'message': f'Job Post {id} not found'
+        }, 404)
+
+
+class JobApplications(Resource):
+    def post(self):
+        new_job_app_dict = request.get_json()
+        new_job_app = JobApplication(
+            education = new_job_app_dict.get('education'),
+            experience = new_job_app_dict.get('experience'),
+            certificate = new_job_app_dict.get('certificate'),
+            status = 'new',
+            job_posting_id = new_job_app_dict.get('job_posting_id'),
+            applicant_id = new_job_app_dict.get('applicant_id')
+            # => Is it possible not to have job_posting_id and application_id???? need error handling if it happens???
+        )
+        db.session.add(new_job_app)
+        db.session.commit()
+        return make_response(new_job_app.to_dict(), 201)
 
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
-api.add_resource(JobPostings, '/jobpostings')
 api.add_resource(JobCategories, '/jobcategories')
+api.add_resource(JobPostings, '/jobpostings')
+api.add_resource(JobPosting_by_id, '/jobpostings/<int:id>')
+api.add_resource(JobApplications, '/jobapplications')
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

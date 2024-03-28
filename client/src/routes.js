@@ -1,6 +1,7 @@
 import App from './pages/App';
 import JobPostings from './pages/JobPostings';
-import NewJobPosting from './pages/NewJobPosting';
+import JobApplicationForm from './pages/JobApplicationForm';
+import JobPostingForm from './pages/JobPostingForm';
 import Signup from './pages/Signup';
 import Signin from './pages/Signin';
 import Signout from './pages/Signout';
@@ -13,11 +14,15 @@ const routes = [
         children: [
             {
                 path: '/',
-                element: <JobPostings />
+                element: <JobPostings />,
             },
             {
-                path: '/new_job_posting',
-                element: <NewJobPosting />
+                path: '/job_applications/:id',
+                element: <JobApplicationForm />,
+            },
+            {
+                path: '/job_posting_form',
+                element: <JobPostingForm />,
             },
             {
                 path: '/signup',

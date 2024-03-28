@@ -101,7 +101,7 @@ if __name__ == '__main__':
                 certificate = f'No Certificate-5',
                 status = status[i % 3],
                 job_posting = job_postings[i],
-                applicant = applicants[4]
+                applicant = applicants[0]
             ))
         db.session.add_all(job_applications)
         db.session.commit()
