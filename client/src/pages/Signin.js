@@ -9,7 +9,7 @@ function Signin() {
         firstTime: true, 
     });
     const navigate = useNavigate();
-    const { signInAccount, onSetSignInAccount } = useOutletContext();
+    const { onSetUserAccount } = useOutletContext();
 
     function handleChange(e) {
         setAccount({
@@ -32,7 +32,7 @@ function Signin() {
             if (r.ok) {
                 r.json().then(data => {
                     console.log('user: ', data);
-                    onSetSignInAccount(data);
+                    onSetUserAccount(data);
                     navigate('/');
                 });
             } else {

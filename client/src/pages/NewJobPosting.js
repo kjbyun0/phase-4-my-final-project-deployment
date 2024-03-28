@@ -6,7 +6,7 @@ import { Form, FormField, Input, Dropdown, TextArea, Button } from 'semantic-ui-
 
 function NewJobPosting() {
     const [ categories, setCagetories ] = useState([]);
-    const { signInAccount, onSetSignInAccount } = useOutletContext();
+    const { userAccount, onSetUserAccount } = useOutletContext();
 
     // => I need to move this to app.js and share it usig useOutletContext...
     useEffect(() => {

@@ -5,7 +5,7 @@ import { Form, FormField, Label, Input, Button } from 'semantic-ui-react';
 
 function Signup() {
     const navigate = useNavigate();
-    const { onSetSignInAccount } = useOutletContext();
+    const { onSetUserAccount } = useOutletContext();
 
     const formSchema = yup.object().shape({
         name: yup.string().required('Must enter a name'),
@@ -53,7 +53,7 @@ function Signup() {
             .then(r => {
                 if (r.ok) {
                     console.log('new account created: ');
-                    r.json().then(data => onSetSignInAccount(data));
+                    r.json().then(data => onSetUserAccount(data));
                     
                     navigate('/');
                 } else {

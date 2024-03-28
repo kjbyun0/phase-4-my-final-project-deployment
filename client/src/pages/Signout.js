@@ -2,7 +2,7 @@ import { useOutletContext, Navigate } from 'react-router-dom';
 
 // => This code need to be changed to nav menu
 function Signout() {
-    const { onSetSignInAccount } = useOutletContext();
+    const { onSetUserAccount } = useOutletContext();
 
     function handleSignout() {
         fetch('/authenticate', { 
@@ -10,7 +10,7 @@ function Signout() {
         })
         .then(r => {
             // The server can't  fail logging out. So, don't need to check the return status.
-            onSetSignInAccount(null);
+            onSetUserAccount(null);
         })
     }
 

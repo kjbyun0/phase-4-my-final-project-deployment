@@ -1,12 +1,17 @@
 import { NavLink } from "react-router-dom";
 import './NavBar.css';
 
-function NavBar({ signInAccount }) {
+function NavBar({ userAccount }) {
+    console.log('in NavBar, userAccount.employer: ', userAccount);
+
     return (
         <nav>
             <NavLink to='/'>Jobs</NavLink>
-            <NavLink to='new_job_posting'>Post Job</NavLink>
-            {signInAccount ? 
+            {userAccount && userAccount.employer ? 
+                <NavLink to='new_job_posting'>Post Job</NavLink> :
+                null
+            }
+            {userAccount ? 
                 <NavLink to='/signout' className='nav-link'>Sign Out</NavLink> :
                 <NavLink to='/signin' className='nav-link'>Sign In</NavLink>
             }
