@@ -7,6 +7,10 @@ function NavBar({ userAccount }) {
     return (
         <nav>
             <NavLink to='/'>Jobs</NavLink>
+            {userAccount && userAccount.applicant ? 
+                <NavLink to='applied_jobs'>Appliced Job List</NavLink> : 
+                null
+            }
             {userAccount && userAccount.employer ? 
                 <NavLink to='job_posting_form'>Post Job</NavLink> :
                 null

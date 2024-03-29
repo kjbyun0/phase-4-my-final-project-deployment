@@ -54,7 +54,7 @@ function JobPostings() {
                 </GridRow>
                 <GridRow style={{ flex: '10 1', width: '100%', overflowY: 'scroll'}}>
                     <ul>
-                        <li>Job Type: {jobPostings[focusedCardIdx].job_type}</li>
+                        <li>Job type: {jobPostings[focusedCardIdx].job_type}</li>
                         <li>Pay: {jobPostings[focusedCardIdx].salary}/hr</li>
                         <li>Remote: {jobPostings[focusedCardIdx].remote}</li>
                         <li>Description: <br/>

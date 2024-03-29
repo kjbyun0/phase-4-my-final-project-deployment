@@ -1,6 +1,7 @@
 import App from './pages/App';
 import JobPostings from './pages/JobPostings';
 import JobApplicationForm from './pages/JobApplicationForm';
+import AppliedJobs from './pages/AppliedJobs';
 import JobPostingForm from './pages/JobPostingForm';
 import Signup from './pages/Signup';
 import Signin from './pages/Signin';
@@ -19,6 +20,10 @@ const routes = [
             {
                 path: '/job_applications/:id',
                 element: <JobApplicationForm />,
+            },
+            {
+                path: '/applied_jobs',
+                element: <AppliedJobs />,
             },
             {
                 path: '/job_posting_form',

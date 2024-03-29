@@ -126,7 +126,7 @@ class JobPosting_by_id(Resource):
         }, 404)
 
 
-class JobApplications(Resource):
+class JobApplications(Resource):        
     def post(self):
         new_job_app_dict = request.get_json()
         new_job_app = JobApplication(
@@ -141,6 +141,12 @@ class JobApplications(Resource):
         db.session.add(new_job_app)
         db.session.commit()
         return make_response(new_job_app.to_dict(), 201)
+    
+class JobApplications_by_Applicant(Resource):
+    def get(self, aid):
+        job_apps_list_dict = [app.to_dict() for app in JobApplication.query.filter_by(applicant_id=aid).all()]
+        return make_response(job_apps_list_dict, 200)
+
 
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
@@ -148,6 +154,7 @@ api.add_resource(JobCategories, '/jobcategories')
 api.add_resource(JobPostings, '/jobpostings')
 api.add_resource(JobPosting_by_id, '/jobpostings/<int:id>')
 api.add_resource(JobApplications, '/jobapplications')
+api.add_resource(JobApplications_by_Applicant, '/jobapplications/<int:aid>')
 
 
 if __name__ == '__main__':
