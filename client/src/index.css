@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --bg: #282c34;
   --header: #fff;
   --link: #61dafb;
@@ -7,4 +7,26 @@
 
 .pointer-link {
   cursor: pointer;
+} */
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* div, header, main {
+  border: 2px solid tomato;
+} */
+
+#root {
+  height: 100%;
+}
+
+#doc-header {
+  height: 8.5%;
+}
+
+#doc-main {
+  height: 91.5%;
 }

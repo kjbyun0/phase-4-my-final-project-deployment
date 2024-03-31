@@ -54,25 +54,12 @@ function AppliedJobs() {
         );
     });
 
-    // const dispTestMsg = [];
-    // for (let i = 0; i < 100; i++) {
-    //     dispTestMsg.push(<p>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest</p>);
-    // }
-
     console.log('in AppliedJobs, dispJobAppliedList: ', dispJobAppliedList);
     
     return (
-        <div style={{ display: 'flex', flexFlow: 'row', height: '100%', overflow: 'hidden'}}>
-            <div sytle={{flex: '1 1', height: '100%', overflowY: 'scroll'}}>
-                <ItemGroup divided >
-                    {dispJobAppliedList}
-                </ItemGroup>
-                {/* {dispTestMsg} */}
-            </div>
-            {/* <div style={{flex: '1 1', height: '100%', overflowY: 'scroll'}}>
-                <p>testing</p>
-            </div> */}
-        </div>
+        <ItemGroup divided >
+            {dispJobAppliedList}
+        </ItemGroup>
     );
 }
 

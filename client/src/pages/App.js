@@ -25,18 +25,17 @@ function App() {
   const [width, height] = useWindowSize()
 
   return (
-    <div style={{ display: 'flex', flexFlow: 'column', justifyContent: 'center', 
-                  overflow: 'hidden',height: height }}>
-      <header style={{ flex: '0 1 auto', height: 'auto' }}>
+    <>
+      <header id='doc-header'>
         <NavBar userAccount={userAccount}/>
       </header>
-      <main style={{ flex: '1 1', overflow: 'hidden'}}>
+      <main id='doc-main'>
         <Outlet context={{
           userAccount: userAccount, 
           onSetUserAccount: setUserAccount,
         }} />
       </main>
-    </div>
+    </>
   );
 }
 

@@ -19,7 +19,7 @@ function JobPostings() {
     console.log('jobPostings: ', jobPostings)
 
     const jobCards = jobPostings.map((job, i) => 
-        <Card key={job.id} color={i === focusedCardIdx ? 'red' : 'grey'} onClick={() => setFocusedCardIdx(i)}>
+        <Card key={job.id} style={{ width: '100%' }} color={i === focusedCardIdx ? 'red' : 'grey'} onClick={() => setFocusedCardIdx(i)}>
             <CardContent>
                 {/* <Button circular icon='bookmark outline' /> */}
                 <CardHeader>{job.title}</CardHeader>
@@ -40,19 +40,17 @@ function JobPostings() {
             return null;
 
         return (
-            <Grid style={{ display: 'flex', flexFlow: 'column', height: '100%', overflow: 'hidden', padding: '15px'}}>
-                <GridRow style={{ flex: '2 1', width: '100%', overflow: 'hidden'}}>
-                    <div>
-                        <h1>{jobPostings[focusedCardIdx].title}</h1>
-                        <p>{jobPostings[focusedCardIdx].employer.name} · {jobPostings[focusedCardIdx].employer.user.city}, {jobPostings[focusedCardIdx].employer.user.state}</p>
-                    </div>
+            <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
+                <div style={{ flex: '1 1 25%', width: '100%', overflow: 'auto', padding: '20px'}}>
+                    <h1>{jobPostings[focusedCardIdx].title}</h1>
+                    <p>{jobPostings[focusedCardIdx].employer.name} · {jobPostings[focusedCardIdx].employer.user.city}, {jobPostings[focusedCardIdx].employer.user.state}</p>
                     {
                         userAccount && userAccount.employer ? 
                         null : 
                         <Button onClick={() => navigate(`/job_applications/${jobPostings[focusedCardIdx].id}`)}>Apply</Button>
-                    }
-                </GridRow>
-                <GridRow style={{ flex: '10 1', width: '100%', overflowY: 'scroll'}}>
+                     }
+                </div>
+                <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
                     <ul>
                         <li>Job type: {jobPostings[focusedCardIdx].job_type}</li>
                         <li>Pay: {jobPostings[focusedCardIdx].salary}/hr</li>
@@ -69,23 +67,20 @@ function JobPostings() {
                         <li>Tel: {jobPostings[focusedCardIdx].employer.user.phone}</li>
                         <li>Email: {jobPostings[focusedCardIdx].employer.user.email}</li>
                     </ul>
-                </GridRow>
-            </Grid>
+                </div>
+            </div>
         );
     }
 
     return (
-        <Grid style={{ display: 'flex', flexFlow: 'row', height: '100%', overflow: 'hidden', padding: '15px'}}>
-            <GridColumn style={{ flex: '1 1', height: '100%', overflowY: 'scroll' }}>
-                <CardGroup itemsPerRow={1}>
-                    {jobCards}
-                </CardGroup>
-            </GridColumn>
-            <GridColumn style={{ flex: '2 1', height: '100%', overflow: 'hidden' }}>
-                {/* <p>Right Column</p> */}
+        <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
+            <div style={{ flex: '1 1 25%', height: '100%', overflow: 'auto', padding: '15px' }}>
+                {jobCards}
+            </div>
+            <div style={{ flex: '1 1 75%', height: '100%', overflowY: 'auto'}}>
                 {dispJobOnFocus()}
-            </GridColumn>
-        </Grid>
+            </div>
+        </div>
     );
 }
 

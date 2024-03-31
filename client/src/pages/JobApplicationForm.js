@@ -27,6 +27,12 @@ function JobApplicationForm() {
                 navigate('/');
             }
         });
+
+        // fetch(`/jobapplication/${id}/${userAccount.applicant_id}`)
+        // .then(r => {
+        //     if (r.ok)
+
+        // })
     }, []);
 
     function dispJobPost() {
@@ -84,11 +90,11 @@ function JobApplicationForm() {
     });
 
     return (
-        <Grid style={{display:'flex', flexFlow: 'row', height: '100%', overflow: 'hidden'}}>
-            <GridColumn style={{flex: '1 1', height: '100%', overflow: 'scroll' }}>
+        <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
+            <div style={{ flex: '1 1 40%', height: '100%', overflow: 'auto' }}>
                 {dispJobPost()}
-            </GridColumn>
-            <GridColumn style={{flex: '1 1', height: '100%', overflowk: 'scroll'}}>
+            </div>
+            <div style={{ flex: '1 1 60%', height: '100%', overflow: 'auto'}}>
                 <Form onSubmit={formik.handleSubmit}>
                     <FormField>
                         <label htmlFor='education'>Education: </label>
@@ -100,15 +106,15 @@ function JobApplicationForm() {
                         <TextArea id='experience' name='experience' rows={5} value={formik.values.experience} 
                             onChange={formik.handleChange} />
                     </FormField>
-                    <formField>
+                    <FormField>
                         <lable htmlFor='certificate'>Certificates: </lable>
                         <TextArea id='certificate' name='certificate' rows={3} value={formik.values.certificate} 
                             onChange={formik.handleChange} />
-                    </formField>
+                    </FormField>
                     <Button type='submit'>Apply</Button>
                 </Form>
-            </GridColumn>
-        </Grid>
+            </div>
+        </div>
     );
 }
 

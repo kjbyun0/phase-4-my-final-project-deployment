@@ -142,11 +142,15 @@ class JobApplications(Resource):
         db.session.commit()
         return make_response(new_job_app.to_dict(), 201)
     
-class JobApplications_by_Applicant(Resource):
+class JobApplications_by_aid(Resource):
     def get(self, aid):
         job_apps_list_dict = [app.to_dict() for app in JobApplication.query.filter_by(applicant_id=aid).all()]
         return make_response(job_apps_list_dict, 200)
 
+# class JobApplication_by_jpid_and_aid(Resource):
+#     def get(self, jpid, aid):
+#         job_app = JobApplication.query.filter_by(Job_posting_id=jpid, applicant_id=aid).first()
+#         return make_response(job_app, 200)
 
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
@@ -154,7 +158,8 @@ api.add_resource(JobCategories, '/jobcategories')
 api.add_resource(JobPostings, '/jobpostings')
 api.add_resource(JobPosting_by_id, '/jobpostings/<int:id>')
 api.add_resource(JobApplications, '/jobapplications')
-api.add_resource(JobApplications_by_Applicant, '/jobapplications/<int:aid>')
+api.add_resource(JobApplications_by_aid, '/jobapplications/<int:aid>')
+# api.add_resource(JobApplication_by_jpid_and_aid, '/jobapplication/<int:jpid>/<int:aid>')
 
 
 if __name__ == '__main__':
