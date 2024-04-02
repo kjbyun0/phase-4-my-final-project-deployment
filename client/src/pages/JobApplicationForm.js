@@ -7,6 +7,7 @@ function JobApplicationForm() {
     const {id} = useParams();
     const {userAccount} = useOutletContext();
     const [jobPost, setJobPost] = useState(null);
+    const [jobApplication, setJobApplication] = useState(null); //=> Should this be a state???
 
     const navigate = useNavigate();
 
@@ -28,12 +29,87 @@ function JobApplicationForm() {
             }
         });
 
-        // fetch(`/jobapplication/${id}/${userAccount.applicant_id}`)
-        // .then(r => {
-        //     if (r.ok)
-
-        // })
+        fetch(`/jobapplication/${id}`)
+        .then(r => {
+            if (r.ok)
+                r.json().then(data => {
+                    setJobApplication(data);
+                    formik.setFieldValue('education', data.education);
+                    formik.setFieldValue('experience', data.experience);
+                    formik.setFieldValue('certificate', data.certificate);
+                })
+            else {
+                console.log("in JobApplicationForm, First time applying for this job.");
+                // => Error Handling needed....
+                switch(r.status) {
+                    case 404:
+                        console.log('in JobApplicationForm, New Application.');
+                        break;
+                    case 403:
+                        console.log("in JobApplicationForm, the user is an employer, Can't apply for a job.");
+                        break;
+                    case 401:
+                        console.log("in JobApplicationForm, the user hasn't loged in yet. Please, sign in first.");
+                        break;
+                }
+            }
+        })
     }, []);
+
+    const formik = useFormik({
+        initialValues: {
+            education: '',
+            experience: '',
+            certificate: '',
+        },
+        onSubmit: (values) => {
+            let jobAppPromise;
+            if (jobApplication) {
+                jobAppPromise = fetch(`/jobapplication/${jobApplication.job_posting_id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...values,
+                        job_posting_id: jobApplication.job_posting_id,
+                    }),
+                });
+            } else {
+                jobAppPromise = fetch('/jobapplications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...values,
+                        status: 'new',
+                        job_posting_id: jobPost.id,
+                        // applicant_id: userAccount.applicant_id, // => the user must be an applicant, not an employer... RBAC's role.
+                    }),
+                });
+            }
+            jobAppPromise.then(r => {
+                if (r.ok) {
+                    navigate('/')
+                } else {
+                    // => Error Handling needed....
+                    switch(r.status) {
+                        case 404:
+                            console.log('in JobApplicationForm, New Application.');
+                            break;
+                        case 403:
+                            console.log("in JobApplicationForm, the user is an employer, Can't apply for a job.");
+                            break;
+                        case 401:
+                            console.log("in JobApplicationForm, the user hasn't loged in yet. Please, sign in first.");
+                            break;
+                    }
+                }
+            })
+        },
+    });
+
 
     function dispJobPost() {
         if (!jobPost) 
@@ -63,32 +139,6 @@ function JobApplicationForm() {
         );
     }
 
-    const formik = useFormik({
-        initialValues: {
-            education: '',
-            experience: '',
-            certificate: '',
-        },
-        onSubmit: (values) => {
-            fetch('/jobapplications', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...values,
-                    job_posting_id: jobPost.id,
-                    applicant_id: userAccount.applicant_id,
-                })
-            })
-            .then(r => r.json())
-            .then(data => {
-                console.log('Job Application submitted successfully');
-                navigate('/');
-            })
-        },
-    });
-
     return (
         <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
             <div style={{ flex: '1 1 40%', height: '100%', overflow: 'auto' }}>
@@ -107,7 +157,7 @@ function JobApplicationForm() {
                             onChange={formik.handleChange} />
                     </FormField>
                     <FormField>
-                        <lable htmlFor='certificate'>Certificates: </lable>
+                        <label htmlFor='certificate'>Certificates: </label>
                         <TextArea id='certificate' name='certificate' rows={3} value={formik.values.certificate} 
                             onChange={formik.handleChange} />
                     </FormField>
