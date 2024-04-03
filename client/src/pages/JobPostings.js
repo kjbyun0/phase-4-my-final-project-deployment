@@ -42,8 +42,6 @@ function JobPostings() {
         .then(data => setJobPostings(data));
     }, []);
 
-    console.log('jobPostings: ', jobPostings);
-
     function handleApplyClick() {
         if (userAccount) {
             navigate(`/job_applications/${selJobPosting.id}`);
@@ -59,7 +57,6 @@ function JobPostings() {
         (!filters.jobTypes.length || filters.jobTypes.includes(job.job_type)) &&
         (!filters.remote.length || filters.remote.includes(job.remote)) && 
         (filters.pay === '' || filters.pay <= job.pay));
-    console.log('filteredJobPostings: ', filteredJobPostings);
 
     if (selJobPosting) {
         if (!filteredJobPostings.map(job => job.id).includes(selJobPosting.id)) {
@@ -72,7 +69,10 @@ function JobPostings() {
         if (filteredJobPostings.length)
             setSelJobPosting(filteredJobPostings[0]);
     }
-    console.log('selJobPosting: ', selJobPosting);
+
+    // console.log('jobPostings: ', jobPostings);
+    console.log('filteredJobPostings: ', filteredJobPostings);
+    // console.log('selJobPosting: ', selJobPosting);
 
     const dispJobCards = filteredJobPostings.map(job => {
         const cardStyle = {
@@ -139,7 +139,7 @@ function JobPostings() {
 
     return (
         <div style={{ height: '100%' }}>
-            <div style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', height: '7%', }}>
+            <div style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', height: '6%', }}>
                 {
                     filterTypes.map((type, i) => 
                         <Dropdown key={type} style={{ flex: '1 1', }} className='icon' 
@@ -154,7 +154,7 @@ function JobPostings() {
                     )
                 }
             </div>
-            <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '93%' }}>
+            <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '94%' }}>
                 <div style={{ flex: '1 1 25%', height: '100%', overflow: 'auto', padding: '15px' }}>
                     {dispJobCards}
                 </div>

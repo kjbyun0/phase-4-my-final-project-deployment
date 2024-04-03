@@ -11,7 +11,7 @@ function AppliedJobs() {
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
     const statusCatOptions = [
-        { key: 'new', text: 'Being reviewed', value: 'new',},
+        { key: 'new', text: 'Applied', value: 'new',},
         { key: 'accepted', text: 'Hired', value: 'accepted',},
         { key: 'rejected', text: 'Closed', value: 'rejected',},
     ];
@@ -43,9 +43,16 @@ function AppliedJobs() {
         setStatusCat(e2.value);
     }
 
+    // => This may be changed... app paramater already has everything to display
+    function handleItemClick(app) {
+        console.log('app: ', app);
+        if (app.status === 'new')
+            navigate(`/job_applications/${app.job_posting.id}`)
+    }
+
     const filterJobAppliedList = statusCat.length === 0 ? appliedList : appliedList.filter(app => statusCat.includes(app.status));
     const dispJobAppliedList = filterJobAppliedList.map(app => {
-        let status = 'Being reviewed', statusIcon = 'spinner', statusColor = 'MistyRose';
+        let status = 'Applied', statusIcon = 'spinner', statusColor = 'MistyRose';
         if  (app.status === 'accepted') {
             status = 'Hired';
             statusIcon = 'thumbs up outline';
@@ -57,7 +64,8 @@ function AppliedJobs() {
         }
 
         return (
-            <Item key={app.id} style={{padding: '15px',}}>
+            <Item key={app.id} title={app.id} style={{padding: '15px',}} className={status === 'Applied' ? 'pointerCursor' : null} 
+                onClick={() => handleItemClick(app)} >
                 <ItemContent>
                     <ItemHeader>{app.job_posting.title}</ItemHeader>
                     <ItemMeta>{app.job_posting.employer.name}</ItemMeta>
@@ -75,15 +83,20 @@ function AppliedJobs() {
     console.log('in AppliedJobs, dispJobAppliedList: ', dispJobAppliedList);
 
     return (
-        <>
-            <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
-                floating labeled button className='icon' 
-                search multiple selection clearable 
-                options={statusCatOptions} value={statusCat}  onChange={handleDropdownChange} />
-            <ItemGroup divided style={{ padding: '15px', }}>
-                {dispJobAppliedList}
-            </ItemGroup>
-        </>
+        <div style={{ height: '100%', }}>
+            <div style={{ height: '6%', }}>
+                <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
+                    floating labeled button className='icon' 
+                    search multiple selection clearable 
+                    placeholder='Status'
+                    options={statusCatOptions} value={statusCat}  onChange={handleDropdownChange} />
+            </div>
+            <div style={{ height: '94%', }}>
+                <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px', }}>
+                    {dispJobAppliedList}
+                </ItemGroup>
+            </div>
+        </div>
 
     );
 }

@@ -75,7 +75,7 @@ class Employer(db.Model, SerializerMixin):
 class Applicant(db.Model, SerializerMixin): 
     __tablename__ = 'applicants'
     
-    serialize_rules = ('-user.applicant', '-job_applications.applicant',)
+    serialize_rules = ('-user.applicant', '-job_applications.applicant', '-favorites.applicant',)
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
@@ -84,9 +84,12 @@ class Applicant(db.Model, SerializerMixin):
 
     user = db.relationship('User', uselist=False, back_populates='applicant')
     job_applications = db.relationship('JobApplication', back_populates='applicant', cascade='all, delete-orphan')
+    favorites = db.relationship('Favorite', back_populates='applicant', cascade='all, delete-orphan')
 
     job_postings = association_proxy('job_applications', 'job_posting',
                                      creator = lambda job_posting_obj: JobApplication(job_posting = job_posting_obj))
+    favorite_job_postings = association_proxy('favorites', 'job_posting',
+                                     creator = lambda job_posting_obj: Favorite(job_posting=job_posting_obj))
 
     def __repr__(self):
         return f'<Applicant {self.id}, {self.first_name}, {self.last_name}>'
@@ -117,7 +120,8 @@ class JobCategory(db.Model, SerializerMixin):
 class JobPosting(db.Model, SerializerMixin):
     __tablename__ = 'job_postings'
 
-    serialize_rules = ('-job_category.job_postings', '-employer.job_postings', '-job_appliacations.job_posting',)
+    serialize_rules = ('-job_category.job_postings', '-employer.job_postings', '-job_appliacations.job_posting', 
+                       '-favorites.job_posting',)
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -134,9 +138,12 @@ class JobPosting(db.Model, SerializerMixin):
     job_category = db.relationship('JobCategory', back_populates='job_postings')
     employer = db.relationship('Employer', back_populates='job_postings')
     job_applications = db.relationship('JobApplication', back_populates='job_posting', cascade='all, delete-orphan')
+    favorites = db.relationship('Favorite', back_populates='job_posting', cascade='all, delete-orphan')
 
     applicants = association_proxy('job_applications', 'applicant', 
                                    creator = lambda applicant_obj: JobApplication(applicant=applicant_obj))
+    favorite_applicants = association_proxy('favorites', 'applicant',
+                                            creator = lambda applicant_obj: Favorite(applicant=applicant_obj))
     
     def __repr__(self):
         return f'<JobPosting {self.id} {self.title}>'
@@ -161,4 +168,16 @@ class JobApplication(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<JobApplication {self.id}>'
+    
+class Favorite(db.Model, SerializerMixin): 
+    __tablename__ = 'favorites'
 
+    id = db.Column(db.Integer, primary_key=True)
+    applicant_id = db.Column(db.Integer, db.ForeignKey('applicants.id'))
+    job_posting_id = db.Column(db.Integer, db.ForeignKey('job_postings.id'))
+
+    applicant = db.relationship('Applicant', back_populates='favorites')
+    job_posting = db.relationship('JobPosting', back_populates='favorites')
+
+    def __repr__(self):
+        return f'<Favorite {self.id}>'

@@ -8,7 +8,7 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, Employer, Applicant, JobCategory, JobPosting, JobApplication
+from models import db, User, Employer, Applicant, JobCategory, JobPosting, JobApplication, Favorite
 
 if __name__ == '__main__':
     fake = Faker()
@@ -104,4 +104,31 @@ if __name__ == '__main__':
                 applicant = applicants[0]
             ))
         db.session.add_all(job_applications)
+
+        favorites = []
+        favorites.append(Favorite(
+            applicant_id = 2,
+            Job_posting_id = 1
+        ))
+        favorites.append(Favorite(
+            applicant_id = 2,
+            Job_posting_id = 2
+        ))
+        favorites.append(Favorite(
+            applicant_id = 2,
+            Job_posting_id = 3
+        ))
+        favorites.append(Favorite(
+            applicant_id = 3,
+            Job_posting_id = 1
+        ))
+        favorites.append(Favorite(
+            applicant_id = 3,
+            Job_posting_id = 3
+        ))
+        favorites.append(Favorite(
+            applicant_id = 3,
+            Job_posting_id = 4
+        ))
+        db.session.add_all(favorites)
         db.session.commit()
