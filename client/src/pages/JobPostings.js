@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardMeta, Button,
 
 function JobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
-    const [focusedCardIdx, setFocusedCardIdx] = useState(0);
+    const [selJobPosting, setSelJobPosting] = useState(null);
     const {userAccount} = useOutletContext();
     const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ function JobPostings() {
 
     function handleApplyClick() {
         if (userAccount) {
-            navigate(`/job_applications/${jobPostings[focusedCardIdx].id}`);
+            navigate(`/job_applications/${selJobPosting.id}`);
         } else {
             // => Semantic ui react의 Confirm을 사용하는 것 고려...
             alert("Please, sign in before applying for a job.");
@@ -59,16 +59,30 @@ function JobPostings() {
         (!filters.jobTypes.length || filters.jobTypes.includes(job.job_type)) &&
         (!filters.remote.length || filters.remote.includes(job.remote)) && 
         (filters.pay === '' || filters.pay <= job.pay));
+    console.log('filteredJobPostings: ', filteredJobPostings);
 
-    const dispJobCards = filteredJobPostings.map((job, i) => {
+    if (selJobPosting) {
+        if (!filteredJobPostings.map(job => job.id).includes(selJobPosting.id)) {
+            if (filteredJobPostings.length)
+                setSelJobPosting(filteredJobPostings[0]);
+            else 
+                setSelJobPosting(null);
+        }
+    } else {
+        if (filteredJobPostings.length)
+            setSelJobPosting(filteredJobPostings[0]);
+    }
+    console.log('selJobPosting: ', selJobPosting);
+
+    const dispJobCards = filteredJobPostings.map(job => {
         const cardStyle = {
             width: '100%',
-            background: i === focusedCardIdx ? 'aliceblue' : 'white',
+            background: (selJobPosting && job.id === selJobPosting.id) ? 'aliceblue' : 'white',
         };
 
         return (
-            <Card key={job.id} style={cardStyle} color={i === focusedCardIdx ? 'blue' : 'grey'} 
-                onClick={() => setFocusedCardIdx(i)}>
+            <Card key={job.id} style={cardStyle} color={(selJobPosting && job.id === selJobPosting.id) ? 'blue' : 'grey'} 
+                onClick={() => setSelJobPosting(job)}>
                 <CardContent>
                     {/* <Button circular icon='bookmark outline' /> */}
                     <CardHeader>{job.title}</CardHeader>
@@ -86,14 +100,14 @@ function JobPostings() {
     });
 
     function dispJobOnFocus() {
-        if (!filteredJobPostings.length) 
+        if (!selJobPosting)
             return null;
 
         return (
             <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
                 <div style={{ flex: '1 1 25%', width: '100%', overflow: 'auto', padding: '20px'}}>
-                    <h1>{filteredJobPostings[focusedCardIdx].title}</h1>
-                    <p>{filteredJobPostings[focusedCardIdx].employer.name} · {filteredJobPostings[focusedCardIdx].employer.user.city}, {filteredJobPostings[focusedCardIdx].employer.user.state}</p>
+                    <h1>{selJobPosting.title}</h1>
+                    <p>{selJobPosting.employer.name} · {selJobPosting.employer.user.city}, {selJobPosting.employer.user.state}</p>
                     {
                         userAccount && userAccount.employer ? 
                         null : 
@@ -102,21 +116,21 @@ function JobPostings() {
                 </div>
                 <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
                     <ul>
-                        <li>Job type: {filteredJobPostings[focusedCardIdx].job_type}</li>
-                        <li>Pay: {filteredJobPostings[focusedCardIdx].pay}/hr</li>
-                        <li>Remote: {filteredJobPostings[focusedCardIdx].remote}</li>
+                        <li>Job type: {selJobPosting.job_type}</li>
+                        <li>Pay: {selJobPosting.pay}/hr</li>
+                        <li>Remote: {selJobPosting.remote}</li>
                         <li>Description: <br/>
-                            {filteredJobPostings[focusedCardIdx].description}
+                            {selJobPosting.description}
                         </li>
                         <li>Address: 
-                            <p>{filteredJobPostings[focusedCardIdx].employer.user.street_1},<br/>
-                                {filteredJobPostings[focusedCardIdx].employer.user.street_2},<br/>
-                                {filteredJobPostings[focusedCardIdx].employer.user.city}, 
-                                {filteredJobPostings[focusedCardIdx].employer.state}<br/>
-                                {filteredJobPostings[focusedCardIdx].employer.user.zipCode}</p>
+                            <p>{selJobPosting.employer.user.street_1},<br/>
+                                {selJobPosting.employer.user.street_2},<br/>
+                                {selJobPosting.employer.user.city}, 
+                                {selJobPosting.employer.state}<br/>
+                                {selJobPosting.employer.user.zipCode}</p>
                         </li>
-                        <li>Tel: {filteredJobPostings[focusedCardIdx].employer.user.phone}</li>
-                        <li>Email: {filteredJobPostings[focusedCardIdx].employer.user.email}</li>
+                        <li>Tel: {selJobPosting.employer.user.phone}</li>
+                        <li>Email: {selJobPosting.employer.user.email}</li>
                     </ul>
                 </div>
             </div>
