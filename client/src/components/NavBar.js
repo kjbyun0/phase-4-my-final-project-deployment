@@ -1,18 +1,17 @@
 import { NavLink } from "react-router-dom";
-import './NavBar.css';
 
 function NavBar({ userAccount }) {
     console.log('in NavBar, userAccount.employer: ', userAccount);
 
     return (
         <nav>
-            <NavLink to='/'>Jobs</NavLink>
+            <NavLink to='/' className='nav-link'>Jobs</NavLink>
             {userAccount && userAccount.applicant ? 
-                <NavLink to='applied_jobs'>Appliced Job List</NavLink> : 
+                <NavLink to='applied_jobs' className='nav-link'>Appliced Job List</NavLink> : 
                 null
             }
             {userAccount && userAccount.employer ? 
-                <NavLink to='job_posting_form'>Post Job</NavLink> :
+                <NavLink to='job_posting_form' className='nav-link'>Post Job</NavLink> :
                 null
             }
             {userAccount ? 

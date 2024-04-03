@@ -77,7 +77,7 @@ if __name__ == '__main__':
                 salary = 1.00 * i,
                 job_type = job_types[i % len(job_types)], # => full,part time,contract
                 remote = remotes[i % len(remotes)],
-                is_active = True,
+                is_active = i <= 15,
                 job_category = job_categories[i],
                 employer = employers[i % 5]
             ))

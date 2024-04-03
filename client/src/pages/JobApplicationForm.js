@@ -15,8 +15,9 @@ function JobApplicationForm() {
     if (userAccount) {
         if (!userAccount.applicant) 
             navigate('/');
-    } else 
-        navigate('/signin')
+    } else {
+        navigate('/signin');
+    }
 
     useEffect(() => {
         fetch(`/jobpostings/${id}`)
@@ -109,7 +110,6 @@ function JobApplicationForm() {
             })
         },
     });
-
 
     function dispJobPost() {
         if (!jobPost) 

@@ -73,10 +73,13 @@ function AppliedJobs() {
     });
 
     console.log('in AppliedJobs, dispJobAppliedList: ', dispJobAppliedList);
-    
+
     return (
         <>
-            <Dropdown style={{ position: 'absolute', right: '20px', }} search multiple selection clearable options={statusCatOptions} value={statusCat}  onChange={handleDropdownChange} />
+            <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
+                floating labeled button className='icon' 
+                search multiple selection clearable 
+                options={statusCatOptions} value={statusCat}  onChange={handleDropdownChange} />
             <ItemGroup divided style={{ padding: '15px', }}>
                 {dispJobAppliedList}
             </ItemGroup>
