@@ -25,7 +25,7 @@ function JobPostingForm() {
 
     const formSchema = yup.object().shape({
         title: yup.string().required("Must enter a title"),
-        salary: yup.number().positive('Must be a positive number'),
+        pay: yup.number().positive('Must be a positive number'),
     });
 
     const formik = useFormik({
@@ -33,7 +33,7 @@ function JobPostingForm() {
             title: '',
             category: 'Cleaner', // => temporary hard coding initialization....
             description: '',
-            salary: 0.0,
+            pay: 0.0,
             job_type: 'Full time',
             remote: 'On-Site',
             is_active: true,
@@ -78,9 +78,9 @@ function JobPostingForm() {
             </FormField>
             <FormField inline>
                 <label>Pay:</label>
-                <Input id='salary' name='salary' type='number' value={formik.values.salary} 
+                <Input id='pay' name='pay' type='number' value={formik.values.pay} 
                     onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                <p style={{ color: 'red', }}>{formik.touched.salary ? formik.errors.salary : null}</p>
+                <p style={{ color: 'red', }}>{formik.touched.pay ? formik.errors.pay : null}</p>
             </FormField>
             <FormField inline>
                 <label>Job Type:</label>

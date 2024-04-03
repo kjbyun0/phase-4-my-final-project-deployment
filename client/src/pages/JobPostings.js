@@ -14,7 +14,7 @@ function JobPostings() {
     const [filters, setFilters] = useState({
         jobTypes: [],
         remote: [],
-        pay: null,
+        pay: '',
     });     
     const filterOptions = {
         jobTypes: [
@@ -58,7 +58,7 @@ function JobPostings() {
         job.is_active && 
         (!filters.jobTypes.length || filters.jobTypes.includes(job.job_type)) &&
         (!filters.remote.length || filters.remote.includes(job.remote)) && 
-        (filters.pay === '' || filters.pay <= job.salary));
+        (filters.pay === '' || filters.pay <= job.pay));
 
     const dispJobCards = filteredJobPostings.map((job, i) => {
         const cardStyle = {
@@ -103,7 +103,7 @@ function JobPostings() {
                 <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
                     <ul>
                         <li>Job type: {filteredJobPostings[focusedCardIdx].job_type}</li>
-                        <li>Pay: {filteredJobPostings[focusedCardIdx].salary}/hr</li>
+                        <li>Pay: {filteredJobPostings[focusedCardIdx].pay}/hr</li>
                         <li>Remote: {filteredJobPostings[focusedCardIdx].remote}</li>
                         <li>Description: <br/>
                             {filteredJobPostings[focusedCardIdx].description}

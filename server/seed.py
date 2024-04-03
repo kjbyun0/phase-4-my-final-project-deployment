@@ -74,7 +74,7 @@ if __name__ == '__main__':
             job_postings.append(JobPosting(
                 title = f'{job_categories[i].category}-{i}',
                 description = 'describing sentence',
-                salary = 1.00 * i,
+                pay = 15.00 + i,
                 job_type = job_types[i % len(job_types)], # => full,part time,contract
                 remote = remotes[i % len(remotes)],
                 is_active = i <= 15,

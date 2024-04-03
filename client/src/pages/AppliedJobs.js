@@ -62,7 +62,7 @@ function AppliedJobs() {
                     <ItemHeader>{app.job_posting.title}</ItemHeader>
                     <ItemMeta>{app.job_posting.employer.name}</ItemMeta>
                     {/* <ItemDescription>Job type: {app.job_posting.job_category}</ItemDescription>
-                    <ItemDescription>Pay: {app.job_posting.salary}/hr</ItemDescription>
+                    <ItemDescription>Pay: {app.job_posting.pay}/hr</ItemDescription>
                     <ItemDescription>Remote: {app.job_posting.remote}</ItemDescription> */}
                     <ItemExtra>
                         <Label style={{background: statusColor,}} icon={statusIcon} content={status} />

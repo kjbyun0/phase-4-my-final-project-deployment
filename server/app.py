@@ -103,7 +103,7 @@ class JobPostings(Resource):
         new_job = JobPosting(
             title = new_job_dict.get('title'),
             description = new_job_dict.get('description'),
-            salary = new_job_dict.get('salary'),
+            pay = new_job_dict.get('pay'),
             job_type = new_job_dict.get('job_type'),
             remote = new_job_dict.get('remote'),
             is_active = new_job_dict.get('is_active'),

@@ -121,7 +121,7 @@ function JobApplicationForm() {
                 <ul>
                     <li>Company: {jobPost.employer.name}</li>
                     <li>Job Type: {jobPost.job_type}</li>
-                    <li>Pay: {jobPost.salary}/hr</li>
+                    <li>Pay: {jobPost.pay}/hr</li>
                     <li>Remote: {jobPost.remote}</li>
                     <li>Description: <br/>
                         {jobPost.description}
