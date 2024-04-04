@@ -7,7 +7,7 @@ import { ItemGroup, Item, ItemContent, ItemHeader,
 
 function AppliedJobs() {
     const { userAccount } = useOutletContext();
-    const [ appliedList, setAppliedList ] = useState([]);
+    const [ appliedJobs, setAppliedJobs ] = useState([]);
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
     const statusCatOptions = [
@@ -28,7 +28,7 @@ function AppliedJobs() {
         fetch(`/jobapplications`)
         .then(r => {
             if (r.ok)
-                r.json().then(data => setAppliedList(data));
+                r.json().then(data => setAppliedJobs(data));
             else {
                 // => Error handling needed.
                 // => check if the HTTP response code is 401. if it is the user needs to sign in... redirect to the sign in page.
@@ -36,12 +36,7 @@ function AppliedJobs() {
         })
     }, []);
 
-    console.log('in AppliedJobs, appliedList: ', appliedList);
-
-    function handleDropdownChange(e1, e2) {
-        console.log(e1, e2);
-        setStatusCat(e2.value);
-    }
+    console.log('in AppliedJobs, appliedJobs: ', appliedJobs);
 
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(app) {
@@ -50,21 +45,19 @@ function AppliedJobs() {
             navigate(`/job_applications/${app.job_posting.id}`)
     }
 
-    const filterJobAppliedList = statusCat.length === 0 ? appliedList : appliedList.filter(app => statusCat.includes(app.status));
-    const dispJobAppliedList = filterJobAppliedList.map(app => {
-        let status = 'Applied', statusIcon = 'spinner', statusColor = 'MistyRose';
-        if  (app.status === 'accepted') {
-            status = 'Hired';
-            statusIcon = 'thumbs up outline';
-            statusColor = 'LightGreen';
-        } else if (app.status === 'rejected') {
-            status = 'Closed';
-            statusIcon = 'remove circle';
-            statusColor = 'LightGrey';
+    const filterAppliedJobs = statusCat.length === 0 ? appliedJobs : appliedJobs.filter(app => statusCat.includes(app.status));
+    const dispFilteredAppliedJobs = filterAppliedJobs.map(app => {
+        let status, statusIcon, statusColor;
+        if (app.status === 'new') {
+            status = 'Applied'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
+        } else if (app.status === 'accepted') {
+            status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
+        } else {
+            status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
         }
 
         return (
-            <Item key={app.id} title={app.id} style={{padding: '15px',}} className={status === 'Applied' ? 'pointerCursor' : null} 
+            <Item key={app.id} style={{padding: '15px',}} className={status === 'Applied' ? 'pointerCursor' : null} 
                 onClick={() => handleItemClick(app)} >
                 <ItemContent>
                     <ItemHeader>{app.job_posting.title}</ItemHeader>
@@ -80,7 +73,7 @@ function AppliedJobs() {
         );
     });
 
-    console.log('in AppliedJobs, dispJobAppliedList: ', dispJobAppliedList);
+    console.log('in AppliedJobs, dispFilteredAppliedJobs: ', dispFilteredAppliedJobs);
 
     return (
         <div style={{ height: '100%', }}>
@@ -89,15 +82,14 @@ function AppliedJobs() {
                     floating labeled button className='icon' 
                     search multiple selection clearable 
                     placeholder='Status'
-                    options={statusCatOptions} value={statusCat}  onChange={handleDropdownChange} />
+                    options={statusCatOptions} value={statusCat}  onChange={(e, {value}) => setStatusCat(value)} />
             </div>
             <div style={{ height: '94%', }}>
                 <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px', }}>
-                    {dispJobAppliedList}
+                    {dispFilteredAppliedJobs}
                 </ItemGroup>
             </div>
         </div>
-
     );
 }
 

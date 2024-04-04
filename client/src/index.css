@@ -15,9 +15,9 @@
   box-sizing: border-box;
 }
 
-/* div, header, main, nav {
+div, header, main, nav {
   border: 2px solid tomato;
-} */
+}
 
 #root {
   height: 100%;

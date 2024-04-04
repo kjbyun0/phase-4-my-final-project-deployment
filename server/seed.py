@@ -8,7 +8,7 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, Employer, Applicant, JobCategory, JobPosting, JobApplication, Favorite
+from models import db, User, Employer, Applicant, JobCategory, JobPosting, JobApplication, FavoriteJob
 
 if __name__ == '__main__':
     fake = Faker()
@@ -21,6 +21,7 @@ if __name__ == '__main__':
         JobCategory.query.delete()
         JobPosting.query.delete()
         JobApplication.query.delete()
+        FavoriteJob.query.delete()
         db.session.commit()
 
         users = []
@@ -105,30 +106,30 @@ if __name__ == '__main__':
             ))
         db.session.add_all(job_applications)
 
-        favorites = []
-        favorites.append(Favorite(
+        favorite_jobs = []
+        favorite_jobs.append(FavoriteJob(
             applicant_id = 2,
-            Job_posting_id = 1
+            job_posting_id = 1
         ))
-        favorites.append(Favorite(
+        favorite_jobs.append(FavoriteJob(
             applicant_id = 2,
-            Job_posting_id = 2
+            job_posting_id = 2
         ))
-        favorites.append(Favorite(
+        favorite_jobs.append(FavoriteJob(
             applicant_id = 2,
-            Job_posting_id = 3
+            job_posting_id = 3
         ))
-        favorites.append(Favorite(
+        favorite_jobs.append(FavoriteJob(
             applicant_id = 3,
-            Job_posting_id = 1
+            job_posting_id = 1
         ))
-        favorites.append(Favorite(
+        favorite_jobs.append(FavoriteJob(
             applicant_id = 3,
-            Job_posting_id = 3
+            job_posting_id = 3
         ))
-        favorites.append(Favorite(
+        favorite_jobs.append(FavoriteJob(
             applicant_id = 3,
-            Job_posting_id = 4
+            job_posting_id = 4
         ))
-        db.session.add_all(favorites)
+        db.session.add_all(favorite_jobs)
         db.session.commit()

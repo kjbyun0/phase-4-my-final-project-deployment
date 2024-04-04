@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Employer, Applicant, JobCategory, JobPosting, JobApplication
+from models import User, Employer, Applicant, JobCategory, JobPosting, JobApplication, FavoriteJob
 
 app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 
@@ -220,6 +220,22 @@ class JobApplication_by_jpid(Resource):
                 'message': "User needs to sign in first",
             }, 401)
 
+class FavoriteJobs(Resource):
+    def get(self):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if user:
+            if user.applicant:
+                favorite_jobs_dict = [favorite_job.to_dict() for favorite_job in FavoriteJob.query.filter_by(applicant_id=user.applicant_id).all()]
+                return make_response(favorite_jobs_dict, 200)
+            else:
+                return make_response({
+                    'message': "User isn't an applicant but an employer",
+                }, 403)
+        else:
+            return make_response({
+                'message': "User needs to sign in first",
+            }, 401)
+
 
 api.add_resource(Authenticate, '/authenticate')
 api.add_resource(Signup, '/signup')
@@ -228,6 +244,7 @@ api.add_resource(JobPostings, '/jobpostings')
 api.add_resource(JobPosting_by_id, '/jobpostings/<int:id>')
 api.add_resource(JobApplications, '/jobapplications')
 api.add_resource(JobApplication_by_jpid, '/jobapplication/<int:jpid>')
+api.add_resource(FavoriteJobs, '/favoritejobs')
 
 
 if __name__ == '__main__':

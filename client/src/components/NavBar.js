@@ -7,7 +7,12 @@ function NavBar({ userAccount }) {
         <nav>
             <NavLink to='/' className='nav-link nav-link-first'>Jobs</NavLink>
             {userAccount && userAccount.applicant ? 
-                <NavLink to='applied_jobs' className='nav-link'>Appliced Job List</NavLink> : 
+                (
+                    <>
+                        <NavLink to='applied_jobs' className='nav-link'>Appliced Jobs</NavLink>
+                        <NavLink to='favorite_jobs' className='nav-link'>Favorite Jobs</NavLink>
+                    </>
+                ) : 
                 null
             }
             {userAccount && userAccount.employer ? 
