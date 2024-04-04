@@ -5,7 +5,7 @@ function NavBar({ userAccount }) {
 
     return (
         <nav>
-            <NavLink to='/' className='nav-link'>Jobs</NavLink>
+            <NavLink to='/' className='nav-link nav-link-first'>Jobs</NavLink>
             {userAccount && userAccount.applicant ? 
                 <NavLink to='applied_jobs' className='nav-link'>Appliced Job List</NavLink> : 
                 null
@@ -15,8 +15,8 @@ function NavBar({ userAccount }) {
                 null
             }
             {userAccount ? 
-                <NavLink to='/signout' className='nav-link'>Sign Out</NavLink> :
-                <NavLink to='/signin' className='nav-link'>Sign In</NavLink>
+                <NavLink to='/signout' className='nav-link nav-link-last'>Sign Out</NavLink> :
+                <NavLink to='/signin' className='nav-link nav-link-last'>Sign In</NavLink>
             }
         </nav>
     );

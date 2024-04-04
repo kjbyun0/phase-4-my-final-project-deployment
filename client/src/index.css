@@ -15,7 +15,7 @@
   box-sizing: border-box;
 }
 
-/* div, header, main {
+/* div, header, main, nav {
   border: 2px solid tomato;
 } */
 
@@ -24,28 +24,37 @@
 }
 
 #doc-header {
-  height: 8.5%;
+  height: 8%;
 }
 
 #doc-main {
-  height: 91.5%;
+  height: 92%;
 }
 
 .nav-link {
   display: inline-block;
   box-sizing: border-box;
-  width: 60px;
-  padding: 5px;
-  margin: 0 6px 6px;
-  background: blue;
+  width: auto;
+  padding: 10px;
+  margin: 10px 0 10px;
   text-decoration: none;
   text-align: center;
-  font-size: min(10vw, 15px) ;
-  color: white;
+  font-size: 1.5em;
+  color: black;
+  /* background: blue; */
+}
+
+.nav-link-first {
+  margin: 10px 0 10px 50px;
+}
+
+.nav-link-last {
+  float: right;
+  margin: 10px 50px 10px 0;
 }
 
 .active {
-  color: red;
+  color: tomato;
 }
 
 .pointerCursor {
