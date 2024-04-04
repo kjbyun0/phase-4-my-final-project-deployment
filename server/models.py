@@ -9,7 +9,9 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-_password_hash', '-employer.user', '-applicant.user',)
+    serialize_rules = ('-_password_hash', 
+                       '-employer.user', '-employer.job_postings', 
+                       '-applicant.user', '-applicant.job_applications', '-applicant.favorites',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -120,8 +122,10 @@ class JobCategory(db.Model, SerializerMixin):
 class JobPosting(db.Model, SerializerMixin):
     __tablename__ = 'job_postings'
 
-    serialize_rules = ('-job_category.job_postings', '-employer.job_postings', '-job_appliacations.job_posting', 
-                       '-favorites.job_posting',)
+    serialize_rules = ('-job_category.job_postings', 
+                       '-employer.job_postings', 
+                       '-job_appliacations.job_posting', '-job_applications.applicant', 
+                       '-favorites.job_posting', '-favorites.applicant',)
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -171,6 +175,8 @@ class JobApplication(db.Model, SerializerMixin):
     
 class Favorite(db.Model, SerializerMixin): 
     __tablename__ = 'favorites'
+
+    serialize_rules = ('-applicant.favorites', '-job_posting.favorites',)
 
     id = db.Column(db.Integer, primary_key=True)
     applicant_id = db.Column(db.Integer, db.ForeignKey('applicants.id'))
