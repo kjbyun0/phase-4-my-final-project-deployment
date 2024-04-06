@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ItemGroup, Item, ItemContent, ItemHeader, ItemMeta, ItemExtra, 
-    Label, Dropdown } from 'semantic-ui-react';
+    Label, Dropdown, Button, IconGroup, Icon, } from 'semantic-ui-react';
 
 function FavoriteJobs() {
     const { userAccount } = useOutletContext();
@@ -42,6 +42,24 @@ function FavoriteJobs() {
         // console.log('job: ', job);
         if (job.status === 'notApplied' || job.status === 'applied') 
             navigate(`/job_applications/${job.job_posting_id}`)
+    }
+
+    function handleFavoriteDeleteClick(id) {
+        fetch(`/favoritejobs/${id}`, {
+            method: 'DELETE',
+        })
+        .then(r => {
+            if (r.ok) {
+                setFavoriteJobs(favoriteJobs.filter(job => job.id !== id));
+            } else if (r.status === 403) {
+                // => It can't be reached. If this popup shows up, then there is a hole for an employer to acess favorites...
+                alert("You are signed in with your employer account. Please, sign in again.")
+            } else if (r.status === 401) {
+                // => It can't be reached because, if not signed up, favorite jobs can't be shown.
+                alert("Please, sign in before adding it to your favorite jobs.");
+                navigate('/signin');
+            }
+        })
     }
 
     const favoriteJobsStatus = favoriteJobs.map(job => {
@@ -86,18 +104,25 @@ function FavoriteJobs() {
         }
 
         return (
-            <Item key={job.id} style={{padding: '15px',}} 
-                className={(status === 'Not Applied' || status === 'Applied') ? 'pointerCursor' : null} 
-                onClick={() => handleItemClick(job)}>
-                <ItemContent>
-                    <ItemHeader>{job.job_posting.title}</ItemHeader>
-                    <ItemMeta>{job.job_posting.employer.name}</ItemMeta>
+            <div key={job.id} style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', }}>
+                <Item style={{flex: '1 1 90%', padding: '15px',}} 
+                    className={(status === 'Not Applied' || status === 'Applied') ? 'pointerCursor' : null} 
+                    onClick={() => handleItemClick(job)}>
+                    <ItemContent>
+                        <ItemHeader>{job.job_posting.title}</ItemHeader>
+                        <ItemMeta>{job.job_posting.employer.name}</ItemMeta>
 
-                    <ItemExtra>
-                        <Label style={{ background: statusColor, }} icon={statusIcon} content={status}/>
-                    </ItemExtra>
-                </ItemContent>
-            </Item>
+                        <ItemExtra>
+                            <Label style={{ background: statusColor, }} icon={statusIcon} content={status}/>
+                        </ItemExtra>
+                    </ItemContent>
+                </Item>
+                <div style={{flex: '1 1 10%', }}>
+                    <Button basic circular icon='trash alternate outline'
+                                size='mini' compact 
+                                onClick={() => handleFavoriteDeleteClick(job.id)} />
+                </div>                
+            </div>
         );
     });
 

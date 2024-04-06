@@ -6,7 +6,7 @@ import { useFormik } from 'formik';
 function JobApplicationForm() {
     const {id} = useParams();
     const {userAccount} = useOutletContext();
-    const [jobPost, setJobPost] = useState(null);
+    const [jobPosting, setJobPosting] = useState(null);
     const [jobApplication, setJobApplication] = useState(null); //=> Should this be a state???
 
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ function JobApplicationForm() {
         fetch(`/jobpostings/${id}`)
         .then(r => {
             if (r.ok)
-                r.json().then(data => setJobPost(data));
+                r.json().then(data => setJobPosting(data));
             else {
                 console.log(`Error: Can't find the job posting id: ${id}, r:`, r);
                 navigate('/');
@@ -85,7 +85,7 @@ function JobApplicationForm() {
                     body: JSON.stringify({
                         ...values,
                         status: 'new',
-                        job_posting_id: jobPost.id,
+                        job_posting_id: jobPosting.id,
                         // applicant_id: userAccount.applicant_id, // => the user must be an applicant, not an employer... RBAC's role.
                     }),
                 });
@@ -111,54 +111,81 @@ function JobApplicationForm() {
         },
     });
 
-    function dispJobPost() {
-        if (!jobPost) 
+    function dispJobPosting() {
+        if (!jobPosting) 
             return null;
 
         return (
-            <>
-                <h3>{jobPost.title}</h3>
-                <ul>
-                    <li>Company: {jobPost.employer.name}</li>
-                    <li>Job Type: {jobPost.job_type}</li>
-                    <li>Pay: {jobPost.pay}/hr</li>
-                    <li>Remote: {jobPost.remote}</li>
-                    <li>Description: <br/>
-                        {jobPost.description}
-                    </li>
-                    <li>Address: 
-                        <p>{jobPost.employer.user.street_1},<br/>
-                            {jobPost.employer.user.street_2},<br/>
-                            {jobPost.employer.user.city}, {jobPost.employer.state}<br/>
-                            {jobPost.employer.user.zipCode}</p>
-                    </li>
-                    <li>Tel: {jobPost.employer.user.phone}</li>
-                    <li>Email: {jobPost.employer.user.email}</li>
-                </ul>
-            </>
+            // <>
+            //     <h3>{jobPosting.title}</h3>
+            //     <ul>
+            //         <li>Company: {jobPosting.employer.name}</li>
+            //         <li>Job Type: {jobPosting.job_type}</li>
+            //         <li>Pay: {jobPosting.pay}/hr</li>
+            //         <li>Remote: {jobPosting.remote}</li>
+            //         <li>Description: <br/>
+            //             {jobPosting.description}
+            //         </li>
+            //         <li>Address: 
+            //             <p>{jobPosting.employer.user.street_1},<br/>
+            //                 {jobPosting.employer.user.street_2},<br/>
+            //                 {jobPosting.employer.user.city}, {jobPosting.employer.state}<br/>
+            //                 {jobPosting.employer.user.zipCode}</p>
+            //         </li>
+            //         <li>Tel: {jobPosting.employer.user.phone}</li>
+            //         <li>Email: {jobPosting.employer.user.email}</li>
+            //     </ul>
+            // </>
+            <div style={{ display: 'flex', flexFlow: 'column', height: '100%', padding: '10px 20px' }}>
+                <div style={{ flex: '1 1 20%', width: '100%', overflow: 'auto', padding: '20px'}}>
+                    <h1>{jobPosting.title}</h1>
+                    <p>{jobPosting.employer.name}<br/>
+                        {jobPosting.employer.user.city}, {jobPosting.employer.user.state} ({jobPosting.remote})</p>
+                </div>
+                <div style={{ flex: '1 1 80%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
+                    <ul>
+                        <li>Job type: {jobPosting.job_type}</li>
+                        <li>Pay: {jobPosting.pay}/hr</li>
+                        <li>Remote: {jobPosting.remote}</li>
+                        <li>Description: <br/>
+                            {jobPosting.description}
+                        </li>
+                        <li>Address: 
+                            <p>{jobPosting.employer.user.street_1},<br/>
+                                {jobPosting.employer.user.street_2},<br/>
+                                {jobPosting.employer.user.city}, 
+                                {jobPosting.employer.state}<br/>
+                                {jobPosting.employer.user.zipCode}</p>
+                        </li>
+                        <li>Tel: {jobPosting.employer.user.phone}</li>
+                        <li>Email: {jobPosting.employer.user.email}</li>
+                    </ul>
+                </div>
+            </div>
         );
     }
 
     return (
         <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
             <div style={{ flex: '1 1 40%', height: '100%', overflow: 'auto' }}>
-                {dispJobPost()}
+                {dispJobPosting()}
             </div>
             <div style={{ flex: '1 1 60%', height: '100%', overflow: 'auto'}}>
-                <Form onSubmit={formik.handleSubmit}>
+                <Form style={{padding: '10px', margin: '3%'}}
+                    onSubmit={formik.handleSubmit}>
                     <FormField>
-                        <label htmlFor='education'>Education: </label>
-                        <TextArea id='education' name='education' rows={3} value={formik.values.education} 
+                        <label htmlFor='education' style={{fontSize: '1.1em'}}>Education: </label>
+                        <TextArea id='education' name='education' rows={7} value={formik.values.education} 
                             onChange={formik.handleChange} />
                     </FormField>
                     <FormField>
-                        <label htmlFor='experience'>Experience: </label>
-                        <TextArea id='experience' name='experience' rows={5} value={formik.values.experience} 
+                        <label htmlFor='experience' style={{fontSize: '1.1em'}}>Experience: </label>
+                        <TextArea id='experience' name='experience' rows={7} value={formik.values.experience} 
                             onChange={formik.handleChange} />
                     </FormField>
                     <FormField>
-                        <label htmlFor='certificate'>Certificates: </label>
-                        <TextArea id='certificate' name='certificate' rows={3} value={formik.values.certificate} 
+                        <label htmlFor='certificate' style={{fontSize: '1.1em'}}>Certificates: </label>
+                        <TextArea id='certificate' name='certificate' rows={5} value={formik.values.certificate} 
                             onChange={formik.handleChange} />
                     </FormField>
                     <Button type='submit'>Apply</Button>

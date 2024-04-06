@@ -53,11 +53,11 @@ function Signin() {
         <>
             <Form onSubmit={handleSubmit}>
                 <FormField>
-                    <Label htmlFor='username'>Username: </Label>
+                    <label htmlFor='username'>Username: </label>
                     <Input id='username' name='username' type='text' value={account.username} onChange={handleChange} />
                 </FormField>
                 <FormField>
-                    <Label htmlFor='password'>Password: </Label>
+                    <label htmlFor='password'>Password: </label>
                     <Input id='password' name='password' type='password' value={account.password} onChange={handleChange} />
                 </FormField>
                 <Button type='submit'>Submit</Button>
