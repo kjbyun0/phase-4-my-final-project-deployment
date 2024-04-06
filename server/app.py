@@ -235,6 +235,52 @@ class FavoriteJobs(Resource):
             return make_response({
                 'message': "User needs to sign in first",
             }, 401)
+        
+    def post(self):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if user: 
+            if user.applicant:
+                request_dict = request.get_json()
+                print('request_dict: ', request_dict)
+                fj = FavoriteJob(
+                    applicant_id = user.applicant_id,
+                    job_posting_id = request_dict.get('job_posting_id')
+                )
+                db.session.add(fj)
+                db.session.commit()
+                # return make_response(fj.to_dict(), 201)
+                jobs_dict = [job.to_dict() for job in JobPosting.query.all()]
+                res_dict = { 'jobs': jobs_dict, 'favorite_job': fj.to_dict(rules=('-applicant', '-job_posting',)) }
+                return make_response(res_dict, 201)
+            else:
+                return make_response({
+                    'message': "User isn't an applicant but an employer",
+                }, 403)
+        else:
+            return make_response({
+                'message': "User needs to sign in first",
+            }, 401)
+        
+class FavoriteJob_by_id(Resource):
+    def delete(self, id):
+        user = User.query.filter_by(id=session['user_id']).first()
+        if user: 
+            if user.applicant:
+                fj = FavoriteJob.query.filter_by(id=id).first()
+                db.session.delete(fj)
+                db.session.commit()
+                jobs_dict = [job.to_dict() for job in JobPosting.query.all()]
+                return make_response(jobs_dict, 200)
+            else:
+                # Forbidden
+                return make_response({
+                    'message': "User isn't an applicant but an employer",
+                }, 403)
+        else:
+            # Unathorized
+            return make_response({
+                'message': "User needs to sign in first",
+            }, 401)
 
 
 api.add_resource(Authenticate, '/authenticate')
@@ -245,6 +291,7 @@ api.add_resource(JobPosting_by_id, '/jobpostings/<int:id>')
 api.add_resource(JobApplications, '/jobapplications')
 api.add_resource(JobApplication_by_jpid, '/jobapplication/<int:jpid>')
 api.add_resource(FavoriteJobs, '/favoritejobs')
+api.add_resource(FavoriteJob_by_id, '/favoritejobs/<int:id>')
 
 
 if __name__ == '__main__':

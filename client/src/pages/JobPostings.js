@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardMeta, Button, 
-        Dropdown } from 'semantic-ui-react';
+        Dropdown, Icon } from 'semantic-ui-react';
 
 function JobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
@@ -36,15 +36,49 @@ function JobPostings() {
         ]
     };
 
+    console.log('in JobPostings, userAccount: ', userAccount);
+    function makeJobPostingState(data, bResetSelJobPosting) {
+        console.log('in JobPostings, makeJobPostingState data before: ', data);
+        console.log('in JobPostings, makeJobPostingState userAccount: ', userAccount);
+        const jps = data.map(job => {
+            return {
+                jobPost: job,
+                favoriteJob: (userAccount ? 
+                            job.favorite_jobs.find(fjob => fjob.applicant_id === userAccount.applicant_id) : 
+                            null),
+            };
+        });
+        console.log('in JobPostings, makeJobPostingState data after: ', jps);
+
+        if (bResetSelJobPosting)
+            setSelJobPosting(null);
+
+        return jps;
+    }
+
     useEffect(() => {
         fetch('/jobpostings')
         .then(r => r.json())
-        .then(data => setJobPostings(data));
-    }, []);
+        .then(data => setJobPostings(makeJobPostingState(data, true)));
+    }, [userAccount]);
+
+    function handleFiltersChange(e1, e2, type) {
+        setFilters({
+            ...filters,
+            [type]: e2.value,
+        });
+
+        setSelJobPosting(null);
+    }
 
     function handleApplyClick() {
         if (userAccount) {
-            navigate(`/job_applications/${selJobPosting.id}`);
+            const app = selJobPosting.jobPost.job_applications.find(app => app.applicant_id === userAccount.applicant_id);
+            if (!app || app.status === 'new')
+                navigate(`/job_applications/${selJobPosting.jobPost.id}`);
+            else {
+                alert("Your application was reviewed. Please, check the result.");
+            } 
         } else {
             // => Semantic ui react의 Confirm을 사용하는 것 고려...
             alert("Please, sign in before applying for a job.");
@@ -52,47 +86,85 @@ function JobPostings() {
         }
     }
 
-    const filteredJobPostings = jobPostings.filter(job => 
-        job.is_active && 
-        (!filters.jobTypes.length || filters.jobTypes.includes(job.job_type)) &&
-        (!filters.remote.length || filters.remote.includes(job.remote)) && 
-        (filters.pay === '' || filters.pay <= job.pay));
-
-    if (selJobPosting) {
-        if (!filteredJobPostings.map(job => job.id).includes(selJobPosting.id)) {
-            if (filteredJobPostings.length)
-                setSelJobPosting(filteredJobPostings[0]);
-            else 
-                setSelJobPosting(null);
+    function handleFavoriteClick(jobPost) {
+        let pms;
+        if (jobPost.favoriteJob) {
+            pms = fetch(`/favoritejobs/${jobPost.favoriteJob.id}`, {
+                method: 'DELETE',
+            });
+        } else {
+            pms = fetch('/favoritejobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    job_posting_id: jobPost.jobPost.id,
+                    // I'm not gonna send the applicant_id because server can get it from session.
+                }),
+            })
         }
-    } else {
-        if (filteredJobPostings.length)
-            setSelJobPosting(filteredJobPostings[0]);
+
+        pms.then(r => {
+            if (r.ok) {                
+                r.json().then(data => {
+                    if (jobPost.favoriteJob) {
+                        setJobPostings(makeJobPostingState(data, false));
+                        setSelJobPosting({
+                            jobPost: jobPost.jobPost,
+                            favoriteJob: undefined,
+                        });
+                    } else {
+                        setJobPostings(makeJobPostingState(data.jobs, false));
+                        setSelJobPosting({
+                            jobPost: jobPost.jobPost,
+                            favoriteJob: data.favorite_job,
+                        });
+                    }
+                });
+            } else if (r.status === 403) {
+                alert("You are signed in with your employer account. Please, sign in again.")
+            } else if (r.status === 401) {
+                alert("Please, sign in before adding it to your favorite jobs.");
+                navigate('/signin');
+            }
+        });
     }
+
+    const filteredJobPostings = jobPostings.filter(job => 
+        job.jobPost.is_active && 
+        (!filters.jobTypes.length || filters.jobTypes.includes(job.jobPost.job_type)) &&
+        (!filters.remote.length || filters.remote.includes(job.jobPost.remote)) && 
+        (filters.pay === '' || filters.pay <= job.jobPost.pay));
+
+    if (!selJobPosting && filteredJobPostings.length)
+        setSelJobPosting(filteredJobPostings[0]);
 
     // console.log('jobPostings: ', jobPostings);
     console.log('filteredJobPostings: ', filteredJobPostings);
-    // console.log('selJobPosting: ', selJobPosting);
+    console.log('selJobPosting: ', selJobPosting);
 
     const dispJobCards = filteredJobPostings.map(job => {
         const cardStyle = {
             width: '100%',
-            background: (selJobPosting && job.id === selJobPosting.id) ? 'aliceblue' : 'white',
+            background: (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white',
         };
 
         return (
-            <Card key={job.id} style={cardStyle} color={(selJobPosting && job.id === selJobPosting.id) ? 'blue' : 'grey'} 
+            <Card key={job.jobPost.id} style={cardStyle} color={(selJobPosting && job.id === selJobPosting.jobPost.id) ? 'blue' : 'grey'} 
                 onClick={() => setSelJobPosting(job)}>
                 <CardContent>
-                    {/* <Button circular icon='bookmark outline' /> */}
-                    <CardHeader>{job.title}</CardHeader>
-                    <CardMeta>{job.employer.name}</CardMeta>
+                    <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
+                        color='blue' size='mini' compact style={{ float: 'right', }} 
+                        onClick={() => handleFavoriteClick(job)} />
+                    <CardHeader>{job.jobPost.title}</CardHeader>
+                    <CardMeta>{job.jobPost.employer.name}</CardMeta>
                     <CardMeta>
-                        {job.remote !== 'Remote'? 
-                            `${job.employer.city}, ${job.employer.state}` : null}
+                        {job.jobPost.remote !== 'Remote'? 
+                            `${job.jobPost.employer.user.city}, ${job.jobPost.employer.user.state}` : null}
                     </CardMeta>
                     <CardMeta>
-                        {job.remote !== 'On Site' ? job.remote : null}
+                        {job.jobPost.remote !== 'On Site' ? job.jobPost.remote : null}
                     </CardMeta>
                 </CardContent>
             </Card>
@@ -106,31 +178,35 @@ function JobPostings() {
         return (
             <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
                 <div style={{ flex: '1 1 25%', width: '100%', overflow: 'auto', padding: '20px'}}>
-                    <h1>{selJobPosting.title}</h1>
-                    <p>{selJobPosting.employer.name} · {selJobPosting.employer.user.city}, {selJobPosting.employer.user.state}</p>
+                    <h1>{selJobPosting.jobPost.title}</h1>
+                    <p>{selJobPosting.jobPost.employer.name} · {selJobPosting.jobPost.employer.user.city}, {selJobPosting.jobPost.employer.user.state}</p>
                     {
                         userAccount && userAccount.employer ? 
                         null : 
-                        <Button onClick={handleApplyClick}>Apply</Button>
+                        <>
+                            <Button color='blue' onClick={handleApplyClick}>Apply</Button>
+                            <Button basic icon={selJobPosting.favoriteJob ? 'bookmark' : 'bookmark outline'} 
+                                color='blue' onClick={() => handleFavoriteClick(selJobPosting)} />
+                        </>
                     }
                 </div>
                 <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
                     <ul>
-                        <li>Job type: {selJobPosting.job_type}</li>
-                        <li>Pay: {selJobPosting.pay}/hr</li>
-                        <li>Remote: {selJobPosting.remote}</li>
+                        <li>Job type: {selJobPosting.jobPost.job_type}</li>
+                        <li>Pay: {selJobPosting.jobPost.pay}/hr</li>
+                        <li>Remote: {selJobPosting.jobPost.remote}</li>
                         <li>Description: <br/>
-                            {selJobPosting.description}
+                            {selJobPosting.jobPost.description}
                         </li>
                         <li>Address: 
-                            <p>{selJobPosting.employer.user.street_1},<br/>
-                                {selJobPosting.employer.user.street_2},<br/>
-                                {selJobPosting.employer.user.city}, 
-                                {selJobPosting.employer.state}<br/>
-                                {selJobPosting.employer.user.zipCode}</p>
+                            <p>{selJobPosting.jobPost.employer.user.street_1},<br/>
+                                {selJobPosting.jobPost.employer.user.street_2},<br/>
+                                {selJobPosting.jobPost.employer.user.city}, 
+                                {selJobPosting.jobPost.employer.state}<br/>
+                                {selJobPosting.jobPost.employer.user.zipCode}</p>
                         </li>
-                        <li>Tel: {selJobPosting.employer.user.phone}</li>
-                        <li>Email: {selJobPosting.employer.user.email}</li>
+                        <li>Tel: {selJobPosting.jobPost.employer.user.phone}</li>
+                        <li>Email: {selJobPosting.jobPost.employer.user.email}</li>
                     </ul>
                 </div>
             </div>
@@ -147,10 +223,7 @@ function JobPostings() {
                             search={type !== 'pay'} multiple={type !== 'pay'} selection clearable 
                             placeholder={filterNames[i]} 
                             options={filterOptions[type]} value={filters[type]}  
-                            onChange={(e1, e2) => setFilters({
-                                ...filters,
-                                [type]: e2.value,
-                            })} />
+                            onChange={(e1, e2) => handleFiltersChange(e1, e2, type)} />
                     )
                 }
             </div>

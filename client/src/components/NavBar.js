@@ -9,7 +9,7 @@ function NavBar({ userAccount }) {
             {userAccount && userAccount.applicant ? 
                 (
                     <>
-                        <NavLink to='applied_jobs' className='nav-link'>Appliced Jobs</NavLink>
+                        <NavLink to='applied_jobs' className='nav-link'>Applied Jobs</NavLink>
                         <NavLink to='favorite_jobs' className='nav-link'>Favorite Jobs</NavLink>
                     </>
                 ) : 

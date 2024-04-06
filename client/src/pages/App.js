@@ -10,6 +10,7 @@ function App() {
   console.log('in App, userAccount: ', userAccount);
 
   useEffect(() => {
+    console.log('in App, authentication occur...');
     fetch('/authenticate')
     .then(r => {
       if (r.ok)

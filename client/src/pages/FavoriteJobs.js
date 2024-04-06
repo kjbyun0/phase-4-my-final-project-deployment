@@ -61,6 +61,7 @@ function FavoriteJobs() {
             status: status,
         });
     });
+    console.log("in FavoriteJobs, favoriteJobsStatus: ", favoriteJobsStatus);
 
     const filterFavoriteJobs = 
         statusCat.length === 0 ? 
@@ -83,17 +84,6 @@ function FavoriteJobs() {
                 status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
                 break;
         }
-        // const app = job.applicant.job_applications.find(app => app.job_posting_id === job.job_posting_id);
-        // let status, statusIcon, statusColor;
-        // if (!app) {
-        //     status = 'Not Applied'; statusIcon = 'pause circle outline'; statusColor = 'dodgerblue';
-        // } else if (app.status === 'new') {
-        //     status = 'Applied'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
-        // } else if (app.status === 'accepted') {
-        //     status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
-        // } else {
-        //     status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
-        // }
 
         return (
             <Item key={job.id} style={{padding: '15px',}} 
@@ -111,9 +101,7 @@ function FavoriteJobs() {
         );
     });
 
-    console.log("in FavoriteJobs, favoriteJobs: ", favoriteJobs);
     return (
-        // <h1>FavoriteJobs Page</h1>
         <div style={{ height: '100%', }}>
             <div style={{ height: '6%', }}>
                 <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
