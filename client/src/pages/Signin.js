@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Form, FormField, Label, Input, Button } from 'semantic-ui-react';
+import { Form, FormField, Input, Button, Divider } from 'semantic-ui-react';
 
 function Signin() {
     const [account, setAccount] = useState({
@@ -50,21 +50,26 @@ function Signin() {
     }
 
     return (
-        <>
+        <div style={{ position: 'relative', width: '400px', height: '500px', margin: 'auto', top: '10%'}} >
+            {/* border: '1px solid gray', borderRadius: '3%', boxShadow: '0px, 1px, 12px' }}> */}
             <Form onSubmit={handleSubmit}>
                 <FormField>
-                    <label htmlFor='username'>Username: </label>
-                    <Input id='username' name='username' type='text' value={account.username} onChange={handleChange} />
+                    <Input id='username' name='username' type='text' placeholder='Username' 
+                        size='big' icon='user' iconPosition='left' 
+                        value={account.username} onChange={handleChange} />
                 </FormField>
                 <FormField>
-                    <label htmlFor='password'>Password: </label>
-                    <Input id='password' name='password' type='password' value={account.password} onChange={handleChange} />
+                    <Input id='password' name='password' type='password' placeholder='Password' 
+                        size='big' icon='lock' iconPosition='left' 
+                        value={account.password} onChange={handleChange} />
                 </FormField>
-                <Button type='submit'>Submit</Button>
+                <Button type='submit' size='big' color='blue' style={{width: '100%', margin: 'auto'}} >Sign In</Button>
                 <p style={{color: 'red'}}>{account.firstTime ? null : 'Invalid username or password. Please, try again.'}</p>
             </Form>
-            <Button type='button' onClick={handleSignUpClick}>Create new account</Button>
-        </>
+            <Divider horizontal>OR</Divider>
+            <Button type='button' size='big' color='green' style={{width: '100%', margin: 'auto'}} 
+                onClick={handleSignUpClick}>Create new account</Button>
+        </div>
     );
 }
 
