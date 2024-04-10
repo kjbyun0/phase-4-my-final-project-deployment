@@ -45,7 +45,7 @@ function AppliedJobs() {
             navigate(`/job_applications/${app.job_posting.id}`)
     }
 
-    const filterAppliedJobs = statusCat.length === 0 ? appliedJobs : appliedJobs.filter(app => statusCat.includes(app.status));
+    const filterAppliedJobs = statusCat.length ? appliedJobs.filter(app => statusCat.includes(app.status)) : appliedJobs;
     const dispFilteredAppliedJobs = filterAppliedJobs.map(app => {
         let status, statusIcon, statusColor;
         if (app.status === 'new') {
@@ -53,7 +53,7 @@ function AppliedJobs() {
         } else if (app.status === 'accepted') {
             status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
         } else {
-            status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
+            status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGray';
         }
 
         return (
@@ -82,7 +82,7 @@ function AppliedJobs() {
                     floating labeled button className='icon' 
                     search multiple selection clearable 
                     placeholder='Status'
-                    options={statusCatOptions} value={statusCat}  onChange={(e, {value}) => setStatusCat(value)} />
+                    options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
             </div>
             <div style={{ height: '94%', }}>
                 <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px', }}>

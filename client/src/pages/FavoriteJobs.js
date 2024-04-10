@@ -99,7 +99,7 @@ function FavoriteJobs() {
                 status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
                 break;
             case 'closed':
-                status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
+                status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGray';
                 break;
         }
 

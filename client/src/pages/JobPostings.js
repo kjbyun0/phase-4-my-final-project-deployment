@@ -61,6 +61,7 @@ function JobPostings() {
         .then(r => r.json())
         .then(data => setJobPostings(makeJobPostingState(data, true)));
     }, [userAccount]);
+    // I added userAccount because everyone can view this page without signing in.
 
     function handleFiltersChange(e1, e2, type) {
         setFilters({
@@ -145,13 +146,10 @@ function JobPostings() {
     console.log('selJobPosting: ', selJobPosting);
 
     const dispJobCards = filteredJobPostings.map(job => {
-        const cardStyle = {
-            width: '100%',
-            background: (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white',
-        };
+        const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white';
 
         return (
-            <Card key={job.jobPost.id} style={cardStyle} color={(selJobPosting && job.id === selJobPosting.jobPost.id) ? 'blue' : 'grey'} 
+            <Card key={job.jobPost.id} style={{width: '100%', background: cardColor}} color='gray' 
                 onClick={() => setSelJobPosting(job)}>
                 <CardContent>
                     <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}

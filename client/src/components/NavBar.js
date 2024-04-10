@@ -16,7 +16,10 @@ function NavBar({ userAccount }) {
                 null
             }
             {userAccount && userAccount.employer ? 
-                <NavLink to='job_posting_form' className='nav-link'>Post Job</NavLink> :
+                <>
+                    <NavLink to='job_posting_form' className='nav-link'>Post Job</NavLink>
+                    <NavLink to='my_job_postings' className='nav-link'>My Postings</NavLink>
+                </> :
                 null
             }
             {userAccount ? 
