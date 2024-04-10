@@ -50,7 +50,7 @@ function Signin() {
     }
 
     return (
-        <div style={{ position: 'relative', width: '400px', height: '500px', margin: 'auto', top: '10%'}} >
+        <div style={{ width: '400px', height: '500px', margin: 'auto', position: 'relative', top: '10%'}} >
             {/* border: '1px solid gray', borderRadius: '3%', boxShadow: '0px, 1px, 12px' }}> */}
             <Form onSubmit={handleSubmit}>
                 <FormField>
@@ -63,11 +63,11 @@ function Signin() {
                         size='big' icon='lock' iconPosition='left' 
                         value={account.password} onChange={handleChange} />
                 </FormField>
-                <Button type='submit' size='big' color='blue' style={{width: '100%', margin: 'auto'}} >Sign In</Button>
+                <Button type='submit' size='big' color='blue' style={{width: '100%', margin: 'auto'}} >Sign in</Button>
                 <p style={{color: 'red'}}>{account.firstTime ? null : 'Invalid username or password. Please, try again.'}</p>
             </Form>
             <Divider horizontal>OR</Divider>
-            <Button type='button' size='big' color='green' style={{width: '100%', margin: 'auto'}} 
+            <Button type='button' size='big' color='green' style={{width: '100%', margin: 'auto'}}
                 onClick={handleSignUpClick}>Create new account</Button>
         </div>
     );

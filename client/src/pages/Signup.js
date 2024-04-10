@@ -1,21 +1,26 @@
+import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Form, FormField, Label, Input, Button } from 'semantic-ui-react';
+import { Form, FormField, Label, Input, Button, Checkbox, 
+    Modal, ModalContent, ModalActions } from 'semantic-ui-react';
 
 function Signup() {
     const navigate = useNavigate();
     const { onSetUserAccount } = useOutletContext();
+    const [ isEmployer, setIsEmployer ] = useState(false);
 
     const formSchema = yup.object().shape({
-        name: yup.string().required('Must enter a name'),
+        name: isEmployer ? yup.string().required('Must enter a name') : '',
+        firstName: isEmployer ? '' : yup.string().required('Must enter a first name'),
+        lastName: isEmployer ? '' : yup.string().required('Must enter a last name'),
         username: yup.string().required('Must enter a username')
-                    .min(5, 'Must be between 5 and 50 characters')
-                    .max(20, 'Must be between 5 and 50 characters'),
+                    .min(5, 'Must be between 5 and 20 characters')
+                    .max(20, 'Must be between 5 and 20 characters'),
         // => add more constraints later. think about making custom constraints
         password: yup.string().required('Must enter a password'),
         email: yup.string().required('Must enter your email').email('Invalid email format'),
-        // mobile: yup.string(),
+        mobile: isEmployer ? '' : yup.string(),
         // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
         // phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
         phone: yup.string(),
@@ -25,14 +30,14 @@ function Signup() {
 
     const formik = useFormik({
         initialValues: {
-            // isEmployer: false,
+            isEmployer: isEmployer,
             name: '',
-            // firstName: '',
-            // lastName: '',
+            firstName: '',
+            lastName: '',
             username: '',
             password: '',
             email: '',
-            // mobile: '',
+            mobile: '',
             phone: '',
             street1: '',
             street2: '',
@@ -64,73 +69,89 @@ function Signup() {
         },
     });
 
+    function handleEmployerCheckChange(bEmployer) {
+        setIsEmployer(!bEmployer);
+        formik.setFieldValue('isEmployer', !bEmployer);
+    }
+
+    // console.log('formSchema: ', formSchema);
     // console.log('formik: ', formik);
 
     return (
-        <Form onSubmit={formik.handleSubmit}>
-            <FormField>
-            <Label htmlFor='name'>Name:</Label>
-            <Input id='name' name='name' type='text' value={formik.values.name} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.name ? formik.errors.name : null}</p>
-            </FormField>
-            <FormField>
-            <Label htmlFor='username'>Username:</Label>
-            <Input id='username' name='username' type='text' value={formik.values.username} 
-                onChange={formik.handleChange} />
-            <p style={{ color: 'red'}}>{formik.touched.username ? formik.errors.username : null}</p>
-            </FormField>
-            <FormField>
-            <Label htmlFor='password'>Password:</Label>
-            <Input id='password' name='password' type='password' value={formik.values.password} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.password ? formik.errors.password : null}</p>
-            </FormField>
-            <FormField>
-            <Label htmlFor='email'>Email:</Label>
-            <Input id='email' name='email' type='email' value={formik.values.email} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.email ? formik.errors.email : null}</p>
-            </FormField>
-            <FormField>
-            {/* <Label htmlFor='mobile'>Mobile:</Label>
-            <Input id='mobile' name='mobile' type='tel' value={formik.values.mobile} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.mobile ? formik.errors.mobile : null}</p>
-            </FormField>
-            <FormField> */}
-            <Label htmlFor='phone'>Phone:</Label>
-            <Input id='phone' name='phone' type='tel' value={formik.values.phone} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            <p style={{ color: 'red'}}>{formik.touched.phone ? formik.errors.phone : null}</p>
-            </FormField>
-            <FormField>
-            <Label htmlFor='street1'>Street 1:</Label>
-            <Input id='street1' name='street1' type='text' value={formik.values.street1} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            </FormField>
-            <FormField>
-            <Label htmlFor='street2'>Street 2:</Label>
-            <Input id='street2' name='street2' type='text' value={formik.values.street2} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            </FormField>
-            <FormField>
-            <Label htmlFor='city'>City:</Label>
-            <Input id='city' name='city' type='text' value={formik.values.city} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            </FormField>
-            <FormField>
-            <Label htmlFor='state'>State:</Label>
-            <Input id='state' name='state' type='text' value={formik.values.state} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            </FormField>
-            <FormField>
-            <Label htmlFor='zipCode'>Zip Code:</Label>
-            <Input id='zipCode' name='zipCode' type='text' value={formik.values.zipCode} 
-                onChange={formik.handleChange} onBlur={formik.handleBlur} />
-            </FormField>
-            <Button type='submit'>Submit</Button>
-        </Form>
+        <div style={{width: '400px', margin: 'auto', position: 'relative', top: '10%'}}>
+            <Form onSubmit={formik.handleSubmit}>
+                {/* <Input id='name' name='name' type='text' placeholder='Name' 
+                    style={{width: '100%', marginTop: '10px'}}
+                    value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                {formik.errors.name && formik.touched.name && <div style={{ color: 'red'}}>{formik.errors.name}</div>} */}
+                <Checkbox label='Are you an employer?' 
+                    style={{ width: '100%', marginTop: '10px'}} 
+                    checked={isEmployer} onChange={() => handleEmployerCheckChange(isEmployer)}/>
+                {
+                    isEmployer ?
+                    <>
+                        <Input id='name' name='name' type='text' placeholder='Name' 
+                            style={{width: '100%', marginTop: '10px'}}
+                            value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.name && formik.touched.name && <div style={{ color: 'red'}}>{formik.errors.name}</div>}
+                    </> : 
+                    <>
+                        <Input id='firstName' name='firstName' type='text' placeholder='First name' 
+                            style={{width: '100%', marginTop: '10px'}}
+                            value={formik.values.firstName} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.firstName && formik.touched.firstName && <div style={{ color: 'red' }}>{formik.errors.firstName}</div>}
+                        <Input id='lastName' name='lastName' type='text' placeholder='Last name' 
+                            style={{width: '100%', marginTop: '10px'}}
+                            value={formik.values.lastName} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.lastName && formik.touched.lastName && <div style={{ color: 'red' }}>{formik.errors.lastName}</div>}
+                    </>
+                }
+                <Input id='username' name='username' type='text' placeholder='Username'
+                    style={{width: '100%', marginTop: '10px'}}
+                    value={formik.values.username} onChange={formik.handleChange} />
+                {formik.errors.username && formik.touched.username && <div style={{ color: 'red'}}>{formik.errors.username}</div>}
+                <Input id='password' name='password' type='password' placeholder='Password'
+                    style={{width: '100%', marginTop: '10px'}}
+                    value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                {formik.errors.password && formik.touched.password && <div style={{ color: 'red'}}>{formik.errors.password}</div>}
+                <Input id='email' name='email' type='email' placeholder='Email'
+                    style={{width: '100%', marginTop: '10px'}}
+                    value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                {formik.errors.email && formik.touched.email && <div style={{ color: 'red'}}>{formik.errors.email}</div>}
+                {
+                    isEmployer ? 
+                    null : 
+                    <>
+                        <Input id='mobile' name='mobile' type='tel' placeholder='Mobile number '
+                            style={{width: '100%', marginTop: '10px'}}
+                            value={formik.values.mobile} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.mobile && formik.touched.mobile && <div style={{ color: 'red'}}>{formik.errors.mobile}</div>}
+                    </>
+                }
+                <Input id='phone' name='phone' type='tel' placeholder='Phone number' 
+                    style={{width: '100%', marginTop: '10px'}}
+                    value={formik.values.phone} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                {formik.errors.phone && formik.touched.phone && <div style={{ color: 'red'}}>{formik.errors.phone}</div>}
+
+                <Input id='street1' name='street1' type='text' placeholder='Street 1' 
+                    style={{width: '100%', marginTop: '5px'}}
+                    value={formik.values.street1} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                <Input id='street2' name='street2' type='text' placeholder='Street 2' 
+                    style={{width: '100%', marginTop: '5px'}}
+                    value={formik.values.street2} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                <Input id='city' name='city' type='text' placeholder='City' 
+                    style={{width: '100%', marginTop: '5px'}}
+                    value={formik.values.city} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                <Input id='state' name='state' type='text' placeholder='State' 
+                    style={{width: '100%', marginTop: '5px'}}
+                    value={formik.values.state} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                <Input id='zipCode' name='zipCode' type='text' placeholder='Zip Code' 
+                    style={{width: '100%', marginTop: '5px'}}
+                    value={formik.values.zipCode} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                <Button type='submit' size='big' color='green' style={{ width: "40%", margin: '20px 120px 20px' }}>Sign up</Button>
+            </Form>
+        </div>
     );
 }
 
