@@ -55,10 +55,17 @@ class Signup(Resource):
             # if this new account is for employer
             # new_employer = None
             # if account_req_dict.get('isEmployer'): # => Must be added to Sigup.js in the client side
-            new_employer = Employer(
-                name = account_req_dict.get('name')
-            )
-            db.session.add(new_employer)
+            
+            if account_req_dict.get('isEmployer'):
+                new_employer = Employer(name = account_req_dict.get('name'))
+                db.session.add(new_employer)
+            else:
+                new_applicant = Applicant(
+                    first_name = account_req_dict.get('firstName'),
+                    last_name = account_req_dict.get('lastName'),
+                    mobile = account_req_dict.get('mobile')
+                )
+                db.session.add(new_applicant)
 
             new_user = User(
                 username = account_req_dict.get('username'),
@@ -71,7 +78,8 @@ class Signup(Resource):
                 state = account_req_dict.get('state'),
                 zip_code = account_req_dict.get('zipCode'),
 
-                employer = new_employer
+                employer = new_employer if account_req_dict.get('isEmployer') else None,
+                applicant = new_applicant if not account_req_dict.get('isEmployer') else None
             )
             db.session.add(new_user)
             db.session.commit()
