@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardMeta, CardDescription, 
     ItemGroup, Item, ItemContent, ItemHeader, ItemMeta, ItemExtra, 
-    Label, Dropdown } from 'semantic-ui-react';
+    Label, Dropdown, Icon, Button, 
+    Accordion, AccordionTitle, AccordionContent } from 'semantic-ui-react';
 
 
 function MyJobPostings() {
     const [ myJobPostings, setMyJobPostings ] = useState([]);
     const [ selJobPosting, setSelJobPosting ] = useState(null);
-    const [ selJobApps, setSelJobApps ] = useState([]);
+    const [ jobApps, setJobApps ] = useState([]);
+    const [ selJobAppIdx, setSelJobAppIdx ] = useState(null);
     const { userAccount } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
@@ -52,13 +54,18 @@ function MyJobPostings() {
             if (r.ok) 
                 r.json().then(data => {
                     console.log('MyJobPostings, job apps for selected job posting', data);
-                    setSelJobApps(data);
+                    setJobApps(data);
                 })
             else {
                 // => Error handling needed for HTTP response status 401 & 403
             }
         });
     }, [selJobPosting]);
+
+    function handleAppclick(e1, e2) {
+        console.log('Accordion, e1: ', e1, ', e2: ', e2);
+        setSelJobAppIdx(e2.index);
+    }
 
     if (!selJobPosting && myJobPostings.length)
         setSelJobPosting(myJobPostings[0]);
@@ -89,36 +96,65 @@ function MyJobPostings() {
         );
     });
 
-    const filterAppliedJobs = statusCat.length ? selJobApps.filter(app => statusCat.includes(app.status)) : selJobApps;
-    const dispSelJobApps = filterAppliedJobs.map(app => {
+    const filterJobApps = statusCat.length ? jobApps.filter(app => statusCat.includes(app.status)) : jobApps;
+
+    const dispSelJobApps = filterJobApps.map(app => {
         let status, statusIcon, statusColor;
         if (app.status === 'new') {
             status = 'Not Reviewd'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
         } else if (app.status === 'accepted') {
             status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
         } else {
-            status = 'Rejected'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
+            status = 'Declined'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
         }
 
         return (
-            <Item key={app.id} style={{padding: '15px',}} >
-                {/* onClick={() => handleItemClick(app)} > */}
-                <ItemContent>
-                    <ItemHeader>{app.applicant.first_name}, {app.applicant.last_name}</ItemHeader>
-                    <ItemMeta>{app.applicant.email}</ItemMeta>
-                    {/* <ItemDescription>Job type: {app.job_posting.job_category}</ItemDescription>
-                    <ItemDescription>Pay: {app.job_posting.pay}/hr</ItemDescription>
-                    <ItemDescription>Remote: {app.job_posting.remote}</ItemDescription> */}
-                    <ItemExtra>
-                        <Label style={{background: statusColor,}} icon={statusIcon} content={status} />
-                    </ItemExtra>
-                </ItemContent>
-            </Item>
+            <div key={app.id}>
+                <AccordionTitle
+                    active={selJobAppIdx === app.id}
+                    index={app.id}
+                    onClick={handleAppclick}>
+                    <div style={{display: 'flex', flexFlow: 'row', justifyContent: 'center', alignItems:'center', width: '100%'}}>
+                        <div style={{flex: '1 1 1%' }}>
+                            <Icon name='dropdown' />
+                        </div>
+                        <div style={{flex: '1 1 99%'}}>
+                            {app.applicant.first_name}, {app.applicant.last_name} <br />
+                            {app.applicant.user.email} <br />
+                            <Label style={{background: statusColor,}} icon={statusIcon} content={status} />
+                        </div>
+                    </div>
+                </AccordionTitle>
+                <AccordionContent active={selJobAppIdx === app.id} style={{color: 'black', paddingLeft: '40px'}}>
+                    <ul>
+                        <li>Education:</li>
+                        <div style={{marginBottom: '10px'}}>{app.education}</div>
+                        <li>Experiences:</li>
+                        <div style={{marginBottom: '10px'}}>{app.experience}</div>
+                        <li>Certificates:</li>
+                        <div style={{marginBottom: '10px'}}>{app.certificate}</div>
+                        <li>Contact Info:<br />
+                            - Email: {app.applicant.user.email} <br />
+                            - Mobile: {app.applicant.mobile} <br />
+                            - Phone: {app.applicant.user.phone} <br />
+                            - Address:
+                                <div>
+                                    &nbsp;&nbsp;{app.applicant.user.street_1}<br/>
+                                    &nbsp;&nbsp;{app.applicant.user.street_2}<br/>
+                                    &nbsp;&nbsp;{app.applicant.user.city}, {app.applicant.user.state} {app.applicant.user.zip_code}
+                                </div>
+                        </li>
+                    </ul>
+                    <br />
+                    <Button color='blue'>Hire</Button>
+                    <Button color='orange'>Decline</Button>
+                </AccordionContent>
+            </div>
         );
     });
 
     console.log('MyJobPostings, myJobPostings: ', myJobPostings);
-    console.log('MyJobPostings, dispSelJobApps: ', dispSelJobApps);
+    console.log('MyJobPostings, filterJobApps: ', filterJobApps);
 
     return (
         <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
@@ -134,9 +170,12 @@ function MyJobPostings() {
                         options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
                 </div>
                 <div style={{height: '94%'}}>
-                    <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px'}}>
+                    {/* <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px'}}>
                         {dispSelJobApps}
-                    </ItemGroup>
+                    </ItemGroup> */}
+                    <Accordion fluid styled style={{height: '100%', overflow: 'auto', padding: '15px'}}>
+                        {dispSelJobApps}
+                    </Accordion>
                 </div>
             </div>
         </div>
