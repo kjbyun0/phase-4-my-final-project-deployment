@@ -10,14 +10,14 @@ function MyJobPostings() {
     const [ myJobPostings, setMyJobPostings ] = useState([]);
     const [ selJobPosting, setSelJobPosting ] = useState(null);
     const [ jobApps, setJobApps ] = useState([]);
-    const [ selJobAppIdx, setSelJobAppIdx ] = useState(null);
+    const [ selJobAppId, setSelJobAppId ] = useState(null);
     const { userAccount } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
     const statusCatOptions = [
         { key: 'new', text: 'Not Reviewed', value: 'new',},
-        { key: 'accepted', text: 'Hired', value: 'accepted',},
-        { key: 'rejected', text: 'Rejected', value: 'rejected',},
+        { key: 'hired', text: 'Hired', value: 'hired',},
+        { key: 'declined', text: 'Declinded', value: 'declined',},
     ];
     
     // RBAC
@@ -62,9 +62,15 @@ function MyJobPostings() {
         });
     }, [selJobPosting]);
 
+    function handleJobPostingClick(job) {
+        console.log('handleJobPostingClick, job: ', job);
+        setSelJobPosting(job);
+        setSelJobAppId(null);
+    }
+
     function handleAppClick(e, {index}) {
         console.log('Accordion, e: ', e, ', index: ', index);
-        setSelJobAppIdx(index);
+        setSelJobAppId(index);
     }
 
     function handleAppDecisionClick(app, isHire) {
@@ -75,8 +81,17 @@ function MyJobPostings() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                status: isHire ? 'accepted' : 'rejected',
+                status: isHire ? 'hired' : 'declined',
             })
+        })
+        .then(r => {
+            if (r.ok)
+                r.json().then(data => {
+                    setJobApps(jobApps.map(app => app.id === data.id ? data : app));
+                })
+            else {
+                // => Error handling needed for HTTP response status 404
+            }
         })
     }
 
@@ -90,7 +105,7 @@ function MyJobPostings() {
 
         return (
             <Card key={job.id} style={{width: '100%', background: cardColor}} color='grey' 
-                onClick={() => setSelJobPosting(job)}>
+                onClick={() => handleJobPostingClick(job)}>
                 <CardContent>
                     <CardHeader>{job.title}</CardHeader>
                     <CardMeta>{job.employer.name}</CardMeta>
@@ -115,7 +130,7 @@ function MyJobPostings() {
         let status, statusIcon, statusColor;
         if (app.status === 'new') {
             status = 'Not Reviewd'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
-        } else if (app.status === 'accepted') {
+        } else if (app.status === 'hired') {
             status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
         } else {
             status = 'Declined'; statusIcon = 'remove circle'; statusColor = 'LightGrey';
@@ -124,7 +139,7 @@ function MyJobPostings() {
         return (
             <div key={app.id}>
                 <AccordionTitle
-                    active={selJobAppIdx === app.id}
+                    active={selJobAppId === app.id}
                     index={app.id}
                     onClick={handleAppClick}>
                     <div style={{display: 'flex', flexFlow: 'row', justifyContent: 'center', alignItems:'center', width: '100%'}}>
@@ -138,7 +153,7 @@ function MyJobPostings() {
                         </div>
                     </div>
                 </AccordionTitle>
-                <AccordionContent active={selJobAppIdx === app.id} style={{color: 'black', paddingLeft: '40px'}}>
+                <AccordionContent active={selJobAppId === app.id} style={{color: 'black', paddingLeft: '40px'}}>
                     <ul>
                         <li>Education:</li>
                         <div style={{marginBottom: '10px'}}>{app.education}</div>

@@ -12,8 +12,8 @@ function AppliedJobs() {
 
     const statusCatOptions = [
         { key: 'new', text: 'Applied', value: 'new',},
-        { key: 'accepted', text: 'Hired', value: 'accepted',},
-        { key: 'rejected', text: 'Closed', value: 'rejected',},
+        { key: 'hired', text: 'Hired', value: 'hired',},
+        { key: 'declined', text: 'Closed', value: 'declined',},
     ];
 
     //RBAC
@@ -50,7 +50,7 @@ function AppliedJobs() {
         let status, statusIcon, statusColor;
         if (app.status === 'new') {
             status = 'Applied'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
-        } else if (app.status === 'accepted') {
+        } else if (app.status === 'hired') {
             status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
         } else {
             status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGray';

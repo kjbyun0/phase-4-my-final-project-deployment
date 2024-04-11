@@ -12,7 +12,7 @@ function FavoriteJobs() {
         { key: 'notApplied', text: 'Not Applied', value: 'notApplied'}, 
         { key: 'applied', text: 'Applied', value: 'applied',},
         { key: 'hired', text: 'Hired', value: 'hired',},
-        { key: 'closed', text: 'Closed', value: 'closed',},
+        { key: 'declinded', text: 'Closed', value: 'declined',},
     ];
 
     //RBAC
@@ -69,10 +69,10 @@ function FavoriteJobs() {
             status = 'notApplied';
         else if (app.status === 'new') 
             status = 'applied';
-        else if (app.status === 'accepted') 
+        else if (app.status === 'hired') 
             status = 'hired';
         else 
-            status = 'closed';
+            status = 'declined';
         
         return ({
             ...job,
@@ -98,7 +98,7 @@ function FavoriteJobs() {
             case 'hired':
                 status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
                 break;
-            case 'closed':
+            case 'declined':
                 status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGray';
                 break;
         }

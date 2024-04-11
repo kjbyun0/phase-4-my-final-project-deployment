@@ -84,7 +84,7 @@ if __name__ == '__main__':
             ))
         db.session.add_all(job_postings)
 
-        status = ['new', 'accepted', 'rejected']
+        status = ['new', 'hired', 'declined']
         job_applications = []
         for i in range(15):
             job_applications.append(JobApplication(
