@@ -134,7 +134,7 @@ class JobPosting_by_id(Resource):
         }, 404)
 
 # Job postings by an employer id
-class JobPostingsUid(Resource):
+class EmpJobPostings(Resource):
     def get(self):
         user = User.query.filter_by(id=session.get('user_id')).first()
         if user:
@@ -152,7 +152,7 @@ class JobPostingsUid(Resource):
         
         
 
-class JobApplicationsUid(Resource):
+class JobApplications(Resource):
     #It is to get all the job applications submitted by an application signed in.
     def get(self): 
         user = User.query.filter_by(id=session.get('user_id')).first()
@@ -161,13 +161,13 @@ class JobApplicationsUid(Resource):
                 job_apps_dict = [app.to_dict() for app in JobApplication.query.filter_by(applicant_id=user.applicant_id).all()]
                 return make_response(job_apps_dict, 200)
             else: 
-                print("In JobApplicationsUid, User isn't an applicant but an employer")
+                print("In JobApplications, User isn't an applicant but an employer")
                 return make_response({
                     'message': "User isn't an applicant but an employer",
                 }, 403)
         else:
             # => need to deal with this case on the client side.!!!!!
-            print('In JobApplicationsUid, User needs to sign in first')
+            print('In JobApplications, User needs to sign in first')
             return make_response({
                 'message': "User needs to sign in first",
             }, 401)
@@ -191,7 +191,7 @@ class JobApplicationsUid(Resource):
     
 
 # Job application by a job posting id
-class JobApplicationsUid_by_jpid(Resource):
+class JobApplication_by_jpid(Resource):
     #It is to get a job applications of job_posting_id submitted by an application signed in.
     def get(self, jpid):
         user = User.query.filter_by(id=session.get('user_id')).first()
@@ -199,21 +199,21 @@ class JobApplicationsUid_by_jpid(Resource):
             if user.applicant_id: 
                 job_app = JobApplication.query.filter_by(job_posting_id=jpid, applicant_id=user.applicant_id).first()
                 if job_app:
-                    print("In JobApplicationsUid_by_jpid, User has apply to this job before, job_app: ", job_app)
+                    print("In JobApplication_by_jpid, User has apply to this job before, job_app: ", job_app)
                     return make_response(job_app.to_dict(), 200)
                 else:
-                    print("In JobApplicationsUid_by_jpid, User hasn't apply to this job yet")
+                    print("In JobApplication_by_jpid, User hasn't apply to this job yet")
                     return make_response({
                         'message': f'Job application {jpid} by the user not available',
                     }, 404)
             else: 
-                print("In JobApplicationsUid_by_jpid, User isn't an applicant but an employer")
+                print("In JobApplication_by_jpid, User isn't an applicant but an employer")
                 return make_response({
                     'message': "User isn't an applicant but an employer",
                 }, 403)
         else:
             # => need to deal with this case on the client side.!!!!!
-            print('In JobApplicationsUid_by_jpid, User needs to sign in first')
+            print('In JobApplication_by_jpid, User needs to sign in first')
             return make_response({
                 'message': "User needs to sign in first",
             }, 401)
@@ -231,35 +231,18 @@ class JobApplicationsUid_by_jpid(Resource):
                     db.session.commit()
                     return make_response(job_app.to_dict(), 200)
                 else: 
-                    print("In JobApplicationsUid_by_jpid patch, User hasn't apply to this job yet")
+                    print("In JobApplication_by_jpid patch, User hasn't apply to this job yet")
                     return make_response({
                         'message': f'Job application {jpid} by the user not available',
                     }, 404)
             else:
-                print("In JobApplicationsUid_by_jpid patch , User isn't an applicant but an employer")
+                print("In JobApplication_by_jpid patch , User isn't an applicant but an employer")
                 return make_response({
                     'message': "User isn't an applicant but an employer",
                 }, 403)
         else: 
             # => need to deal with this case on the client side.!!!!!
-            print('In JobApplicationsUid_by_jpid patch, User needs to sign in first')
-            return make_response({
-                'message': "User needs to sign in first",
-            }, 401)
-
-
-class JobApplicationsJpid(Resource):
-    def get(self, jpid):
-        user = User.query.filter_by(id=session.get('user_id')).first()  # => Do I need to check if employer is signed in???
-        if user:
-            if user.employer_id:
-                job_apps_dict = [job_app.to_dict() for job_app in JobApplication.query.filter_by(job_posting_id=jpid).order_by(JobApplication.id.asc()).all()]
-                return make_response(job_apps_dict, 200)
-            else:
-                return make_response({
-                    'message': "User isn't an employer but an applicant",
-                }, 403)
-        else:
+            print('In JobApplication_by_jpid patch, User needs to sign in first')
             return make_response({
                 'message': "User needs to sign in first",
             }, 401)
@@ -280,8 +263,27 @@ class JobApplication_by_id(Resource):
                 'message': f'Application {id} not available'
             }, 404)
 
+        
 
-class FavoriteJobsUid(Resource):
+
+class EmpJobApplications(Resource):
+    def get(self, jpid):
+        user = User.query.filter_by(id=session.get('user_id')).first()  # => Do I need to check if employer is signed in???
+        if user:
+            if user.employer_id:
+                job_apps_dict = [job_app.to_dict() for job_app in JobApplication.query.filter_by(job_posting_id=jpid).order_by(JobApplication.id.asc()).all()]
+                return make_response(job_apps_dict, 200)
+            else:
+                return make_response({
+                    'message': "User isn't an employer but an applicant",
+                }, 403)
+        else:
+            return make_response({
+                'message': "User needs to sign in first",
+            }, 401)
+
+
+class FavoriteJobs(Resource):
     def get(self):
         user = User.query.filter_by(id=session.get('user_id')).first()
         if user:
@@ -322,7 +324,7 @@ class FavoriteJobsUid(Resource):
                 'message': "User needs to sign in first",
             }, 401)
         
-class FavoriteJobsUid_by_id(Resource):
+class FavoriteJob_by_id(Resource):
     def delete(self, id):
         user = User.query.filter_by(id=session['user_id']).first()
         if user: 
@@ -349,13 +351,13 @@ api.add_resource(Signup, '/signup')
 api.add_resource(JobCategories, '/jobcategories')
 api.add_resource(JobPostings, '/jobpostings')
 api.add_resource(JobPosting_by_id, '/jobpostings/<int:id>')
-api.add_resource(JobPostingsUid, '/jobpostings/uid')
-api.add_resource(JobApplicationsUid, '/jobapplications/uid')
-api.add_resource(JobApplicationsUid_by_jpid, '/jobapplications/uid/jpids/<int:jpid>')
-api.add_resource(JobApplicationsJpid, '/jobapplications/jpids/<int:jpid>')
+api.add_resource(EmpJobPostings, '/empjobpostings')
+api.add_resource(JobApplications, '/jobapplications')
+api.add_resource(JobApplication_by_jpid, '/jobapplication/<int:jpid>')
 api.add_resource(JobApplication_by_id, '/jobapplications/<int:id>')
-api.add_resource(FavoriteJobsUid, '/favoritejobs/uid')
-api.add_resource(FavoriteJobsUid_by_id, '/favoritejobs/uid/<int:id>')
+api.add_resource(EmpJobApplications, '/empjobapplications/<int:jpid>')
+api.add_resource(FavoriteJobs, '/favoritejobs')
+api.add_resource(FavoriteJob_by_id, '/favoritejobs/<int:id>')
 
 
 if __name__ == '__main__':

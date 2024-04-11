@@ -90,11 +90,11 @@ function JobPostings() {
     function handleFavoriteClick(jobPost) {
         let pms;
         if (jobPost.favoriteJob) {
-            pms = fetch(`/favoritejobs/${jobPost.favoriteJob.id}`, {
+            pms = fetch(`/favoritejobs/uid/${jobPost.favoriteJob.id}`, {
                 method: 'DELETE',
             });
         } else {
-            pms = fetch('/favoritejobs', {
+            pms = fetch('/favoritejobs/uid', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

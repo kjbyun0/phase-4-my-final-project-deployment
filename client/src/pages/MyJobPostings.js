@@ -30,7 +30,7 @@ function MyJobPostings() {
 
 
     useEffect(() => {
-        fetch('/empjobpostings')
+        fetch('/jobpostings/uid')
         .then(r => {
             if (r.ok) 
                 r.json().then(data => {
@@ -49,7 +49,7 @@ function MyJobPostings() {
         if (!selJobPosting)
             return;
 
-        fetch(`/empjobapplications/${selJobPosting.id}`)
+        fetch(`/jobapplications/jpids/${selJobPosting.id}`)
         .then(r => {
             if (r.ok) 
                 r.json().then(data => {
@@ -62,9 +62,22 @@ function MyJobPostings() {
         });
     }, [selJobPosting]);
 
-    function handleAppclick(e1, e2) {
-        console.log('Accordion, e1: ', e1, ', e2: ', e2);
-        setSelJobAppIdx(e2.index);
+    function handleAppClick(e, {index}) {
+        console.log('Accordion, e: ', e, ', index: ', index);
+        setSelJobAppIdx(index);
+    }
+
+    function handleAppDecisionClick(app, isHire) {
+        console.log('handleAppDecisionClick, app: ', app, ', isHire: ', isHire);
+        fetch(`/jobapplications/${app.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                status: isHire ? 'accepted' : 'rejected',
+            })
+        })
     }
 
     if (!selJobPosting && myJobPostings.length)
@@ -113,7 +126,7 @@ function MyJobPostings() {
                 <AccordionTitle
                     active={selJobAppIdx === app.id}
                     index={app.id}
-                    onClick={handleAppclick}>
+                    onClick={handleAppClick}>
                     <div style={{display: 'flex', flexFlow: 'row', justifyContent: 'center', alignItems:'center', width: '100%'}}>
                         <div style={{flex: '1 1 1%' }}>
                             <Icon name='dropdown' />
@@ -146,8 +159,8 @@ function MyJobPostings() {
                         </li>
                     </ul>
                     <br />
-                    <Button color='blue'>Hire</Button>
-                    <Button color='orange'>Decline</Button>
+                    <Button color='blue' onClick={() => handleAppDecisionClick(app, true)}>Hire</Button>
+                    <Button color='orange' onClick={() => handleAppDecisionClick(app, false)}>Decline</Button>
                 </AccordionContent>
             </div>
         );

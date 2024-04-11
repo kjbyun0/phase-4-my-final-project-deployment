@@ -25,7 +25,7 @@ function AppliedJobs() {
         navigate('/signin');
 
     useEffect(() => {
-        fetch(`/jobapplications`)
+        fetch(`/jobapplications/uid`)
         .then(r => {
             if (r.ok)
                 r.json().then(data => setAppliedJobs(data));

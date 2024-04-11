@@ -24,7 +24,7 @@ function FavoriteJobs() {
         navigate('/signin');
 
     useEffect(() => {
-        fetch('/favoritejobs')
+        fetch('/favoritejobs/uid')
         .then(r => {
             if (r.ok)
                 r.json().then(data => {
@@ -45,7 +45,7 @@ function FavoriteJobs() {
     }
 
     function handleFavoriteDeleteClick(id) {
-        fetch(`/favoritejobs/${id}`, {
+        fetch(`/favoritejobs/uid/${id}`, {
             method: 'DELETE',
         })
         .then(r => {

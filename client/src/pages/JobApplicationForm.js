@@ -30,7 +30,7 @@ function JobApplicationForm() {
             }
         });
 
-        fetch(`/jobapplication/${id}`)
+        fetch(`/jobapplications/uid/jpids/${id}`)
         .then(r => {
             if (r.ok)
                 r.json().then(data => {
@@ -66,7 +66,7 @@ function JobApplicationForm() {
         onSubmit: (values) => {
             let jobAppPromise;
             if (jobApplication) {
-                jobAppPromise = fetch(`/jobapplication/${jobApplication.job_posting_id}`, {
+                jobAppPromise = fetch(`/jobapplications/uid/jpids/${jobApplication.job_posting_id}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ function JobApplicationForm() {
                     }),
                 });
             } else {
-                jobAppPromise = fetch('/jobapplications', {
+                jobAppPromise = fetch('/jobapplications/uid', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
