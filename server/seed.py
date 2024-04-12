@@ -70,6 +70,7 @@ if __name__ == '__main__':
 
         job_types = ['Part time', 'Contract', 'Full time']
         remotes = ['On-Site', 'Remote', 'Hybrid']
+        # jobposting_status = ['open', 'review', 'close']
         job_postings = []
         for i in range(20):
             job_postings.append(JobPosting(
@@ -78,7 +79,7 @@ if __name__ == '__main__':
                 pay = 15.00 + i,
                 job_type = job_types[i % len(job_types)], # => full,part time,contract
                 remote = remotes[i % len(remotes)],
-                is_active = i <= 15,
+                status = 'open',
                 job_category = job_categories[i],
                 employer = employers[i % 5]
             ))

@@ -74,12 +74,14 @@ function JobPostings() {
 
     function handleApplyClick() {
         if (userAccount) {
-            const app = selJobPosting.jobPost.job_applications.find(app => app.applicant_id === userAccount.applicant_id);
-            if (!app || app.status === 'new')
-                navigate(`/job_applications/${selJobPosting.jobPost.id}`);
-            else {
-                alert("Your application was reviewed. Please, check the result.");
-            } 
+            navigate(`/job_applications/${selJobPosting.jobPost.id}`);
+            // => I don't need the codes below anymore because job list displayed in this page are all in open status!!!!!
+            // const app = selJobPosting.jobPost.job_applications.find(app => app.applicant_id === userAccount.applicant_id);
+            // if (!app || app.status === 'new')
+            //     navigate(`/job_applications/${selJobPosting.jobPost.id}`);
+            // else {
+            //     alert("Your application was reviewed. Please, check the result.");
+            // } 
         } else {
             // => Semantic ui react의 Confirm을 사용하는 것 고려...
             alert("Please, sign in before applying for a job.");
@@ -133,7 +135,7 @@ function JobPostings() {
     }
 
     const filteredJobPostings = jobPostings.filter(job => 
-        job.jobPost.is_active && 
+        job.jobPost.status === 'open' && 
         (!filters.jobTypes.length || filters.jobTypes.includes(job.jobPost.job_type)) &&
         (!filters.remote.length || filters.remote.includes(job.jobPost.remote)) && 
         (filters.pay === '' || filters.pay <= job.jobPost.pay));
@@ -149,7 +151,7 @@ function JobPostings() {
         const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white';
 
         return (
-            <Card key={job.jobPost.id} style={{width: '100%', background: cardColor}} color='gray' 
+            <Card key={job.jobPost.id} style={{width: '100%', background: cardColor}} color='grey' 
                 onClick={() => setSelJobPosting(job)}>
                 <CardContent>
                     <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}

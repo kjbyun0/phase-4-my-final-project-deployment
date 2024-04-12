@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardMeta, CardDescription, 
-    ItemGroup, Item, ItemContent, ItemHeader, ItemMeta, ItemExtra, 
-    Label, Dropdown, Icon, Button, 
+    Label, Dropdown, Icon, ButtonGroup, Button, ButtonOr, 
     Accordion, AccordionTitle, AccordionContent } from 'semantic-ui-react';
-
 
 function MyJobPostings() {
     const [ myJobPostings, setMyJobPostings ] = useState([]);
@@ -70,7 +68,10 @@ function MyJobPostings() {
 
     function handleAppClick(e, {index}) {
         console.log('Accordion, e: ', e, ', index: ', index);
-        setSelJobAppId(index);
+        if (selJobAppId === index) 
+            setSelJobAppId(null);
+        else
+            setSelJobAppId(index);
     }
 
     function handleAppDecisionClick(app, isHire) {
@@ -95,13 +96,38 @@ function MyJobPostings() {
         })
     }
 
+    function handleJPStatusChange(jobPosting, status) {
+        if (!jobPosting)
+            return;
+
+        fetch(`/jobpostings/${jobPosting.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                status: status
+            }),
+        })
+        .then(r => {
+            if (r.ok) {
+                r.json().then(data => {
+                    setMyJobPostings(myJobPostings.map(jp => jp.id === data.id ? data : jp));
+                    setSelJobPosting(data);
+                })
+            } else {
+                // => Error handling needed for HTTP response status 404
+            }
+        });
+    }
+
     if (!selJobPosting && myJobPostings.length)
         setSelJobPosting(myJobPostings[0]);
 
     const dispJobCards = myJobPostings.map(job => {
         const cardColor = (selJobPosting && job.id === selJobPosting.id) ? 'aliceblue' : 'white';
-        const statusColor = job.is_active ? 'lightskyblue' : 'lightgray';
-        const status = job.is_active ? 'Proceeding' : 'Process Completed';
+        const statusColor = job.status === 'open' ? 'lightskyblue' : (job.status === 'review' ? 'tomato' : 'lightgray');
+        const status = job.status === 'open' ? 'Open' : (job.status === 'review' ? 'In review' : 'Closed');
 
         return (
             <Card key={job.id} style={{width: '100%', background: cardColor}} color='grey' 
@@ -127,8 +153,14 @@ function MyJobPostings() {
     const filterJobApps = statusCat.length ? jobApps.filter(app => statusCat.includes(app.status)) : jobApps;
 
     const dispSelJobApps = filterJobApps.map(app => {
+        // This case only happens when debugging....
+        if (!selJobPosting)
+            return null;
+
         let status, statusIcon, statusColor;
-        if (app.status === 'new') {
+        if (selJobPosting.status === 'open') {
+            status = 'Open'; statusIcon = 'info circle'; statusColor = 'lightblue';
+        } else if (selJobPosting.status === 'review' && app.status === 'new') {
             status = 'Not Reviewd'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
         } else if (app.status === 'hired') {
             status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
@@ -174,8 +206,8 @@ function MyJobPostings() {
                         </li>
                     </ul>
                     <br />
-                    <Button color='blue' onClick={() => handleAppDecisionClick(app, true)}>Hire</Button>
-                    <Button color='orange' onClick={() => handleAppDecisionClick(app, false)}>Decline</Button>
+                    <Button color='blue' disabled={selJobPosting.status !== 'review'} onClick={() => handleAppDecisionClick(app, true)}>Hire</Button>
+                    <Button color='orange' disabled={selJobPosting.status !== 'review'} onClick={() => handleAppDecisionClick(app, false)}>Decline</Button>
                 </AccordionContent>
             </div>
         );
@@ -183,6 +215,7 @@ function MyJobPostings() {
 
     console.log('MyJobPostings, myJobPostings: ', myJobPostings);
     console.log('MyJobPostings, filterJobApps: ', filterJobApps);
+    console.log('MyJobPostings, selJobPosting: ', selJobPosting);
 
     return (
         <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
@@ -191,6 +224,16 @@ function MyJobPostings() {
             </div>
             <div style={{ flex: '1 1 75%', height: '100%'}}>   
                 <div style={{height: '6%'}}>
+                    <ButtonGroup>
+                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue' 
+                            onClick={() => handleJPStatusChange(selJobPosting, 'open')}>Open</Button>
+                        {/* <ButtonOr style={{border: '1px solid black',}} /> */}
+                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'review')} color='orange' 
+                            onClick={() => handleJPStatusChange(selJobPosting, 'review')}>In Review</Button>
+                        {/* <ButtonOr style={{border: '1px solid black',}} /> */}
+                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey' 
+                            onClick={() => handleJPStatusChange(selJobPosting, 'close')}>Close</Button>
+                    </ButtonGroup>
                     <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
                         floating labeled button className='icon' 
                         search multiple selection clearable 

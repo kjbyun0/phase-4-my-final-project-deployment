@@ -11,9 +11,10 @@ function AppliedJobs() {
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
     const statusCatOptions = [
-        { key: 'new', text: 'Applied', value: 'new',},
-        { key: 'hired', text: 'Hired', value: 'hired',},
-        { key: 'declined', text: 'Closed', value: 'declined',},
+        { key: 'applied', text: 'Applied', value: 'Applied',},
+        { key: 'review', text: 'In review', value: 'In review',},
+        { key: 'hired', text: 'Hired', value: 'Hired',},
+        { key: 'closed', text: 'Closed', value: 'Closed',},
     ];
 
     //RBAC
@@ -41,23 +42,49 @@ function AppliedJobs() {
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(app) {
         console.log('app: ', app);
-        if (app.status === 'new')
+        if (app.status === 'Applied')
             navigate(`/job_applications/${app.job_posting.id}`)
     }
 
-    const filterAppliedJobs = statusCat.length ? appliedJobs.filter(app => statusCat.includes(app.status)) : appliedJobs;
-    const dispFilteredAppliedJobs = filterAppliedJobs.map(app => {
-        let status, statusIcon, statusColor;
-        if (app.status === 'new') {
-            status = 'Applied'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
-        } else if (app.status === 'hired') {
-            status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
-        } else {
-            status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGray';
+    const appliedJobsStatus = appliedJobs.map(app => {
+        let status;
+        if (app.job_posting.status === 'open')
+            status = 'Applied';
+        else if (app.job_posting.status === 'review')
+            status = 'In review';
+        else if (app.status === 'hired')
+            status = 'Hired';
+        else
+            status = 'Closed';
+
+        return {
+            ...app,
+            status: status,
+        }
+    });
+
+    const filterAppliedJobsStatus = statusCat.length ? 
+                                appliedJobsStatus.filter(app => statusCat.includes(app.status)) : 
+                                appliedJobsStatus;
+
+    const dispFilteredAppliedJobsStatus = filterAppliedJobsStatus.map(app => {
+        let statusIcon, statusColor;
+        switch(app.status) {
+            case 'Applied':
+                statusIcon = 'pin'; statusColor = 'lightblue';
+                break;
+            case 'In review':
+                statusIcon = 'spinner'; statusColor = 'mistyrose';
+            case 'Hired':
+                statusIcon = 'winner'; statusColor = 'lightgreen';
+                break;
+            case 'Closed':
+                statusIcon = 'remove circle'; statusColor = 'lightgray';
+                break;
         }
 
         return (
-            <Item key={app.id} style={{padding: '15px',}} className={status === 'Applied' ? 'pointerCursor' : null} 
+            <Item key={app.id} style={{padding: '15px',}} className={app.status === 'Applied' ? 'pointerCursor' : null} 
                 onClick={() => handleItemClick(app)} >
                 <ItemContent>
                     <ItemHeader>{app.job_posting.title}</ItemHeader>
@@ -66,14 +93,14 @@ function AppliedJobs() {
                     <ItemDescription>Pay: {app.job_posting.pay}/hr</ItemDescription>
                     <ItemDescription>Remote: {app.job_posting.remote}</ItemDescription> */}
                     <ItemExtra>
-                        <Label style={{background: statusColor,}} icon={statusIcon} content={status} />
+                        <Label style={{background: statusColor,}} icon={statusIcon} content={app.status} />
                     </ItemExtra>
                 </ItemContent>
             </Item>
         );
     });
 
-    console.log('in AppliedJobs, dispFilteredAppliedJobs: ', dispFilteredAppliedJobs);
+    console.log('in AppliedJobs, dispFilteredAppliedJobs: ', dispFilteredAppliedJobsStatus);
 
     return (
         <div style={{ height: '100%', }}>
@@ -86,7 +113,7 @@ function AppliedJobs() {
             </div>
             <div style={{ height: '94%', }}>
                 <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px', }}>
-                    {dispFilteredAppliedJobs}
+                    {dispFilteredAppliedJobsStatus}
                 </ItemGroup>
             </div>
         </div>

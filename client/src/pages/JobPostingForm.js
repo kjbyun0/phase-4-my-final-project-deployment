@@ -36,7 +36,7 @@ function JobPostingForm() {
             pay: 0.0,
             job_type: 'Full time',
             remote: 'On-Site',
-            is_active: true,
+            status: 'open',
         },
         validationSchema: formSchema,
         onSubmit: (values) => {

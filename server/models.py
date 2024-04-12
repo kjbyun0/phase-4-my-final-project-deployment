@@ -133,7 +133,7 @@ class JobPosting(db.Model, SerializerMixin):
     pay = db.Column(db.Float, nullable=False)
     job_type = db.Column(db.String) # => full,partime,contract
     remote = db.Column(db.String, nullable=False)   # => On-Site, Remote, Hybrid
-    is_active = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.String, nullable=False)  # => open, review, close
     # requited skills,
 
     job_category_id = db.Column(db.Integer, db.ForeignKey('job_categories.id'))

@@ -9,10 +9,11 @@ function FavoriteJobs() {
     const [ statusCat, setStatusCat ] = useState([]);
 
     const statusCatOptions = [
-        { key: 'notApplied', text: 'Not Applied', value: 'notApplied'}, 
-        { key: 'applied', text: 'Applied', value: 'applied',},
-        { key: 'hired', text: 'Hired', value: 'hired',},
-        { key: 'declinded', text: 'Closed', value: 'declined',},
+        { key: 'open', text: 'Open', value: 'Open'}, 
+        { key: 'applied', text: 'Applied', value: 'Applied',},
+        { key: 'review', text: 'In Review', value: 'In Review',},
+        { key: 'hired', text: 'Hired', value: 'Hired',},
+        { key: 'declinded', text: 'Closed', value: 'Closed',},
     ];
 
     //RBAC
@@ -40,7 +41,7 @@ function FavoriteJobs() {
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(job) {
         // console.log('job: ', job);
-        if (job.status === 'notApplied' || job.status === 'applied') 
+        if (job.status === 'Open' || job.status === 'Applied') 
             navigate(`/job_applications/${job.job_posting_id}`)
     }
 
@@ -62,20 +63,20 @@ function FavoriteJobs() {
         })
     }
 
-    const favoriteJobsStatus = favoriteJobs.map(job => {
-        const app = job.applicant.job_applications.find(app => app.job_posting_id === job.job_posting_id);
+    const favoriteJobsStatus = favoriteJobs.map(fjob => {
+        const app = fjob.applicant.job_applications.find(app => app.job_posting_id === fjob.job_posting_id);
+
         let status;
-        if (!app) 
-            status = 'notApplied';
-        else if (app.status === 'new') 
-            status = 'applied';
-        else if (app.status === 'hired') 
-            status = 'hired';
-        else 
-            status = 'declined';
+        if (fjob.job_posting.status === 'open') {
+            status = app ? 'Applied' : 'Open';
+        } else if (fjob.job_posting.status === 'review') {
+            status = app ? 'In review' : 'Closed';
+        } else {
+            status = app ? (app.status === 'hired' ? 'Hired' : 'Closed') : 'Closed';
+        }
         
         return ({
-            ...job,
+            ...fjob,
             status: status,
         });
     });
@@ -84,43 +85,45 @@ function FavoriteJobs() {
     const filterFavoriteJobs = 
         statusCat.length === 0 ? 
         favoriteJobsStatus : 
-        favoriteJobsStatus.filter((job, i) => statusCat.includes(job.status));
+        favoriteJobsStatus.filter(fjob => statusCat.includes(fjob.status));
 
-    const dispFilteredFavoriteJobs = filterFavoriteJobs.map(job => {
-        let status, statusIcon, statusColor;
-        switch (job.status) {
-            case 'notApplied':
-                status = 'Not Applied'; statusIcon = 'pause circle outline'; statusColor = 'dodgerblue';
+    const dispFilteredFavoriteJobs = filterFavoriteJobs.map(fjob => {
+        let statusIcon, statusColor;
+        switch (fjob.status) {
+            case 'Open':
+                statusIcon = 'info circle'; statusColor = 'dodgerblue';
                 break;
-            case 'applied':
-                status = 'Applied'; statusIcon = 'play circle outline'; statusColor = 'MistyRose';
+            case 'Applied':
+                statusIcon = 'pin'; statusColor = 'lightblue';
                 break;
-            case 'hired':
-                status = 'Hired'; statusIcon = 'thumbs up outline'; statusColor = 'LightGreen';
+            case 'In review':
+                statusIcon = 'spinner'; statusColor = 'mistyrose';
+            case 'Hired':
+                statusIcon = 'winner'; statusColor = 'lightgreen';
                 break;
-            case 'declined':
-                status = 'Closed'; statusIcon = 'remove circle'; statusColor = 'LightGray';
+            case 'Closed':
+                statusIcon = 'remove circle'; statusColor = 'lightgray';
                 break;
         }
 
         return (
-            <div key={job.id} style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', }}>
+            <div key={fjob.id} style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', }}>
                 <Item style={{flex: '1 1 90%', padding: '15px',}} 
-                    className={(status === 'Not Applied' || status === 'Applied') ? 'pointerCursor' : null} 
-                    onClick={() => handleItemClick(job)}>
+                    className={(fjob.status === 'Open' || fjob.status === 'Applied') ? 'pointerCursor' : null} 
+                    onClick={() => handleItemClick(fjob)}>
                     <ItemContent>
-                        <ItemHeader>{job.job_posting.title}</ItemHeader>
-                        <ItemMeta>{job.job_posting.employer.name}</ItemMeta>
+                        <ItemHeader>{fjob.job_posting.title}</ItemHeader>
+                        <ItemMeta>{fjob.job_posting.employer.name}</ItemMeta>
 
                         <ItemExtra>
-                            <Label style={{ background: statusColor, }} icon={statusIcon} content={status}/>
+                            <Label style={{ background: statusColor, }} icon={statusIcon} content={fjob.status}/>
                         </ItemExtra>
                     </ItemContent>
                 </Item>
                 <div style={{flex: '1 1 10%', }}>
                     <Button basic circular icon='trash alternate outline'
-                                size='mini' compact 
-                                onClick={() => handleFavoriteDeleteClick(job.id)} />
+                                size='' compact 
+                                onClick={() => handleFavoriteDeleteClick(fjob.id)} />
                 </div>                
             </div>
         );

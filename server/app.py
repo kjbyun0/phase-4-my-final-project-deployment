@@ -114,7 +114,7 @@ class JobPostings(Resource):
             pay = new_job_dict.get('pay'),
             job_type = new_job_dict.get('job_type'),
             remote = new_job_dict.get('remote'),
-            is_active = new_job_dict.get('is_active'),
+            status = new_job_dict.get('status'),
             job_category = new_job_category,
             employer = employer
         )
@@ -132,6 +132,20 @@ class JobPosting_by_id(Resource):
         return make_response({
             'message': f'Job Post {id} not found'
         }, 404)
+    
+    def patch(self, id):
+        request_dict = request.get_json()
+        job_posting = JobPosting.query.filter_by(id=id).first()
+        if job_posting:
+            for key in request_dict:
+                setattr(job_posting, key, request_dict[key])
+            db.session.add(job_posting)
+            db.session.commit()
+            return make_response(job_posting.to_dict(), 200)
+        else:
+            make_response({
+                'message': f'Job Post {id} not found'
+            }, 404)
 
 # Job postings by an employer id
 class JobPostingsUid(Resource):
