@@ -111,8 +111,9 @@ function AppliedJobs() {
                     placeholder='Status'
                     options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
             </div>
-            <div style={{ height: '94%', }}>
-                <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px', }}>
+            <div style={{ height: '94%', background: 'whitesmoke', }}>
+                <ItemGroup divided style={{ height: '100%', border: '1px solid lightgray', padding: '15px', 
+                    margin: '0 20%', background: 'white', overflow: 'auto', }}>
                     {dispFilteredAppliedJobsStatus}
                 </ItemGroup>
             </div>

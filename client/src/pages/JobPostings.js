@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardMeta, Button, 
+import { CardGroup, Card, CardContent, CardHeader, CardMeta, Button, 
         Dropdown, Icon } from 'semantic-ui-react';
 
 function JobPostings() {
@@ -176,8 +176,9 @@ function JobPostings() {
             return null;
 
         return (
-            <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
-                <div style={{ flex: '1 1 25%', width: '100%', overflow: 'auto', padding: '20px'}}>
+            <div style={{ display: 'flex', flexFlow: 'column', height: '100%', padding: '20px', }}>
+                <div style={{ flex: '1 1 25%', width: '100%', overflow: 'auto', padding: '20px', 
+                    border: '1px solid lightgray', borderRadius: '10px',}}>
                     <h1>{selJobPosting.jobPost.title}</h1>
                     <p>{selJobPosting.jobPost.employer.name} · {selJobPosting.jobPost.employer.user.city}, {selJobPosting.jobPost.employer.user.state}</p>
                     {
@@ -190,7 +191,7 @@ function JobPostings() {
                         </>
                     }
                 </div>
-                <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
+                <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px', }}>
                     <ul>
                         <li>Job type: {selJobPosting.jobPost.job_type}</li>
                         <li>Pay: {selJobPosting.jobPost.pay}/hr</li>
@@ -214,7 +215,7 @@ function JobPostings() {
     }
 
     return (
-        <div style={{ height: '100%' }}>
+        <div style={{ height: '100%',  }}>
             <div style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', height: '6%', }}>
                 {
                     filterTypes.map((type, i) => 
@@ -227,11 +228,16 @@ function JobPostings() {
                     )
                 }
             </div>
-            <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '94%' }}>
-                <div style={{ flex: '1 1 25%', height: '100%', overflow: 'auto', padding: '15px' }}>
-                    {dispJobCards}
+            <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', 
+                height: '94%', background: 'whitesmoke', }}>
+                <div style={{ flex: '1 1 30%', height: '100%', paddingTop: '10px', 
+                    margin: '0 0 0 10%', border: '1px solid lightgray', background: 'white', overflow: 'auto', }}>
+                    <CardGroup itemsPerRow={1} centered >
+                        {dispJobCards}
+                    </CardGroup>
                 </div>
-                <div style={{ flex: '1 1 75%', height: '100%', overflowY: 'auto'}}>
+                <div style={{ flex: '1 1 70%', height: '100%', 
+                     margin: '0 10% 0 0', border: '1px solid lightgray', background: 'white', overflowY: 'auto', }}>
                     {dispJobOnFocus()}
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardMeta, CardDescription, 
-    Label, Dropdown, Icon, ButtonGroup, Button, ButtonOr, 
+import { CardGroup, Card, CardContent, CardHeader, CardMeta, CardDescription, 
+    Label, Dropdown, Icon, ButtonGroup, Button,  
     Accordion, AccordionTitle, AccordionContent } from 'semantic-ui-react';
 
 function MyJobPostings() {
@@ -130,7 +130,7 @@ function MyJobPostings() {
         const status = job.status === 'open' ? 'Open' : (job.status === 'review' ? 'In review' : 'Closed');
 
         return (
-            <Card key={job.id} style={{width: '100%', background: cardColor}} color='grey' 
+            <Card key={job.id} style={{width: '100%', background: cardColor, }} color='grey' 
                 onClick={() => handleJobPostingClick(job)}>
                 <CardContent>
                     <CardHeader>{job.title}</CardHeader>
@@ -217,34 +217,114 @@ function MyJobPostings() {
     console.log('MyJobPostings, filterJobApps: ', filterJobApps);
     console.log('MyJobPostings, selJobPosting: ', selJobPosting);
 
+    // return (
+    //     <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%', background: 'whitesmoke', }}>
+    //         <div style={{ flex: '1 1 30%', height: '100%', paddingTop: '10px', 
+    //             margin: '0 0 0 10%', border: '1px solid lightgray', background: 'white', overflow: 'auto', }}>
+    //             <CardGroup itemsPerRow={1} centered >
+    //                 {dispJobCards}
+    //             </CardGroup>
+    //         </div>
+    //         <div style={{ flex: '1 1 70%', height: '100%', margin: '0 10% 0 0', border: '1px solid lightgray', background: 'white', }}>   
+    //             <div style={{height: '6%'}}>
+    //                 <ButtonGroup>
+    //                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue' 
+    //                         onClick={() => handleJPStatusChange(selJobPosting, 'open')}>Open</Button>
+    //                     {/* <ButtonOr style={{border: '1px solid black',}} /> */}
+    //                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'review')} color='orange' 
+    //                         onClick={() => handleJPStatusChange(selJobPosting, 'review')}>In Review</Button>
+    //                     {/* <ButtonOr style={{border: '1px solid black',}} /> */}
+    //                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey' 
+    //                         onClick={() => handleJPStatusChange(selJobPosting, 'close')}>Close</Button>
+    //                 </ButtonGroup>
+    //                 <Dropdown style={{ position: 'relative', right: '20px', }} icon='filter' 
+    //                     floating labeled button className='icon' 
+    //                     search multiple selection clearable 
+    //                     placeholder='Status'
+    //                     options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
+    //             </div>
+    //             <div style={{height: '94%'}}>
+    //                 {/* <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px'}}>
+    //                     {dispSelJobApps}
+    //                 </ItemGroup> */}
+    //                 <Accordion fluid styled style={{height: '100%', overflow: 'auto', padding: '15px'}}>
+    //                     {dispSelJobApps}
+    //                 </Accordion>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
+
+    // return (
+    //     <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%', background: 'whitesmoke', }}>
+    //         <div style={{ flex: '1 1 30%', height: '100%', paddingTop: '10px', 
+    //             margin: '0 0 0 10%', border: '1px solid lightgray', background: 'white', overflow: 'auto', }}>
+    //             <CardGroup itemsPerRow={1} centered >
+    //                 {dispJobCards}
+    //             </CardGroup>
+    //         </div>
+    //         <div style={{ flex: '1 1 70%', height: '100%', margin: '0 10% 0 0', border: '1px solid lightgray', background: 'white', }}>   
+    //             <div>
+    //                 <ButtonGroup style={{marginLeft: '3px', }}>
+    //                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue'
+    //                         onClick={() => handleJPStatusChange(selJobPosting, 'open')}>Open</Button>
+    //                     {/* <ButtonOr style={{border: '1px solid black',}} /> */}
+    //                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'review')} color='orange'
+    //                         onClick={() => handleJPStatusChange(selJobPosting, 'review')}>In Review</Button>
+    //                     {/* <ButtonOr style={{border: '1px solid black',}} /> */}
+    //                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey'
+    //                         onClick={() => handleJPStatusChange(selJobPosting, 'close')}>Close</Button>
+    //                 </ButtonGroup>
+    //                 <Dropdown style={{ float: 'right', }} icon='filter' 
+    //                     labeled button className='icon' 
+    //                     search multiple selection clearable 
+    //                     placeholder='Status'
+    //                     options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
+    //             </div>
+    //             <div style={{maxWidth: 'fit-content', overflow: 'auto', }}>
+    //                 {/* <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px'}}>
+    //                     {dispSelJobApps}
+    //                 </ItemGroup> */}
+    //                 <Accordion styled style={{height: '100%', padding: '15px', }}>
+    //                     {dispSelJobApps}
+    //                 </Accordion>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
+
     return (
-        <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
-            <div style={{ flex: '1 1 25%', height: '100%', overflow: 'auto', padding: '15px' }}>
-                {dispJobCards}
+        <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%', background: 'whitesmoke', }}>
+            <div style={{ flex: '1 1 30%', height: '100%', paddingTop: '10px', 
+                margin: '0 0 0 10%', border: '1px solid lightgray', background: 'white', overflow: 'auto', }}>
+                <CardGroup itemsPerRow={1} centered >
+                    {dispJobCards}
+                </CardGroup>
             </div>
-            <div style={{ flex: '1 1 75%', height: '100%'}}>   
-                <div style={{height: '6%'}}>
-                    <ButtonGroup>
-                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue' 
+            <div style={{ flex: '1 1 70%', height: '100%', margin: '0 10% 0 0', border: '1px solid lightgray', background: 'white', 
+                        display: 'grid', gridTemplateRows: 'min-content auto', }}>   
+                <div>
+                    <ButtonGroup style={{marginLeft: '3px', }}>
+                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue'
                             onClick={() => handleJPStatusChange(selJobPosting, 'open')}>Open</Button>
                         {/* <ButtonOr style={{border: '1px solid black',}} /> */}
-                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'review')} color='orange' 
+                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'review')} color='orange'
                             onClick={() => handleJPStatusChange(selJobPosting, 'review')}>In Review</Button>
                         {/* <ButtonOr style={{border: '1px solid black',}} /> */}
-                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey' 
+                        <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey'
                             onClick={() => handleJPStatusChange(selJobPosting, 'close')}>Close</Button>
                     </ButtonGroup>
-                    <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
-                        floating labeled button className='icon' 
+                    <Dropdown style={{ float: 'right', }} icon='filter' 
+                        labeled button className='icon' 
                         search multiple selection clearable 
                         placeholder='Status'
                         options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
                 </div>
-                <div style={{height: '94%'}}>
+                <div style={{overflow: 'auto', }}>
                     {/* <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px'}}>
                         {dispSelJobApps}
                     </ItemGroup> */}
-                    <Accordion fluid styled style={{height: '100%', overflow: 'auto', padding: '15px'}}>
+                    <Accordion styled style={{height: '100%', padding: '15px', }}>
                         {dispSelJobApps}
                     </Accordion>
                 </div>

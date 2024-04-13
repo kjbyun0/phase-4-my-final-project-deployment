@@ -107,25 +107,21 @@ function FavoriteJobs() {
         }
 
         return (
-            <div key={fjob.id} style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', }}>
-                <Item style={{flex: '1 1 90%', padding: '15px',}} 
-                    className={(fjob.status === 'Open' || fjob.status === 'Applied') ? 'pointerCursor' : null} 
-                    onClick={() => handleItemClick(fjob)}>
-                    <ItemContent>
-                        <ItemHeader>{fjob.job_posting.title}</ItemHeader>
-                        <ItemMeta>{fjob.job_posting.employer.name}</ItemMeta>
+            <Item key={fjob.id} 
+                className={(fjob.status === 'Open' || fjob.status === 'Applied') ? 'pointerCursor' : null} 
+                onClick={() => handleItemClick(fjob)}>
+                <Button basic circular size='small' compact icon='trash alternate outline'
+                    style={{alignSelf: 'center', marginRight: '20px', }} 
+                    onClick={() => handleFavoriteDeleteClick(fjob.id)} />
+                <ItemContent>
+                    <ItemHeader>{fjob.job_posting.title}</ItemHeader>
+                    <ItemMeta>{fjob.job_posting.employer.name}</ItemMeta>
 
-                        <ItemExtra>
-                            <Label style={{ background: statusColor, }} icon={statusIcon} content={fjob.status}/>
-                        </ItemExtra>
-                    </ItemContent>
-                </Item>
-                <div style={{flex: '1 1 10%', }}>
-                    <Button basic circular icon='trash alternate outline'
-                                size='' compact 
-                                onClick={() => handleFavoriteDeleteClick(fjob.id)} />
-                </div>                
-            </div>
+                    <ItemExtra>
+                        <Label style={{ background: statusColor, }} icon={statusIcon} content={fjob.status}/>
+                    </ItemExtra>
+                </ItemContent>
+            </Item>
         );
     });
 
@@ -138,8 +134,9 @@ function FavoriteJobs() {
                     placeholder='Status'
                     options={statusCatOptions} value={statusCat}  onChange={(e, {value}) => setStatusCat(value)} />
             </div>
-            <div style={{ height: '94%', }}>
-                <ItemGroup divided style={{ height: '100%', overflow: 'auto', padding: '15px', }}>
+            <div style={{ height: '94%', background: 'whitesmoke', }}>
+                <ItemGroup divided style={{ height: '100%', border: '1px solid lightgray', padding: '15px', 
+                    margin: '0 20%', background: 'white', overflow: 'auto', }}>
                     {dispFilteredFavoriteJobs}
                 </ItemGroup>
             </div>

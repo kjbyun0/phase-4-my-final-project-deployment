@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import { Switch, Route } from "react-router-dom";
 import { Outlet } from 'react-router-dom';
-import { useWindowSize } from '@react-hook/window-size';
 import NavBar from '../components/NavBar';
 
 function App() {
@@ -22,8 +20,6 @@ function App() {
       console.log('r: ', r);
     });
   }, [])
-
-  const [width, height] = useWindowSize()
 
   return (
     <>
