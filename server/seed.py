@@ -70,7 +70,6 @@ if __name__ == '__main__':
 
         job_types = ['Part time', 'Contract', 'Full time']
         remotes = ['On-Site', 'Remote', 'Hybrid']
-        # jobposting_status = ['open', 'review', 'close']
         job_postings = []
         for i in range(20):
             job_postings.append(JobPosting(

@@ -78,12 +78,9 @@ function Signup() {
     // console.log('formik: ', formik);
 
     return (
-        <div style={{width: '400px', margin: 'auto', position: 'relative', top: '10%'}}>
-            <Form onSubmit={formik.handleSubmit}>
-                {/* <Input id='name' name='name' type='text' placeholder='Name' 
-                    style={{width: '100%', marginTop: '10px'}}
-                    value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                {formik.errors.name && formik.touched.name && <div style={{ color: 'red'}}>{formik.errors.name}</div>} */}
+        <div style={{width: '100%', height: '100%', overflow: 'auto', }}>
+            <Form style={{width: '400px', margin: 'auto', position: 'relative', top: '10px', }} 
+                onSubmit={formik.handleSubmit}>
                 <Checkbox label='Are you an employer?' 
                     style={{ width: '100%', marginTop: '10px'}} 
                     checked={isEmployer} onChange={() => handleEmployerCheckChange(isEmployer)}/>

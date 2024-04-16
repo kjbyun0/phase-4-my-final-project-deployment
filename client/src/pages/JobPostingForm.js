@@ -58,62 +58,69 @@ function JobPostingForm() {
     });
 
     return (
-        <div style={{width: '800px', margin: 'auto', top: '5%'}}>
-            <Form onSubmit={formik.handleSubmit} >
-                <FormField inline>
-                    <label style={{fontSize: '1.1em'}}>Job Title:</label>
-                    <Input id='title' name='title' type='text' style={{width: '40em'}} value={formik.values.title}
-                        onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                    {formik.errors.title && formik.touched.title && <div style={{ color: 'red', }}>{formik.errors.title}</div>}
-                </FormField>
-                <FormField inline>
-                    <label style={{fontSize: '1.1em'}}>Job Category:</label>
-                    <Dropdown selection search value={formik.values.category} 
-                        onChange={(e, selVal) => formik.setFieldValue('category', selVal.value)}  
-                        options={categories.map(category => ({
-                            key: category.id, 
-                            value: category.category, 
-                            text: category.category,
-                        }))} 
-                    />
-                </FormField>
-                <FormField inline>
-                    <label style={{fontSize: '1.1em'}}>Pay:</label>
-                    <Input id='pay' name='pay' type='number' value={formik.values.pay} 
-                        onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                    {formik.errors.pay && formik.touched.pay && <div style={{ color: 'red', }}>{formik.errors.pay}</div>}
-                </FormField>
-                <FormField inline>
-                    <label style={{fontSize: '1.1em'}}>Job Type:</label>
-                    <Dropdown selection value={formik.values.job_type} 
-                        onChange={(e, selVal) => formik.setFieldValue('job_type', selVal.value)}
-                        options={[
-                            {key: 'f', value: 'Full time', text: 'Full time'}, 
-                            {key: 'p', value: 'Part time', text: 'Part time'}, 
-                            {key: 'c', value: 'Contract', text: 'Contract'}, 
-                        ]} 
-                    />
-                </FormField>
-                <FormField inline>
-                    <label style={{fontSize: '1.1em'}}>Remote:</label>
-                    <Dropdown selection value={formik.values.remote}
-                        onChange={(e, selVal) => formik.setFieldValue('remote', selVal.value)} 
-                        options={[
-                            {key: 'o', value: 'On-Site', text: 'On-Site'}, 
-                            {key: 'r', value: 'Remote', text: 'Remote'}, 
-                            {key: 'h', value: 'Hybrid', text: 'Hybrid'},
-                        ]} 
-                    />
-                </FormField>
-                <FormField inline>
-                    <label style={{fontSize: '1.1em'}}>Descriptions</label>
-                    <TextArea id='description' name='description' rows='20'  
-                        value={formik.values.description} onChange={formik.handleChange} />
-                </FormField>
-                <Button type='submit' size='big' color='orange' style={{width: '200px', margin: '0 300px 20px'}} >Post it</Button>
-            </Form>
+        <div style={{display: 'grid', width: '100%', height: '100%', gridTemplateColumns: '10% 1fr 10%', }} >
+            <div style={{background: 'lightgray', }} />
+            <div style={{padding: '5%', top: '5%', overflow: 'auto', }}>
+                <Form onSubmit={formik.handleSubmit}>
+                    <FormField inline>
+                        <label style={{fontSize: '1.1em'}}>Job Title:</label>
+                        <Input id='title' name='title' type='text' style={{width: '80%'}} value={formik.values.title}
+                            onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.title && formik.touched.title && <div style={{ color: 'red', }}>{formik.errors.title}</div>}
+                    </FormField>
+                    <FormField inline>
+                        <label style={{fontSize: '1.1em'}}>Job Category:</label>
+                        <Dropdown selection search value={formik.values.category} 
+                            onChange={(e, selVal) => formik.setFieldValue('category', selVal.value)}  
+                            options={categories.map(category => ({
+                                key: category.id, 
+                                value: category.category, 
+                                text: category.category,
+                            }))} 
+                        />
+                    </FormField>
+                    <FormField inline>
+                        <label style={{fontSize: '1.1em'}}>Pay:</label>
+                        <Input id='pay' name='pay' type='number' value={formik.values.pay} 
+                            onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.pay && formik.touched.pay && <div style={{ color: 'red', }}>{formik.errors.pay}</div>}
+                    </FormField>
+                    <FormField inline>
+                        <label style={{fontSize: '1.1em'}}>Job Type:</label>
+                        <Dropdown selection value={formik.values.job_type} 
+                            onChange={(e, selVal) => formik.setFieldValue('job_type', selVal.value)}
+                            options={[
+                                {key: 'f', value: 'Full time', text: 'Full time'}, 
+                                {key: 'p', value: 'Part time', text: 'Part time'}, 
+                                {key: 'c', value: 'Contract', text: 'Contract'}, 
+                            ]} 
+                        />
+                    </FormField>
+                    <FormField inline>
+                        <label style={{fontSize: '1.1em'}}>Remote:</label>
+                        <Dropdown selection value={formik.values.remote}
+                            onChange={(e, selVal) => formik.setFieldValue('remote', selVal.value)} 
+                            options={[
+                                {key: 'o', value: 'On-Site', text: 'On-Site'}, 
+                                {key: 'r', value: 'Remote', text: 'Remote'}, 
+                                {key: 'h', value: 'Hybrid', text: 'Hybrid'},
+                            ]} 
+                        />
+                    </FormField>
+                    <FormField inline>
+                        <label style={{fontSize: '1.1em'}}>Descriptions</label>
+                        <TextArea id='description' name='description' rows='20'  
+                            value={formik.values.description} onChange={formik.handleChange} />
+                    </FormField>
+                    <Button type='submit' size='big' color='orange' style={{margin: '0 40%', width: '20%', }} >Post it</Button>
+                </Form>
+            </div>
+            <div style={{background: 'lightgray', }} />
         </div>
     );
 }
 
 export default JobPostingForm;
+
+// margin: '0 300px 20px'
+// width: '200px'

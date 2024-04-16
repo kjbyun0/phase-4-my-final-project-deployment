@@ -151,7 +151,7 @@ function JobPostings() {
         const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white';
 
         return (
-            <Card key={job.jobPost.id} style={{width: '100%', background: cardColor}} color='grey' 
+            <Card key={job.jobPost.id} style={{ background: cardColor, }} color='grey' 
                 onClick={() => setSelJobPosting(job)}>
                 <CardContent>
                     <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
@@ -176,9 +176,10 @@ function JobPostings() {
             return null;
 
         return (
-            <div style={{ display: 'flex', flexFlow: 'column', height: '100%', padding: '20px', }}>
-                <div style={{ flex: '1 1 25%', width: '100%', overflow: 'auto', padding: '20px', 
-                    border: '1px solid lightgray', borderRadius: '10px',}}>
+            <div style={{display: 'grid', width: '100%', height: '100%', 
+                gridTemplateRows: '170px 1fr', padding: '10px', }}>
+                <div style={{overflow: 'auto', padding: '20px', 
+                    border: '1px solid lightgray', borderRadius: '10px', }}>
                     <h1>{selJobPosting.jobPost.title}</h1>
                     <p>{selJobPosting.jobPost.employer.name} · {selJobPosting.jobPost.employer.user.city}, {selJobPosting.jobPost.employer.user.state}</p>
                     {
@@ -191,7 +192,7 @@ function JobPostings() {
                         </>
                     }
                 </div>
-                <div style={{ flex: '1 1 75%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px', }}>
+                <div style={{overflow: 'auto', padding: '20px 15px 15px 30px', }}>
                     <ul>
                         <li>Job type: {selJobPosting.jobPost.job_type}</li>
                         <li>Pay: {selJobPosting.jobPost.pay}/hr</li>
@@ -215,11 +216,16 @@ function JobPostings() {
     }
 
     return (
-        <div style={{ height: '100%',  }}>
-            <div style={{ display: 'flex', flexFlow: 'row', alignItems: 'center', height: '6%', }}>
+        <div style={{display: 'grid', width: '100%', height: '100%', 
+            gridTemplateColumns: '10% 25% 1fr 10%',
+            gridTemplateRows: 'max-content 1fr', 
+            gridTemplateAreas: 
+                "'filterBar filterBar filterBar filterBar' \
+                'leftMargin cards details rightMargin'", }}>
+            <div style={{gridArea: 'filterBar', margin: '0 5%' }}>
                 {
                     filterTypes.map((type, i) => 
-                        <Dropdown key={type} style={{ flex: '1 1', }} className='icon' 
+                        <Dropdown key={type} className='icon' style={{width: '32%', margin: '5px 3px', }}
                             icon='filter' floating labeled button 
                             search={type !== 'pay'} multiple={type !== 'pay'} selection clearable 
                             placeholder={filterNames[i]} 
@@ -228,19 +234,16 @@ function JobPostings() {
                     )
                 }
             </div>
-            <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', 
-                height: '94%', background: 'whitesmoke', }}>
-                <div style={{ flex: '1 1 30%', height: '100%', paddingTop: '10px', 
-                    margin: '0 0 0 10%', border: '1px solid lightgray', background: 'white', overflow: 'auto', }}>
-                    <CardGroup itemsPerRow={1} centered >
-                        {dispJobCards}
-                    </CardGroup>
-                </div>
-                <div style={{ flex: '1 1 70%', height: '100%', 
-                     margin: '0 10% 0 0', border: '1px solid lightgray', background: 'white', overflowY: 'auto', }}>
-                    {dispJobOnFocus()}
-                </div>
+            <div style={{gridArea: 'leftMargin', background: 'lightgray', }} />
+            <div style={{gridArea: 'cards', overflow: 'auto', marginTop: '5px', }}>
+                <CardGroup itemsPerRow={1} centered >
+                    {dispJobCards}
+                </CardGroup>
             </div>
+            <div style={{gridArea: 'details', minWidth: '0', minHeight: '0', margin: '10px', }}>
+                {dispJobOnFocus()}
+            </div>
+            <div style={{gridArea: 'rightMargin', background: 'lightgray', }} />
         </div>
     );
 }

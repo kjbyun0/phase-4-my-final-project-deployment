@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
-import { Grid, GridColumn, Form, FormField, TextArea, Button } from 'semantic-ui-react';
+import { Form, FormField, TextArea, Button } from 'semantic-ui-react';
 import { useFormik } from 'formik';
 
 function JobApplicationForm() {
@@ -136,13 +136,15 @@ function JobApplicationForm() {
             //         <li>Email: {jobPosting.employer.user.email}</li>
             //     </ul>
             // </>
-            <div style={{ display: 'flex', flexFlow: 'column', height: '100%', padding: '10px 20px' }}>
-                <div style={{ flex: '1 1 20%', width: '100%', overflow: 'auto', padding: '20px'}}>
+            <div style={{display: 'grid', width: '100%', height: '100%', 
+                gridTemplateRows: '140px 1fr', padding: '10px', }}>
+                <div style={{overflow: 'auto', padding: '20px', 
+                    border: '1px solid lightgray', borderRadius: '10px', }}>
                     <h1>{jobPosting.title}</h1>
                     <p>{jobPosting.employer.name}<br/>
                         {jobPosting.employer.user.city}, {jobPosting.employer.user.state} ({jobPosting.remote})</p>
                 </div>
-                <div style={{ flex: '1 1 80%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
+                <div style={{overflow: 'auto', padding: '20px 15px 15px 30px', }}>
                     <ul>
                         <li>Job type: {jobPosting.job_type}</li>
                         <li>Pay: {jobPosting.pay}/hr</li>
@@ -165,32 +167,61 @@ function JobApplicationForm() {
         );
     }
 
+{/* <div style={{ display: 'flex', flexFlow: 'column', height: '100%', padding: '10px 20px' }}>
+    <div style={{ flex: '1 1 20%', width: '100%', overflow: 'auto', padding: '20px'}}>
+        <h1>{jobPosting.title}</h1>
+        <p>{jobPosting.employer.name}<br/>
+            {jobPosting.employer.user.city}, {jobPosting.employer.user.state} ({jobPosting.remote})</p>
+    </div>
+    <div style={{ flex: '1 1 80%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
+        <ul>
+            <li>Job type: {jobPosting.job_type}</li>
+            <li>Pay: {jobPosting.pay}/hr</li>
+            <li>Remote: {jobPosting.remote}</li>
+            <li>Description: <br/>
+                {jobPosting.description}
+            </li>
+            <li>Address: 
+                <p>{jobPosting.employer.user.street_1},<br/>
+                    {jobPosting.employer.user.street_2},<br/>
+                    {jobPosting.employer.user.city}, 
+                    {jobPosting.employer.state}<br/>
+                    {jobPosting.employer.user.zipCode}</p>
+            </li>
+            <li>Tel: {jobPosting.employer.user.phone}</li>
+            <li>Email: {jobPosting.employer.user.email}</li>
+        </ul>
+    </div>
+</div> */}
+
     return (
-        <div style={{ display: 'flex', flexFlow: 'row', justifyContent: 'center', height: '100%' }}>
-            <div style={{ flex: '1 1 40%', height: '100%', overflow: 'auto' }}>
+        <div style={{display: 'grid', width: '100%', height: '100%', 
+            gridTemplateColumns: '10% 35% 45% 10%', }}>
+            <div style={{background: 'lightgray', }} />
+            <div style={{minWidth: '0', minHeight: '0', }}>
                 {dispJobPosting()}
             </div>
-            <div style={{ flex: '1 1 60%', height: '100%', overflow: 'auto'}}>
-                <Form style={{padding: '10px', margin: '3%'}}
-                    onSubmit={formik.handleSubmit}>
+            <div style={{padding: '5%', top: '5%', overflow: 'auto', }}>
+                <Form onSubmit={formik.handleSubmit}>
                     <FormField>
                         <label htmlFor='education' style={{fontSize: '1.1em'}}>Education: </label>
-                        <TextArea id='education' name='education' rows={7} value={formik.values.education} 
+                        <TextArea id='education' name='education' rows={10} value={formik.values.education} 
                             onChange={formik.handleChange} />
                     </FormField>
                     <FormField>
                         <label htmlFor='experience' style={{fontSize: '1.1em'}}>Experience: </label>
-                        <TextArea id='experience' name='experience' rows={7} value={formik.values.experience} 
+                        <TextArea id='experience' name='experience' rows={10} value={formik.values.experience} 
                             onChange={formik.handleChange} />
                     </FormField>
                     <FormField>
                         <label htmlFor='certificate' style={{fontSize: '1.1em'}}>Certificates: </label>
-                        <TextArea id='certificate' name='certificate' rows={5} value={formik.values.certificate} 
+                        <TextArea id='certificate' name='certificate' rows={7} value={formik.values.certificate} 
                             onChange={formik.handleChange} />
                     </FormField>
-                    <Button type='submit'>Apply</Button>
+                    <Button type='submit' color='blue' style={{width: '28%', margin: '0 36%'}}>Apply</Button>
                 </Form>
             </div>
+            <div style={{background: 'lightgray', }} />
         </div>
     );
 }

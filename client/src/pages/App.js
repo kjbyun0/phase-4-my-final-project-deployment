@@ -22,18 +22,20 @@ function App() {
   }, [])
 
   return (
-    <>
-      <header id='doc-header'>
+    <div style={{display: 'grid', width: '100%', height: '100%', gridTemplateRows: 'max-content 1fr', }}>
+      <header>
         <NavBar userAccount={userAccount}/>
       </header>
-      <main id='doc-main'>
+      <main style={{minWidth: '0', minHeight: '0', }}>
         <Outlet context={{
           userAccount: userAccount, 
           onSetUserAccount: setUserAccount,
         }} />
       </main>
-    </>
+    </div>
   );
 }
+
+
 
 export default App;

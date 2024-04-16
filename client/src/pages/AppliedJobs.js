@@ -103,20 +103,26 @@ function AppliedJobs() {
     console.log('in AppliedJobs, dispFilteredAppliedJobs: ', dispFilteredAppliedJobsStatus);
 
     return (
-        <div style={{ height: '100%', }}>
-            <div style={{ height: '6%', }}>
-                <Dropdown style={{ position: 'absolute', right: '20px', }} icon='filter' 
+        <div style={{display: 'grid', width: '100%', height: '100%', 
+            gridTemplateColumns: '20% 1fr 20%', 
+            gridTemplateRows: 'max-content 1fr', 
+            gridTemplateAreas: 
+                "'leftMargin filterBar rightMargin' \
+                'leftMargin list rightMargin'", }}>
+            <div style={{gridArea: 'leftMargin', background: 'lightgray', }} />
+            <div style={{gridArea: 'filterBar', margin: '5px 0', }}>
+                <Dropdown style={{ float: 'right', }} icon='filter' 
                     floating labeled button className='icon' 
                     search multiple selection clearable 
                     placeholder='Status'
                     options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
             </div>
-            <div style={{ height: '94%', background: 'whitesmoke', }}>
-                <ItemGroup divided style={{ height: '100%', border: '1px solid lightgray', padding: '15px', 
-                    margin: '0 20%', background: 'white', overflow: 'auto', }}>
+            <div style={{gridArea: 'list', overflow: 'auto', }}>
+                <ItemGroup divided style={{ padding: '15px', }}>
                     {dispFilteredAppliedJobsStatus}
                 </ItemGroup>
             </div>
+            <div style={{gridArea: 'rightMargin', background: 'lightgray', }} />
         </div>
     );
 }
