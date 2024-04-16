@@ -61,9 +61,12 @@ function MyJobPostings() {
     }, [selJobPosting]);
 
     function handleJobPostingClick(job) {
-        console.log('handleJobPostingClick, job: ', job);
-        setSelJobPosting(job);
-        setSelJobAppId(null);
+        // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (selJobPosting !== job) {
+            console.log("in handleJobPostingClick, selJobPosting: ", selJobPosting, ", job: ", job);
+            setSelJobPosting(job);
+            setSelJobAppId(null);
+        }
     }
 
     function handleAppClick(e, {index}) {
@@ -97,7 +100,7 @@ function MyJobPostings() {
     }
 
     function handleJPStatusChange(jobPosting, status) {
-        if (!jobPosting)
+        if (!jobPosting || jobPosting.status === status)
             return;
 
         fetch(`/jobpostings/${jobPosting.id}`, {
@@ -114,6 +117,7 @@ function MyJobPostings() {
                 r.json().then(data => {
                     setMyJobPostings(myJobPostings.map(jp => jp.id === data.id ? data : jp));
                     setSelJobPosting(data);
+                    setStatusCat([]);
                 })
             } else {
                 // => Error handling needed for HTTP response status 404
@@ -150,7 +154,17 @@ function MyJobPostings() {
         );
     });
 
-    const filterJobApps = statusCat.length ? jobApps.filter(app => statusCat.includes(app.status)) : jobApps;
+    // const filterJobApps = statusCat.length ? 
+    //     jobApps.filter(app => statusCat.includes(app.status)) : 
+    //     jobApps;
+
+    const filterJobApps = statusCat.length ? 
+        jobApps.filter(app => statusCat.includes(
+            (selJobPosting && selJobPosting.status === 'close' && app.status === 'new') ? 
+            'declined' : 
+            app.status)
+        ) : 
+        jobApps;
 
     const dispSelJobApps = filterJobApps.map(app => {
         // This case only happens when debugging....
@@ -206,8 +220,14 @@ function MyJobPostings() {
                         </li>
                     </ul>
                     <br />
-                    <Button color='blue' disabled={selJobPosting.status !== 'review'} onClick={() => handleAppDecisionClick(app, true)}>Hire</Button>
-                    <Button color='orange' disabled={selJobPosting.status !== 'review'} onClick={() => handleAppDecisionClick(app, false)}>Decline</Button>
+                    {
+                        selJobPosting.status !== 'close' ? 
+                        <div>
+                            <Button color='blue' disabled={selJobPosting.status !== 'review'} onClick={() => handleAppDecisionClick(app, true)}>Hire</Button>
+                            <Button color='orange' disabled={selJobPosting.status !== 'review'} onClick={() => handleAppDecisionClick(app, false)}>Decline</Button>
+                        </div> : 
+                        null
+                    }
                 </AccordionContent>
                 <Divider />
             </div>
@@ -215,8 +235,9 @@ function MyJobPostings() {
     });
 
     console.log('MyJobPostings, myJobPostings: ', myJobPostings);
-    console.log('MyJobPostings, filterJobApps: ', filterJobApps);
     console.log('MyJobPostings, selJobPosting: ', selJobPosting);
+    console.log('MyJobPostings, filterJobApps: ', filterJobApps);
+    console.log('MyJobPostings, statusCat: ', statusCat);
 
     return (
         <div style={{display: 'grid', width: '100%', height: '100%', 
@@ -231,7 +252,7 @@ function MyJobPostings() {
                     {dispJobCards}
                 </CardGroup>
             </div>
-            <div style={{gridArea: 'toolBar', overflow: 'auto', }}>
+            <div style={{gridArea: 'toolBar', }}>
                 <ButtonGroup style={{margin: '5px 3px', }}>
                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue'
                         onClick={() => handleJPStatusChange(selJobPosting, 'open')}>Open</Button>
@@ -240,11 +261,14 @@ function MyJobPostings() {
                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey'
                         onClick={() => handleJPStatusChange(selJobPosting, 'close')}>Close</Button>
                 </ButtonGroup>
-                <Dropdown style={{ float: 'right', }} icon='filter' 
+                <Dropdown style={{float: 'right', }} icon='filter' 
                     labeled button className='icon' 
                     search multiple selection clearable 
                     placeholder='Status'
-                    options={statusCatOptions} value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
+                    disabled={!selJobPosting || selJobPosting.status === 'open'}
+                    options={selJobPosting && selJobPosting.status === 'close' ? 
+                        statusCatOptions.slice(1) : statusCatOptions} 
+                    value={statusCat} onChange={(e, {value}) => setStatusCat(value)} />
             </div>
             <div style={{gridArea: 'list', overflow: 'auto', minWidth: '0', }}>
                 <Accordion fluid style={{height: '100%', padding: '15px', }}>

@@ -36,7 +36,6 @@ function JobPostings() {
         ]
     };
 
-    console.log('in JobPostings, userAccount: ', userAccount);
     function makeJobPostingState(data, bResetSelJobPosting) {
         console.log('in JobPostings, makeJobPostingState data before: ', data);
         console.log('in JobPostings, makeJobPostingState userAccount: ', userAccount);
@@ -50,7 +49,7 @@ function JobPostings() {
         });
         console.log('in JobPostings, makeJobPostingState data after: ', jps);
 
-        if (bResetSelJobPosting)
+        if (bResetSelJobPosting) 
             setSelJobPosting(null);
 
         return jps;
@@ -140,19 +139,28 @@ function JobPostings() {
         (!filters.remote.length || filters.remote.includes(job.jobPost.remote)) && 
         (filters.pay === '' || filters.pay <= job.jobPost.pay));
 
-    if (!selJobPosting && filteredJobPostings.length)
+    if (!selJobPosting && filteredJobPostings.length) 
         setSelJobPosting(filteredJobPostings[0]);
 
+    console.log('in JobPostings, userAccount: ', userAccount);
     // console.log('jobPostings: ', jobPostings);
     console.log('filteredJobPostings: ', filteredJobPostings);
     console.log('selJobPosting: ', selJobPosting);
+
+    function handleCardClick(job) {
+        // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (selJobPosting !== job) {
+            console.log("in handleCardClick, selJobPosting: ", selJobPosting, ", job: ", job);
+            setSelJobPosting(job);
+        }
+    }
 
     const dispJobCards = filteredJobPostings.map(job => {
         const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white';
 
         return (
             <Card key={job.jobPost.id} style={{ background: cardColor, }} color='grey' 
-                onClick={() => setSelJobPosting(job)}>
+                onClick={() => handleCardClick(job)}>
                 <CardContent>
                     <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
                         color='blue' size='mini' compact style={{ float: 'right', }} 
