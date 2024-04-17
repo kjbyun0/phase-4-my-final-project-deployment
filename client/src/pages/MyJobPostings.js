@@ -247,7 +247,7 @@ function MyJobPostings() {
                 "'leftMargin cards toolBar rightMargin' \
                 'leftMargin cards list rightMargin'", }}>
             <div style={{gridArea: 'leftMargin', background: 'lightgray', }} />
-            <div style={{gridArea: 'cards', overflow: 'auto', marginTop: '5px', }}>
+            <div style={{gridArea: 'cards', overflow: 'auto', paddingTop: '5px', marginTop: '5px', }}>
                 <CardGroup itemsPerRow={1} centered>
                     {dispJobCards}
                 </CardGroup>
