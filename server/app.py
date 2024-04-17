@@ -218,7 +218,7 @@ class JobApplicationsUid_by_jpid(Resource):
                 else:
                     print("In JobApplicationsUid_by_jpid, User hasn't apply to this job yet")
                     return make_response({
-                        'message': f'Job application {jpid} by the user not available',
+                        'message': f'Job application {jpid} by the user not found',
                     }, 404)
             else: 
                 print("In JobApplicationsUid_by_jpid, User isn't an applicant but an employer")
@@ -247,7 +247,7 @@ class JobApplicationsUid_by_jpid(Resource):
                 else: 
                     print("In JobApplicationsUid_by_jpid patch, User hasn't apply to this job yet")
                     return make_response({
-                        'message': f'Job application {jpid} by the user not available',
+                        'message': f'Job application {jpid} by the user not found',
                     }, 404)
             else:
                 print("In JobApplicationsUid_by_jpid patch , User isn't an applicant but an employer")
@@ -291,7 +291,20 @@ class JobApplication_by_id(Resource):
             return make_response(app.to_dict(), 200)
         else:
             return make_response({
-                'message': f'Application {id} not available'
+                'message': f'Application {id} not found'
+            }, 404)
+        
+    def delete(self, id): 
+        app = JobApplication.query.filter_by(id=id).first()
+        if app:
+            db.session.delete(app)
+            db.session.commit()
+            return make_response({
+                'message': f'Application {id} is deleted.'
+            }, 200)
+        else:
+            return make_response({
+                'message': f'Application {id} not found'
             }, 404)
 
 
@@ -344,7 +357,7 @@ class FavoriteJobsUid_by_id(Resource):
                 fj = FavoriteJob.query.filter_by(id=id).first()
                 db.session.delete(fj)
                 db.session.commit()
-                jobs_dict = [job.to_dict() for job in JobPosting.query.all()]
+                jobs_dict = [job.to_dict() for job in JobPosting.query.all()]   # => This part was needed for JobPostings page. I think this to be eliminated.
                 return make_response(jobs_dict, 200)
             else:
                 # Forbidden

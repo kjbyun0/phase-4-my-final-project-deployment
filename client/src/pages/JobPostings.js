@@ -62,10 +62,10 @@ function JobPostings() {
     }, [userAccount]);
     // I added userAccount because everyone can view this page without signing in.
 
-    function handleFiltersChange(e1, e2, type) {
+    function handleFiltersChange(e, o, type) {
         setFilters({
             ...filters,
-            [type]: e2.value,
+            [type]: o.value,
         });
 
         setSelJobPosting(null);
@@ -88,8 +88,8 @@ function JobPostings() {
         }
     }
 
-    function handleFavoriteClick(e1, e2, jobPost) {
-        e1.stopPropagation();
+    function handleFavoriteClick(e, o, jobPost) {
+        e.stopPropagation();
 
         let pms;
         if (jobPost.favoriteJob) {
@@ -170,7 +170,7 @@ function JobPostings() {
                         (userAccount && userAccount.applicant) ? 
                         <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
                             color='blue' size='mini' compact style={{ float: 'right', }} 
-                            onClick={(e1, e2) => handleFavoriteClick(e1, e2, job)} /> :
+                            onClick={(e, o) => handleFavoriteClick(e, o, job)} /> :
                         null
                     }
                     <CardHeader>{job.jobPost.title}</CardHeader>
@@ -204,7 +204,7 @@ function JobPostings() {
                         <>
                             <Button color='blue' onClick={handleApplyClick}>Apply</Button>
                             <Button basic icon={selJobPosting.favoriteJob ? 'bookmark' : 'bookmark outline'} 
-                                color='blue' onClick={(e1, e2) => handleFavoriteClick(e1, e2, selJobPosting)} />
+                                color='blue' onClick={(e, o) => handleFavoriteClick(e, o, selJobPosting)} />
                         </>
                     }
                 </div>
@@ -246,7 +246,7 @@ function JobPostings() {
                             search={type !== 'pay'} multiple={type !== 'pay'} selection clearable 
                             placeholder={filterNames[i]} 
                             options={filterOptions[type]} value={filters[type]}  
-                            onChange={(e1, e2) => handleFiltersChange(e1, e2, type)} />
+                            onChange={(e, o) => handleFiltersChange(e, o, type)} />
                     )
                 }
             </div>

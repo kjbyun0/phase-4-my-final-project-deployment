@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ItemGroup, Item, ItemContent, ItemHeader, 
     ItemMeta, ItemDescription, ItemExtra, Label,
-    Dropdown, } from 'semantic-ui-react';
+    Dropdown, Button } from 'semantic-ui-react';
 
 
 function AppliedJobs() {
@@ -46,6 +46,22 @@ function AppliedJobs() {
             navigate(`/job_applications/${app.job_posting.id}`)
     }
 
+    function handleAppDeleteClick(e, o, app) {
+        e.stopPropagation();
+
+        fetch(`/jobapplications/${app.id}`, {
+            method: 'DELETE',
+        })
+        .then(r => {
+            if (r.ok) {
+                console.log('handleAppDeleteClick, delete successful.');
+                setAppliedJobs(appliedJobs.filter(aJob => aJob.id !== app.id));
+            } else {
+                // => Handle Errors.
+            }
+        })
+    }
+
     const appliedJobsStatus = appliedJobs.map(app => {
         let status;
         if (app.job_posting.status === 'open')
@@ -84,7 +100,8 @@ function AppliedJobs() {
         }
 
         return (
-            <Item key={app.id} style={{padding: '15px',}} className={app.status === 'Applied' ? 'pointerCursor' : null} 
+            <Item key={app.id} style={{padding: '15px',}} 
+                className={app.status === 'Applied' ? 'pointerCursor' : null} 
                 onClick={() => handleItemClick(app)} >
                 <ItemContent>
                     <ItemHeader>{app.job_posting.title}</ItemHeader>
@@ -96,6 +113,9 @@ function AppliedJobs() {
                         <Label style={{background: statusColor,}} icon={statusIcon} content={app.status} />
                     </ItemExtra>
                 </ItemContent>
+                <Button basic circular size='small' compact icon='trash alternate outline'
+                    style={{alignSelf: 'center', }} 
+                    onClick={(e, o) => handleAppDeleteClick(e, o, app)} />
             </Item>
         );
     });

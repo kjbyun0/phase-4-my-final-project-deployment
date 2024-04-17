@@ -39,19 +39,21 @@ function FavoriteJobs() {
     }, []);
 
     // => This may be changed... app paramater already has everything to display
-    function handleItemClick(job) {
-        // console.log('job: ', job);
-        if (job.status === 'Open' || job.status === 'Applied') 
-            navigate(`/job_applications/${job.job_posting_id}`)
+    function handleItemClick(fjob) {
+        if (fjob.status === 'Open' || fjob.status === 'Applied') 
+            navigate(`/job_applications/${fjob.job_posting_id}`)
     }
 
-    function handleFavoriteDeleteClick(id) {
-        fetch(`/favoritejobs/uid/${id}`, {
+    function handleFavoriteDeleteClick(e, o, fjob) {
+        // console.log('in handleFavoriteDeleteClick, e1: ', e1, ', e2: ', e2);
+        e.stopPropagation();
+
+        fetch(`/favoritejobs/uid/${fjob.id}`, {
             method: 'DELETE',
         })
         .then(r => {
             if (r.ok) {
-                setFavoriteJobs(favoriteJobs.filter(job => job.id !== id));
+                setFavoriteJobs(favoriteJobs.filter(job => job.id !== fjob.id));
             } else if (r.status === 403) {
                 // => It can't be reached. If this popup shows up, then there is a hole for an employer to acess favorites...
                 alert("You are signed in with your employer account. Please, sign in again.")
@@ -107,12 +109,9 @@ function FavoriteJobs() {
         }
 
         return (
-            <Item key={fjob.id} 
+            <Item key={fjob.id} style={{padding: '15px',}} 
                 className={(fjob.status === 'Open' || fjob.status === 'Applied') ? 'pointerCursor' : null} 
                 onClick={() => handleItemClick(fjob)}>
-                <Button basic circular size='small' compact icon='trash alternate outline'
-                    style={{alignSelf: 'center', marginRight: '20px', }} 
-                    onClick={() => handleFavoriteDeleteClick(fjob.id)} />
                 <ItemContent>
                     <ItemHeader>{fjob.job_posting.title}</ItemHeader>
                     <ItemMeta>{fjob.job_posting.employer.name}</ItemMeta>
@@ -121,6 +120,9 @@ function FavoriteJobs() {
                         <Label style={{ background: statusColor, }} icon={statusIcon} content={fjob.status}/>
                     </ItemExtra>
                 </ItemContent>
+                <Button basic circular size='small' compact icon='trash alternate outline'
+                    style={{alignSelf: 'center', }} 
+                    onClick={(e, o) => handleFavoriteDeleteClick(e, o, fjob)} />
             </Item>
         );
     });
