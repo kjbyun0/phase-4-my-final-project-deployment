@@ -88,7 +88,9 @@ function JobPostings() {
         }
     }
 
-    function handleFavoriteClick(jobPost) {
+    function handleFavoriteClick(e1, e2, jobPost) {
+        e1.stopPropagation();
+
         let pms;
         if (jobPost.favoriteJob) {
             pms = fetch(`/favoritejobs/uid/${jobPost.favoriteJob.id}`, {
@@ -112,16 +114,18 @@ function JobPostings() {
                 r.json().then(data => {
                     if (jobPost.favoriteJob) {
                         setJobPostings(makeJobPostingState(data, false));
-                        setSelJobPosting({
-                            jobPost: jobPost.jobPost,
-                            favoriteJob: undefined,
-                        });
+                        if (jobPost.jobPost.id === selJobPosting.jobPost.id) 
+                            setSelJobPosting({
+                                jobPost: jobPost.jobPost,
+                                favoriteJob: undefined,
+                            });
                     } else {
                         setJobPostings(makeJobPostingState(data.jobs, false));
-                        setSelJobPosting({
-                            jobPost: jobPost.jobPost,
-                            favoriteJob: data.favorite_job,
-                        });
+                        if (jobPost.jobPost.id === selJobPosting.jobPost.id)
+                            setSelJobPosting({
+                                jobPost: jobPost.jobPost,
+                                favoriteJob: data.favorite_job,
+                            });
                     }
                 });
             } else if (r.status === 403) {
@@ -131,6 +135,14 @@ function JobPostings() {
                 navigate('/signin');
             }
         });
+    }
+
+    function handleCardClick(job) {
+        // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (selJobPosting.jobPost.id !== job.jobPost.id) {
+            console.log("in handleCardClick, selJobPosting: ", selJobPosting, ", job: ", job);
+            setSelJobPosting(job);
+        }
     }
 
     const filteredJobPostings = jobPostings.filter(job => 
@@ -147,14 +159,6 @@ function JobPostings() {
     console.log('filteredJobPostings: ', filteredJobPostings);
     console.log('selJobPosting: ', selJobPosting);
 
-    function handleCardClick(job) {
-        // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (selJobPosting !== job) {
-            console.log("in handleCardClick, selJobPosting: ", selJobPosting, ", job: ", job);
-            setSelJobPosting(job);
-        }
-    }
-
     const dispJobCards = filteredJobPostings.map(job => {
         const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white';
 
@@ -162,9 +166,13 @@ function JobPostings() {
             <Card key={job.jobPost.id} style={{ background: cardColor, }} color='grey' 
                 onClick={() => handleCardClick(job)}>
                 <CardContent>
-                    <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
-                        color='blue' size='mini' compact style={{ float: 'right', }} 
-                        onClick={() => handleFavoriteClick(job)} />
+                    {
+                        (userAccount && userAccount.applicant) ? 
+                        <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
+                            color='blue' size='mini' compact style={{ float: 'right', }} 
+                            onClick={(e1, e2) => handleFavoriteClick(e1, e2, job)} /> :
+                        null
+                    }
                     <CardHeader>{job.jobPost.title}</CardHeader>
                     <CardMeta>{job.jobPost.employer.name}</CardMeta>
                     <CardMeta>
@@ -185,7 +193,7 @@ function JobPostings() {
 
         return (
             <div style={{display: 'grid', width: '100%', height: '100%', 
-                gridTemplateRows: '170px 1fr', padding: '10px', }}>
+                gridTemplateRows: 'max-content 1fr', padding: '10px', }}>
                 <div style={{overflow: 'auto', padding: '20px', 
                     border: '1px solid lightgray', borderRadius: '10px', }}>
                     <h1>{selJobPosting.jobPost.title}</h1>
@@ -196,7 +204,7 @@ function JobPostings() {
                         <>
                             <Button color='blue' onClick={handleApplyClick}>Apply</Button>
                             <Button basic icon={selJobPosting.favoriteJob ? 'bookmark' : 'bookmark outline'} 
-                                color='blue' onClick={() => handleFavoriteClick(selJobPosting)} />
+                                color='blue' onClick={(e1, e2) => handleFavoriteClick(e1, e2, selJobPosting)} />
                         </>
                     }
                 </div>

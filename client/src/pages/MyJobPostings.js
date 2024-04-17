@@ -62,7 +62,7 @@ function MyJobPostings() {
 
     function handleJobPostingClick(job) {
         // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (selJobPosting !== job) {
+        if (selJobPosting.id !== job.id) {
             console.log("in handleJobPostingClick, selJobPosting: ", selJobPosting, ", job: ", job);
             setSelJobPosting(job);
             setSelJobAppId(null);
