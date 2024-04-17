@@ -100,6 +100,7 @@ function FavoriteJobs() {
                 break;
             case 'In review':
                 statusIcon = 'spinner'; statusColor = 'mistyrose';
+                break;
             case 'Hired':
                 statusIcon = 'winner'; statusColor = 'lightgreen';
                 break;

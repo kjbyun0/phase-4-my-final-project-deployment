@@ -49,6 +49,7 @@ function AppliedJobs() {
     function handleAppDeleteClick(e, o, app) {
         e.stopPropagation();
 
+
         fetch(`/jobapplications/${app.id}`, {
             method: 'DELETE',
         })
@@ -91,6 +92,7 @@ function AppliedJobs() {
                 break;
             case 'In review':
                 statusIcon = 'spinner'; statusColor = 'mistyrose';
+                break;
             case 'Hired':
                 statusIcon = 'winner'; statusColor = 'lightgreen';
                 break;
@@ -113,9 +115,13 @@ function AppliedJobs() {
                         <Label style={{background: statusColor,}} icon={statusIcon} content={app.status} />
                     </ItemExtra>
                 </ItemContent>
-                <Button basic circular size='small' compact icon='trash alternate outline'
-                    style={{alignSelf: 'center', }} 
-                    onClick={(e, o) => handleAppDeleteClick(e, o, app)} />
+                {
+                    (app.status === 'Applied' || app.status === 'Closed') ? 
+                    <Button basic circular size='small' compact icon='trash alternate outline'
+                        style={{alignSelf: 'center', }} 
+                        onClick={(e, o) => handleAppDeleteClick(e, o, app)} /> : 
+                    null
+                }
             </Item>
         );
     });
