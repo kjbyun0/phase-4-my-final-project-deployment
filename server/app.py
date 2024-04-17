@@ -126,9 +126,9 @@ class JobPostings(Resource):
 class JobPosting_by_id(Resource):
     def get(self, id):
         job_posting = JobPosting.query.filter_by(id=id).first()
-
         if job_posting:
             return make_response(job_posting.to_dict(), 200)
+        
         return make_response({
             'message': f'Job Post {id} not found'
         }, 404)
@@ -142,10 +142,21 @@ class JobPosting_by_id(Resource):
             db.session.add(job_posting)
             db.session.commit()
             return make_response(job_posting.to_dict(), 200)
-        else:
-            make_response({
-                'message': f'Job Post {id} not found'
-            }, 404)
+
+        make_response({
+            'message': f'Job Post {id} not found'
+        }, 404)
+    
+    def delete(self, id):
+        job_posting = JobPosting.query.filter_by(id=id).first()
+        if job_posting:
+            db.session.delete(job_posting)
+            db.session.commit()
+            return make_response({}, 204)
+        
+        return make_response({
+            'message': f'Job Post {id} not found',
+        }, 404)
 
 # Job postings by an employer id
 class JobPostingsUid(Resource):
@@ -299,9 +310,7 @@ class JobApplication_by_id(Resource):
         if app:
             db.session.delete(app)
             db.session.commit()
-            return make_response({
-                'message': f'Application {id} is deleted.'
-            }, 200)
+            return make_response({}, 204)
         else:
             return make_response({
                 'message': f'Application {id} not found'

@@ -145,6 +145,42 @@ function JobPostings() {
         }
     }
 
+    function handleJobPostingDeleteClick(e, o, job) {
+        console.log('in handleJobPostingDeleteClick, ');
+        e.stopPropagation();
+
+        fetch(`/jobpostings/${job.jobPost.id}`, {
+            method: 'DELETE',
+        })
+        .then(r => {
+            if (r.ok) {
+                setJobPostings(jobPostings.filter((jp, i) => {
+                    if (jp.jobPost.id === job.jobPost.id && 
+                        selJobPosting && selJobPosting.jobPost.id === jp.jobPost.id) {
+                            if (jp < jobPostings.length - 1)
+                                setSelJobPosting(jobPostings[i+1]);
+                            else if (i > 0)
+                                setSelJobPosting(jobPostings[i-1]);
+                            else
+                                setSelJobPosting(null);
+                    }
+                    return jp.jobPost.id !== job.jobPost.id;
+                }));
+            } else {
+                // => Error handling needed for HTTP response status 404
+            }
+        })
+        
+    }
+
+    function isEmployer() {
+        return userAccount && userAccount.employer;
+    }
+
+    function isJobByEmployer(job) {
+        return userAccount && userAccount.employer_id === job.jobPost.employer_id;
+    }
+    
     const filteredJobPostings = jobPostings.filter(job => 
         job.jobPost.status === 'open' && 
         (!filters.jobTypes.length || filters.jobTypes.includes(job.jobPost.job_type)) &&
@@ -160,18 +196,21 @@ function JobPostings() {
     console.log('selJobPosting: ', selJobPosting);
 
     const dispJobCards = filteredJobPostings.map(job => {
-        const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' : 'white';
+        const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' :  'white';
 
         return (
             <Card key={job.jobPost.id} style={{ background: cardColor, }} color='grey' 
                 onClick={() => handleCardClick(job)}>
                 <CardContent>
                     {
-                        (userAccount && userAccount.applicant) ? 
-                        <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
-                            color='blue' size='mini' compact style={{ float: 'right', }} 
-                            onClick={(e, o) => handleFavoriteClick(e, o, job)} /> :
-                        null
+                        (isEmployer()) ? 
+                            (isJobByEmployer(job) ? 
+                                <Button basic circular size='mini' compact icon='trash alternate outline' 
+                                    style={{float: 'right', }} onClick={(e, o) => handleJobPostingDeleteClick(e, o, job)} /> : 
+                                null) :
+                            <Button basic circular icon={job.favoriteJob ? 'bookmark' :'bookmark outline'}
+                                color='blue' size='mini' compact style={{ float: 'right', }} 
+                                onClick={(e, o) => handleFavoriteClick(e, o, job)} />
                     }
                     <CardHeader>{job.jobPost.title}</CardHeader>
                     <CardMeta>{job.jobPost.employer.name}</CardMeta>
@@ -199,13 +238,17 @@ function JobPostings() {
                     <h1>{selJobPosting.jobPost.title}</h1>
                     <p>{selJobPosting.jobPost.employer.name} · {selJobPosting.jobPost.employer.user.city}, {selJobPosting.jobPost.employer.user.state}</p>
                     {
-                        userAccount && userAccount.employer ? 
-                        null : 
-                        <>
-                            <Button color='blue' onClick={handleApplyClick}>Apply</Button>
-                            <Button basic icon={selJobPosting.favoriteJob ? 'bookmark' : 'bookmark outline'} 
-                                color='blue' onClick={(e, o) => handleFavoriteClick(e, o, selJobPosting)} />
-                        </>
+                        (isEmployer()) ? 
+                            (isJobByEmployer(selJobPosting) ? 
+                                <Button basic icon='trash alternate outline' 
+                                    color='black' onClick={(e, o) => handleJobPostingDeleteClick(e, o, selJobPosting)} /> : 
+                                null)
+                            : 
+                            <>
+                                <Button color='blue' onClick={handleApplyClick}>Apply</Button>
+                                <Button basic icon={selJobPosting.favoriteJob ? 'bookmark' : 'bookmark outline'} 
+                                    color='blue' onClick={(e, o) => handleFavoriteClick(e, o, selJobPosting)} />
+                            </>
                     }
                 </div>
                 <div style={{overflow: 'auto', padding: '20px 15px 15px 30px', }}>

@@ -125,6 +125,32 @@ function MyJobPostings() {
         });
     }
 
+    function handleJobPostingDeleteClick(e, o, job) {
+        console.log('in handleJobPostingDeleteClick, job: ', job);
+        e.stopPropagation();
+
+        fetch(`/jobpostings/${job.id}`, {
+            method: 'DELETE',
+        })
+        .then(r => {
+            if (r.ok) {
+                setMyJobPostings(myJobPostings.filter((jp, i) => {
+                    if (jp.id === job.id && selJobPosting && selJobPosting.id === jp.id) {
+                        if (i < myJobPostings.length - 1)
+                            setSelJobPosting(myJobPostings[i+1]);
+                        else if (i > 0)
+                            setSelJobPosting(myJobPostings[i-1]);
+                        else 
+                            setSelJobPosting(null);
+                    }
+                    return jp.id !== job.id;
+                }));
+            } else {
+                // => Error handling needed for HTTP response status 404
+            }
+        })
+    }
+
     if (!selJobPosting && myJobPostings.length)
         setSelJobPosting(myJobPostings[0]);
 
@@ -137,6 +163,8 @@ function MyJobPostings() {
             <Card key={job.id} style={{width: '100%', background: cardColor, }} color='grey' 
                 onClick={() => handleJobPostingClick(job)}>
                 <CardContent>
+                    <Button basic circular size='mini' compact icon='trash alternate outline' 
+                        style={{float: 'right', }} onClick={(e, o) => handleJobPostingDeleteClick(e, o, job)} />
                     <CardHeader>{job.title}</CardHeader>
                     <CardMeta>{job.employer.name}</CardMeta>
                     <CardMeta>

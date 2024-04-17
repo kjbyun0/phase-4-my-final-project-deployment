@@ -5,20 +5,19 @@ function NavBar({ userAccount }) {
 
     return (
         <nav>
-            <NavLink to='/' className='nav-link nav-link-first'>Jobs</NavLink>
             {userAccount && userAccount.applicant ? 
-                (
-                    <>
-                        <NavLink to='applied_jobs' className='nav-link'>Applied Jobs</NavLink>
-                        <NavLink to='favorite_jobs' className='nav-link'>Favorite Jobs</NavLink>
-                    </>
-                ) : 
+                <>
+                    <NavLink to='/' className='nav-link nav-link-first'>Jobs</NavLink>
+                    <NavLink to='applied_jobs' className='nav-link'>Applied Jobs</NavLink>
+                    <NavLink to='favorite_jobs' className='nav-link'>Favorite Jobs</NavLink>
+                </> : 
                 null
             }
             {userAccount && userAccount.employer ? 
                 <>
-                    <NavLink to='job_posting_form' className='nav-link'>Post Job</NavLink>
+                    <NavLink to='/' className='nav-link nav-link-first'>All Postings</NavLink>
                     <NavLink to='my_job_postings' className='nav-link'>My Postings</NavLink>
+                    <NavLink to='job_posting_form' className='nav-link'>Post Job</NavLink>
                 </> :
                 null
             }
