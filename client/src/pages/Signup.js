@@ -18,12 +18,17 @@ function Signup() {
                     .min(5, 'Must be between 5 and 20 characters')
                     .max(20, 'Must be between 5 and 20 characters'),
         // => add more constraints later. think about making custom constraints
-        password: yup.string().required('Must enter a password'),
+        password: yup.string().required('Must enter a password')
+            .min(5, 'Password should be of minimum 5 characters length'),
         email: yup.string().required('Must enter your email').email('Invalid email format'),
-        mobile: isEmployer ? '' : yup.string(),
-        // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-        // phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
-        phone: yup.string(),
+        mobile: isEmployer ? '' : yup.string().matches(
+            /^[\(]?([0-9]{3,4}[\-\)]?){2}[0-9]{4}$/,
+            'Mobile number is not valid'
+        ),
+        phone: yup.string().matches(
+            /^[\(]?([0-9]{3,4}[\-\)]?){2}[0-9]{4}$/,
+            'Phone number is not valid'
+        ),
         // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
         // phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
     });

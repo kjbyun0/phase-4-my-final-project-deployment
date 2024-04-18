@@ -26,6 +26,7 @@ function JobPostingForm() {
     const formSchema = yup.object().shape({
         title: yup.string().required("Must enter a title"),
         pay: yup.number().positive('Must be a positive number'),
+        description: yup.string().required('Must enter a job description'),
     });
 
     const formik = useFormik({
@@ -108,9 +109,10 @@ function JobPostingForm() {
                         />
                     </FormField>
                     <FormField inline>
-                        <label style={{fontSize: '1.1em'}}>Descriptions</label>
+                        <label style={{fontSize: '1.1em'}}>Description:</label>
                         <TextArea id='description' name='description' rows='20'  
-                            value={formik.values.description} onChange={formik.handleChange} />
+                            value={formik.values.description} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        {formik.errors.description && formik.touched.description && <div style={{color: 'red', }}>{formik.errors.description}</div>}
                     </FormField>
                     <Button type='submit' size='big' color='orange' style={{margin: '0 40%', width: '20%', }} >Post it</Button>
                 </Form>
