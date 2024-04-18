@@ -13,6 +13,28 @@ class User(db.Model, SerializerMixin):
                        '-employer.user', '-employer.job_postings', 
                        '-applicant.user', '-applicant.job_applications', '-applicant.favorite_jobs',)
 
+    # serialize_rules = (
+    #     "-_password_hash",
+    #     "-employer.user",
+    #     "-employer.job_postings.job_category",
+    #     "-employer.job_postings.employer",
+    #     "-employer.job_postings.job_applications",
+    #     "-employer.job_postings.favorite_jobs",
+    #     "-employer.job_postings.applicants",
+    #     "-employer.job_postings.favorite_applicants",
+    #     "-applicant.user",
+    #     "-applicant.job_applications",
+    #     "-applicant.favorite_jobs.applicant",
+    #     "-applicant.favorite_jobs.job_posting",
+    #     "-applicant.job_postings.job_category",
+    #     "-applicant.job_postings.employer",
+    #     "-applicant.job_postings.job_applications",
+    #     "-applicant.job_postings.favorite_jobs",
+    #     "-applicant.job_postings.applicants",
+    #     "-applicant.job_postings.favorite_applicants",
+    #     "-applicant.favorite_job_postings",
+    # )
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     _password_hash = db.Column(db.String, nullable=False)

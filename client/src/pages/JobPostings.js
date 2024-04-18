@@ -253,21 +253,30 @@ function JobPostings() {
                 </div>
                 <div style={{overflow: 'auto', padding: '20px 15px 15px 30px', }}>
                     <ul>
-                        <li>Job type: {selJobPosting.jobPost.job_type}</li>
-                        <li>Pay: {selJobPosting.jobPost.pay}/hr</li>
-                        <li>Remote: {selJobPosting.jobPost.remote}</li>
-                        <li>Description: <br/>
-                            {selJobPosting.jobPost.description}
+                        <li style={{fontWeight: 'bold', }}>Job type: 
+                            <span style={{fontWeight: 'normal'}}>&nbsp;{selJobPosting.jobPost.job_type}</span>
+                        </li> 
+                        <li style={{fontWeight: 'bold', }}>Pay: 
+                            <span style={{fontWeight: 'normal'}}>&nbsp;${selJobPosting.jobPost.pay}/hr</span>
                         </li>
-                        <li>Address: 
-                            <p>{selJobPosting.jobPost.employer.user.street_1},<br/>
-                                {selJobPosting.jobPost.employer.user.street_2},<br/>
-                                {selJobPosting.jobPost.employer.user.city}, 
-                                {selJobPosting.jobPost.employer.state}<br/>
-                                {selJobPosting.jobPost.employer.user.zipCode}</p>
+                        <li style={{fontWeight: 'bold', }}>Remote: 
+                            <span style={{fontWeight: 'normal', }}>&nbsp;{selJobPosting.jobPost.remote}</span>
                         </li>
-                        <li>Tel: {selJobPosting.jobPost.employer.user.phone}</li>
-                        <li>Email: {selJobPosting.jobPost.employer.user.email}</li>
+                        <li style={{fontWeight: 'bold', }}>Description:</li>
+                        <div style={{whiteSpace: 'pre', }}>{selJobPosting.jobPost.description}</div>
+                        <li style={{fontWeight: 'bold', }}>Address:</li>
+                        <div>
+                            {selJobPosting.jobPost.employer.user.street_1},<br/>
+                            {selJobPosting.jobPost.employer.user.street_2},<br/>
+                            {selJobPosting.jobPost.employer.user.city},&nbsp;
+                            {selJobPosting.jobPost.employer.user.state}
+                        </div>
+                        <li style={{fontWeight: 'bold', }}>Tel: 
+                        <span style={{fontWeight: 'normal', }}>&nbsp;{selJobPosting.jobPost.employer.user.phone}</span>
+                        </li>
+                        <li style={{fontWeight: 'bold', }}>Email: 
+                            <span style={{fontWeight: 'normal', }}>&nbsp;{selJobPosting.jobPost.employer.user.email}</span>
+                        </li>
                     </ul>
                 </div>
             </div>

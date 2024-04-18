@@ -267,23 +267,22 @@ function MyJobPostings() {
                 </AccordionTitle>
                 <AccordionContent active={selJobAppId === app.id} style={{color: 'black', paddingLeft: '40px'}}>
                     <ul>
-                        <li>Education:</li>
-                        <div style={{marginBottom: '10px'}}>{app.education}</div>
-                        <li>Experiences:</li>
-                        <div style={{marginBottom: '10px'}}>{app.experience}</div>
-                        <li>Certificates:</li>
-                        <div style={{marginBottom: '10px'}}>{app.certificate}</div>
-                        <li>Contact Info:<br />
+                        <li style={{fontWeight: 'bold', }}>Education:</li>
+                        <div style={{whiteSpace: 'pre', marginBottom: '10px'}}>{app.education}</div>
+                        <li style={{fontWeight: 'bold', }}>Experiences:</li>
+                        <div style={{whiteSpace: 'pre', marginBottom: '10px'}}>{app.experience}</div>
+                        <li style={{fontWeight: 'bold', }}>Certificates:</li>
+                        <div style={{whiteSpace: 'pre', marginBottom: '10px'}}>{app.certificate}</div>
+                        <li style={{fontWeight: 'bold', }}>Contact Info:</li>
+                        <div>
                             - Email: {app.applicant.user.email} <br />
                             - Mobile: {app.applicant.mobile} <br />
                             - Phone: {app.applicant.user.phone} <br />
-                            - Address:
-                                <div>
-                                    &nbsp;&nbsp;{app.applicant.user.street_1}<br/>
-                                    &nbsp;&nbsp;{app.applicant.user.street_2}<br/>
-                                    &nbsp;&nbsp;{app.applicant.user.city}, {app.applicant.user.state} {app.applicant.user.zip_code}
-                                </div>
-                        </li>
+                            - Address: <br />
+                            &nbsp;&nbsp;{app.applicant.user.street_1}<br/>
+                            &nbsp;&nbsp;{app.applicant.user.street_2}<br/>
+                            &nbsp;&nbsp;{app.applicant.user.city}, {app.applicant.user.state} {app.applicant.user.zip_code}
+                        </div>
                     </ul>
                     <br />
                     {
