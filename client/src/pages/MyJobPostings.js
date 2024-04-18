@@ -99,11 +99,11 @@ function MyJobPostings() {
         })
     }
 
-    function handleJPStatusChange(jobPosting, status) {
+    async function handleJPStatusChange(jobPosting, status) {
         if (!jobPosting || jobPosting.status === status)
             return;
 
-        fetch(`/jobpostings/${jobPosting.id}`, {
+        await fetch(`/jobpostings/${jobPosting.id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,6 +112,13 @@ function MyJobPostings() {
                 status: status
             }),
         })
+        // .then(r => r.json())
+        // .then(data => {
+        //     setMyJobPostings(myJobPostings.map(jp => jp.id === data.id ? data : jp));
+        //     setSelJobPosting(data);
+        //     setStatusCat([]);
+        // })
+        // .catch(e => console.log('in handleJPStatusChange, Error1: ', e));
         .then(r => {
             if (r.ok) {
                 r.json().then(data => {
@@ -120,9 +127,40 @@ function MyJobPostings() {
                     setStatusCat([]);
                 })
             } else {
-                // => Error handling needed for HTTP response status 404
             }
         });
+
+        // => From Here~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if (status === 'open') {
+            for (let i = 0; i < jobApps.length; i++) {
+                if (jobApps[i].status === 'new')
+                    continue;
+
+                console.log('in handleJPStatusChange, change app status to new: app: ', jobApps[i]);
+                await fetch(`/jobapplications/${jobApps[i].id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        status: 'new',
+                    }),
+                })
+                // .then(r => r.json())
+                // .then(data => {
+                //     setJobApps(jobApps.map(app => app.id === data.id ? data : app));
+                // })
+                // .catch(e => console.log('in handleJPStatusChange, Error2: ', e));
+                .then(r => {
+                    if (r.ok) {
+                        r.json().then(data => setJobApps(jobApps.map(app => app.id === data.id ? data : app)));
+                        // => It can be much better to get the entire list of apps after all patch operations!!!!!!!!!
+                    } else {
+                        // => Error handling needed for HTTP response status 404
+                    }
+                });
+            }
+        }
     }
 
     function handleJobPostingDeleteClick(e, o, job) {
