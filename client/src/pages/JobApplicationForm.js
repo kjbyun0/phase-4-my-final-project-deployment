@@ -137,7 +137,7 @@ function JobApplicationForm() {
             //     </ul>
             // </>
             <div style={{display: 'grid', width: '100%', height: '100%', 
-                gridTemplateRows: '140px 1fr', padding: '10px', }}>
+                gridTemplateRows: 'max-content 1fr', padding: '10px', }}>
                 <div style={{overflow: 'auto', padding: '20px', 
                     border: '1px solid lightgray', borderRadius: '10px', }}>
                     <h1>{jobPosting.title}</h1>
@@ -146,21 +146,30 @@ function JobApplicationForm() {
                 </div>
                 <div style={{overflow: 'auto', padding: '20px 15px 15px 30px', }}>
                     <ul>
-                        <li>Job type: {jobPosting.job_type}</li>
-                        <li>Pay: {jobPosting.pay}/hr</li>
-                        <li>Remote: {jobPosting.remote}</li>
-                        <li>Description: <br/>
-                            {jobPosting.description}
+                        <li style={{fontWeight: 'bold', }}>Job type: 
+                            <span style={{fontWeight: 'normal', }}>&nbsp;{jobPosting.job_type}</span>
                         </li>
-                        <li>Address: 
-                            <p>{jobPosting.employer.user.street_1},<br/>
-                                {jobPosting.employer.user.street_2},<br/>
-                                {jobPosting.employer.user.city}, 
-                                {jobPosting.employer.state}<br/>
-                                {jobPosting.employer.user.zipCode}</p>
+                        <li style={{fontWeight: 'bold', }}>Pay: 
+                            <span style={{fontWeight: 'normal', }}>&nbsp;${jobPosting.pay}/hr</span>
                         </li>
-                        <li>Tel: {jobPosting.employer.user.phone}</li>
-                        <li>Email: {jobPosting.employer.user.email}</li>
+                        <li style={{fontWeight: 'bold', }}>Remote:
+                            <span style={{fontWeight: 'normal', }}>&nbsp;{jobPosting.remote}</span>
+                        </li>
+                        <li style={{fontWeight: 'bold', }}>Description:</li>
+                        <div style={{whiteSpace: 'pre', }}>{jobPosting.description}</div>
+                        <li style={{fontWeight: 'bold', }}>Address:</li>
+                        <div>{jobPosting.employer.user.street_1},<br/>
+                            {jobPosting.employer.user.street_2},<br/>
+                            {jobPosting.employer.user.city},&nbsp;
+                            {jobPosting.employer.user.state}&nbsp;
+                            {jobPosting.employer.user.zipCode}
+                        </div>
+                        <li style={{fontWeight: 'bold', }}>Tel:
+                            <span style={{fontWeight: 'normal', }}>&nbsp;{jobPosting.employer.user.phone}</span>
+                        </li>
+                        <li style={{fontWeight: 'bold', }}>Email:
+                            <span style={{fontWeight: 'normal', }}>&nbsp;{jobPosting.employer.user.email}</span>
+                        </li>
                     </ul>
                 </div>
             </div>
