@@ -9,32 +9,62 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-_password_hash', 
-                       '-employer.user', '-employer.job_postings', 
-                       '-applicant.user', '-applicant.job_applications', '-applicant.favorite_jobs',)
-
-    # serialize_rules = (
-    #     "-_password_hash",
-    #     "-employer.user",
-    #     "-employer.job_postings.job_category",
-    #     "-employer.job_postings.employer",
-    #     "-employer.job_postings.job_applications",
-    #     "-employer.job_postings.favorite_jobs",
-    #     "-employer.job_postings.applicants",
-    #     "-employer.job_postings.favorite_applicants",
-    #     "-applicant.user",
-    #     "-applicant.job_applications",
-    #     "-applicant.favorite_jobs.applicant",
-    #     "-applicant.favorite_jobs.job_posting",
-    #     "-applicant.job_postings.job_category",
-    #     "-applicant.job_postings.employer",
-    #     "-applicant.job_postings.job_applications",
-    #     "-applicant.job_postings.favorite_jobs",
-    #     "-applicant.job_postings.applicants",
-    #     "-applicant.job_postings.favorite_applicants",
-    #     "-applicant.favorite_job_postings",
-    # )
-
+    # serialize_rules = ('-_password_hash', 
+    #                    '-employer.user', '-employer.job_postings', 
+    #                    '-applicant.user', '-applicant.job_applications', '-applicant.favorite_jobs',)
+    
+    serialize_rules = (
+        '-_password_hash', 
+        '-employer.user', 
+        '-employer.job_postings.job_category.job_postings',
+        '-employer.job_postings.employer.user',
+        '-employer.job_postings.employer.job_postings',
+        '-employer.job_postings.job_applications.job_posting',
+        '-employer.job_postings.job_applications.applicant.user',
+        '-employer.job_postings.job_applications.applicant.job_applications',
+        '-employer.job_postings.job_applications.applicant.favorite_jobs.applicant',
+        '-employer.job_postings.job_applications.applicant.favorite_jobs.job_posting',
+        '-employer.job_postings.job_applications.applicant.job_postings',
+        '-employer.job_postings.job_applications.applicant.favorite_job_postings',
+        '-employer.job_postings.favorite_jobs.applicant.user',
+        '-employer.job_postings.favorite_jobs.applicant.job_applications.job_posting',
+        '-employer.job_postings.favorite_jobs.applicant.job_applications.applicant',
+        '-employer.job_postings.favorite_jobs.applicant.favorite_jobs',
+        '-employer.job_postings.favorite_jobs.applicant.job_postings',
+        '-employer.job_postings.favorite_jobs.applicant.favorite_job_postings',
+        '-employer.job_postings.favorite_jobs.job_posting',
+        '-employer.job_postings.applicants',
+        '-employer.job_postings.favorite_applicants',
+        '-applicant.user',
+        '-applicant.job_applications.job_posting.job_category.job_postings',
+        '-applicant.job_applications.job_posting.employer.user',
+        '-applicant.job_applications.job_posting.employer.job_postings.job_category.job_postings',
+        '-applicant.job_applications.job_posting.employer.job_postings.employer',
+        '-applicant.job_applications.job_posting.employer.job_postings.job_applications',
+        '-applicant.job_applications.job_posting.employer.job_postings.favorite_jobs.applicant',
+        '-applicant.job_applications.job_posting.employer.job_postings.favorite_jobs.job_posting',
+        '-applicant.job_applications.job_posting.employer.job_postings.applicants',
+        '-applicant.job_applications.job_posting.employer.job_postings.favorite_applicants',
+        '-applicant.job_applications.job_posting.job_applications.job_posting',
+        '-applicant.job_applications.job_posting.job_applications.applicant',
+        '-applicant.job_applications.job_posting.favorite_jobs.applicant',
+        '-applicant.job_applications.job_posting.favorite_jobs.job_posting',
+        '-applicant.job_applications.job_posting.applicants',
+        '-applicant.job_applications.job_posting.favorite_applicants',
+        '-applicant.job_applications.applicant',
+        '-applicant.favorite_jobs.applicant',
+        '-applicant.favorite_jobs.job_posting.job_category.job_postings',
+        '-applicant.favorite_jobs.job_posting.employer.user',
+        '-applicant.favorite_jobs.job_posting.employer.job_postings',
+        '-applicant.favorite_jobs.job_posting.job_applications.job_posting',
+        '-applicant.favorite_jobs.job_posting.job_applications.applicant',
+        '-applicant.favorite_jobs.job_posting.favorite_jobs',
+        '-applicant.favorite_jobs.job_posting.applicants',
+        '-applicant.favorite_jobs.job_posting.favorite_applicants',
+        '-applicant.job_postings',
+        '-applicant.favorite_job_postings',
+    )
+    
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     _password_hash = db.Column(db.String, nullable=False)
@@ -81,11 +111,55 @@ class User(db.Model, SerializerMixin):
             if len(value) != 5 or not value.isdecimal():
                 raise ValueError('Server validation error: Invalid zip code')
         return value
-    
+
+
 class Employer(db.Model, SerializerMixin):
     __tablename__ = 'employers'
 
-    serialize_rules = ('-user.employer', '-job_postings.employer',)
+    # serialize_rules = ('-user.employer', '-job_postings.employer',)
+
+    serialize_rules = (
+        '-user.employer',
+        '-user.applicant.user',
+        '-user.applicant.job_applications.job_posting.job_category.job_postings',
+        '-user.applicant.job_applications.job_posting.employer',
+        '-user.applicant.job_applications.job_posting.job_applications',
+        '-user.applicant.job_applications.job_posting.favorite_jobs.applicant',
+        '-user.applicant.job_applications.job_posting.favorite_jobs.job_posting',
+        '-user.applicant.job_applications.job_posting.applicants',
+        '-user.applicant.job_applications.job_posting.favorite_applicants',
+        '-user.applicant.job_applications.applicant',
+        '-user.applicant.favorite_jobs.applicant',
+        '-user.applicant.favorite_jobs.job_posting.job_category.job_postings',
+        '-user.applicant.favorite_jobs.job_posting.employer',
+        '-user.applicant.favorite_jobs.job_posting.job_applications.job_posting',
+        '-user.applicant.favorite_jobs.job_posting.job_applications.applicant',
+        '-user.applicant.favorite_jobs.job_posting.favorite_jobs',
+        '-user.applicant.favorite_jobs.job_posting.applicants',
+        '-user.applicant.favorite_jobs.job_posting.favorite_applicants',
+        '-user.applicant.job_postings',
+        '-user.applicant.favorite_job_postings',
+        '-job_postings.job_category.job_postings',
+        '-job_postings.employer',
+        '-job_postings.job_applications.job_posting',
+        '-job_postings.job_applications.applicant.user.employer',
+        '-job_postings.job_applications.applicant.user.applicant',
+        '-job_postings.job_applications.applicant.job_applications',
+        '-job_postings.job_applications.applicant.favorite_jobs.applicant',
+        '-job_postings.job_applications.applicant.favorite_jobs.job_posting',
+        '-job_postings.job_applications.applicant.job_postings',
+        '-job_postings.job_applications.applicant.favorite_job_postings',
+        '-job_postings.favorite_jobs.applicant.user.employer',
+        '-job_postings.favorite_jobs.applicant.user.applicant',
+        '-job_postings.favorite_jobs.applicant.job_applications.job_posting',
+        '-job_postings.favorite_jobs.applicant.job_applications.applicant',
+        '-job_postings.favorite_jobs.applicant.favorite_jobs',
+        '-job_postings.favorite_jobs.applicant.job_postings',
+        '-job_postings.favorite_jobs.applicant.favorite_job_postings',
+        '-job_postings.favorite_jobs.job_posting',
+        '-job_postings.applicants',
+        '-job_postings.favorite_applicants',
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -95,11 +169,47 @@ class Employer(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Employer {self.id}, {self.name}>'
-    
+
+ 
 class Applicant(db.Model, SerializerMixin): 
     __tablename__ = 'applicants'
     
-    serialize_rules = ('-user.applicant', '-job_applications.applicant', '-favorite_jobs.applicant',)
+    # serialize_rules = ('-user.applicant', '-job_applications.applicant', '-favorite_jobs.applicant',)
+
+    seriaize_rules = (
+        '-user.employer.user',
+        '-user.employer.job_postings.job_category.job_postings',
+        '-user.employer.job_postings.employer',
+        '-user.employer.job_postings.job_applications.job_posting',
+        '-user.employer.job_postings.job_applications.applicant',
+        '-user.employer.job_postings.favorite_jobs.applicant',
+        '-user.employer.job_postings.favorite_jobs.job_posting',
+        '-user.employer.job_postings.applicants',
+        '-user.employer.job_postings.favorite_applicants',
+        '-user.applicant',
+        '-job_applications.job_posting.job_category.job_postings',
+        '-job_applications.job_posting.employer.user.employer',
+        '-job_applications.job_posting.employer.user.applicant',
+        '-job_applications.job_posting.employer.job_postings',
+        '-job_applications.job_posting.job_applications',
+        '-job_applications.job_posting.favorite_jobs.applicant',
+        '-job_applications.job_posting.favorite_jobs.job_posting',
+        '-job_applications.job_posting.applicants',
+        '-job_applications.job_posting.favorite_applicants',
+        '-job_applications.applicant',
+        '-favorite_jobs.applicant',
+        '-favorite_jobs.job_posting.job_category.job_postings',
+        '-favorite_jobs.job_posting.employer.user.employer',
+        '-favorite_jobs.job_posting.employer.user.applicant',
+        '-favorite_jobs.job_posting.employer.job_postings',
+        '-favorite_jobs.job_posting.job_applications.job_posting',
+        '-favorite_jobs.job_posting.job_applications.applicant',
+        '-favorite_jobs.job_posting.favorite_jobs',
+        '-favorite_jobs.job_posting.applicants',
+        '-favorite_jobs.job_posting.favorite_applicants',
+        '-job_postings',
+        '-favorite_job_postings',
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
@@ -128,10 +238,45 @@ class Applicant(db.Model, SerializerMixin):
         
         return value
 
+
 class JobCategory(db.Model, SerializerMixin):
     __tablename__ = 'job_categories'
 
-    serialze_rules = ('-job_postings.job_category',)
+    # serialize_rules = ('-job_postings.job_category',)
+
+    serialize_rules = (
+        '-job_postings.job_category',
+        '-job_postings.employer.user.employer',
+        '-job_postings.employer.user.applicant.user',
+        '-job_postings.employer.user.applicant.job_applications.job_posting',
+        '-job_postings.employer.user.applicant.job_applications.applicant',
+        '-job_postings.employer.user.applicant.favorite_jobs.applicant',
+        '-job_postings.employer.user.applicant.favorite_jobs.job_posting',
+        '-job_postings.employer.user.applicant.job_postings',
+        '-job_postings.employer.user.applicant.favorite_job_postings',
+        '-job_postings.employer.job_postings',
+        '-job_postings.job_applications.job_posting',
+        '-job_postings.job_applications.applicant.user.employer.user',
+        '-job_postings.job_applications.applicant.user.employer.job_postings',
+        '-job_postings.job_applications.applicant.user.applicant',
+        '-job_postings.job_applications.applicant.job_applications',
+        '-job_postings.job_applications.applicant.favorite_jobs.applicant',
+        '-job_postings.job_applications.applicant.favorite_jobs.job_posting',
+        '-job_postings.job_applications.applicant.job_postings',
+        '-job_postings.job_applications.applicant.favorite_job_postings',
+        '-job_postings.favorite_jobs.applicant.user.employer.user',
+        '-job_postings.favorite_jobs.applicant.user.employer.job_postings',
+        '-job_postings.favorite_jobs.applicant.user.applicant',
+        '-job_postings.favorite_jobs.applicant.job_applications.job_posting',
+        '-job_postings.favorite_jobs.applicant.job_applications.applicant',
+        '-job_postings.favorite_jobs.applicant.favorite_jobs.applicant',
+        '-job_postings.favorite_jobs.applicant.favorite_jobs.job_posting',
+        '-job_postings.favorite_jobs.applicant.job_postings',
+        '-job_postings.favorite_jobs.applicant.favorite_job_postings',
+        '-job_postings.favorite_jobs.job_posting',
+        '-job_postings.applicants',
+        '-job_postings.favorite_applicants',
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String, nullable=False)
@@ -140,14 +285,49 @@ class JobCategory(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<JobCategory {self.id}, {self.category}>'
-    
+
+
+
 class JobPosting(db.Model, SerializerMixin):
     __tablename__ = 'job_postings'
 
-    serialize_rules = ('-job_category.job_postings', 
-                       '-employer.job_postings', 
-                       '-job_appliacations.job_posting', '-job_applications.applicant', 
-                       '-favorite_jobs.job_posting', '-favorite_jobs.applicant',)
+    # serialize_rules = ('-job_category.job_postings', 
+    #                    '-employer.job_postings', 
+    #                    '-job_appliacations.job_posting', '-job_applications.applicant', 
+    #                    '-favorite_jobs.job_posting', '-favorite_jobs.applicant',)
+
+    serialize_rules = (
+        '-job_category.job_postings',
+        '-employer.user.employer',
+        '-employer.user.applicant.user',
+        '-employer.user.applicant.job_applications.job_posting',
+        '-employer.user.applicant.job_applications.applicant',
+        '-employer.user.applicant.favorite_jobs.applicant',
+        '-employer.user.applicant.favorite_jobs.job_posting',
+        '-employer.user.applicant.job_postings',
+        '-employer.user.applicant.favorite_job_postings',
+        '-employer.job_postings',
+        '-job_applications.job_posting',
+        '-job_applications.applicant.user.employer.user',
+        '-job_applications.applicant.user.employer.job_postings',
+        '-job_applications.applicant.user.applicant',
+        '-job_applications.applicant.job_applications',
+        '-job_applications.applicant.favorite_jobs.applicant',
+        '-job_applications.applicant.favorite_jobs.job_posting',
+        '-job_applications.applicant.job_postings',
+        '-job_applications.applicant.favorite_job_postings',
+        '-favorite_jobs.applicant.user.employer.user',
+        '-favorite_jobs.applicant.user.employer.job_postings',
+        '-favorite_jobs.applicant.user.applicant',
+        '-favorite_jobs.applicant.job_applications.job_posting',
+        '-favorite_jobs.applicant.job_applications.applicant',
+        '-favorite_jobs.applicant.favorite_jobs',
+        '-favorite_jobs.applicant.job_postings',
+        '-favorite_jobs.applicant.favorite_job_postings',
+        '-favorite_jobs.job_posting',
+        '-applicants',
+        '-favorite_applicants',
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -179,7 +359,51 @@ class JobApplication(db.Model, SerializerMixin):
 
     # serialize_rules = ('-job_posting.job_applications', '-job_posting.favorite_jobs'
     #                    '-applicant.job_applications', '-applicant.favorite_jobs',)
-    serialize_rules = ('-job_posting.job_applications', '-applicant.job_applications', )
+    # serialize_rules = ('-job_posting.job_applications', '-applicant.job_applications', ) <= This one was used.
+
+    serialize_rules = (
+        '-job_posting.job_category.job_postings',
+        '-job_posting.employer.user.employer',
+        '-job_posting.employer.user.applicant.user',
+        '-job_posting.employer.user.applicant.job_applications',
+        '-job_posting.employer.user.applicant.favorite_jobs.applicant',
+        '-job_posting.employer.user.applicant.favorite_jobs.job_posting',
+        '-job_posting.employer.user.applicant.job_postings',
+        '-job_posting.employer.user.applicant.favorite_job_postings',
+        '-job_posting.employer.job_postings',
+        '-job_posting.job_applications',
+        '-job_posting.favorite_jobs.applicant.user.employer.user',
+        '-job_posting.favorite_jobs.applicant.user.employer.job_postings',
+        '-job_posting.favorite_jobs.applicant.user.applicant',
+        '-job_posting.favorite_jobs.applicant.job_applications',
+        '-job_posting.favorite_jobs.applicant.favorite_jobs',
+        '-job_posting.favorite_jobs.applicant.job_postings',
+        '-job_posting.favorite_jobs.applicant.favorite_job_postings',
+        '-job_posting.favorite_jobs.job_posting',
+        '-job_posting.applicants',
+        '-job_posting.favorite_applicants',
+        '-applicant.user.employer.user',
+        '-applicant.user.employer.job_postings.job_category.job_postings',
+        '-applicant.user.employer.job_postings.employer',
+        '-applicant.user.employer.job_postings.job_applications',
+        '-applicant.user.employer.job_postings.favorite_jobs.applicant',
+        '-applicant.user.employer.job_postings.favorite_jobs.job_posting',
+        '-applicant.user.employer.job_postings.applicants',
+        '-applicant.user.employer.job_postings.favorite_applicants',
+        '-applicant.user.applicant',
+        '-applicant.job_applications',
+        '-applicant.favorite_jobs.applicant',
+        '-applicant.favorite_jobs.job_posting.job_category.job_postings',
+        '-applicant.favorite_jobs.job_posting.employer.user.employer',
+        '-applicant.favorite_jobs.job_posting.employer.user.applicant',
+        '-applicant.favorite_jobs.job_posting.employer.job_postings',
+        '-applicant.favorite_jobs.job_posting.job_applications',
+        '-applicant.favorite_jobs.job_posting.favorite_jobs',
+        '-applicant.favorite_jobs.job_posting.applicants',
+        '-applicant.favorite_jobs.job_posting.favorite_applicants',
+        '-applicant.job_postings',
+        '-applicant.favorite_job_postings',
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     education = db.Column(db.String)
@@ -200,7 +424,42 @@ class JobApplication(db.Model, SerializerMixin):
 class FavoriteJob(db.Model, SerializerMixin): 
     __tablename__ = 'favorite_jobs'
 
-    serialize_rules = ('-applicant.favorite_jobs', '-job_posting.favorite_jobs',)
+    # serialize_rules = ('-applicant.favorite_jobs', '-job_posting.favorite_jobs',)
+
+    serialize_rules = (
+        '-applicant.user.employer.user',
+        '-applicant.user.employer.job_postings.job_category.job_postings',
+        '-applicant.user.employer.job_postings.employer',
+        '-applicant.user.employer.job_postings.job_applications.job_posting',
+        '-applicant.user.employer.job_postings.job_applications.applicant',
+        '-applicant.user.employer.job_postings.favorite_jobs',
+        '-applicant.user.employer.job_postings.applicants',
+        '-applicant.user.employer.job_postings.favorite_applicants',
+        '-applicant.user.applicant',
+        '-applicant.job_applications.job_posting.job_category.job_postings',
+        '-applicant.job_applications.job_posting.employer.employer.',
+        '-applicant.job_applications.job_posting.employer.user.applicant',
+        '-applicant.job_applications.job_posting.employer.job_postings',
+        '-applicant.job_applications.job_posting.job_applications',
+        '-applicant.job_applications.job_posting.favorite_jobs',
+        '-applicant.job_applications.job_posting.applicants',
+        '-applicant.job_applications.job_posting.favorite_applicants',
+        '-applicant.job_applications.applicant',
+        '-applicant.favorite_jobs',
+        '-applicant.job_postings',
+        '-applicant.favorite_job_postings',
+        '-job_posting.job_category.job_postings',
+        '-job_posting.employer.user',
+        '-job_posting.employer.job_postings',
+        '-job_posting.job_applications.job_posting',
+        '-job_posting.job_applications.applicant.user.employer.user',
+        '-job_posting.job_applications.applicant.user.employer.job_postings',
+        '-job_posting.job_applications.applicant.user.applicant',
+        '-job_posting.job_applications.applicant.job_applications',
+        '-job_posting.favorite_jobs',
+        '-job_posting.applicants',
+        '-job_posting.favorite_applicants',
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     applicant_id = db.Column(db.Integer, db.ForeignKey('applicants.id'))
