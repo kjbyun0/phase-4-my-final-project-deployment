@@ -4,16 +4,17 @@ import { Form, FormField, TextArea, Button } from 'semantic-ui-react';
 import { useFormik } from 'formik';
 
 function JobApplicationForm() {
-    const {id} = useParams();
-    const {userAccount} = useOutletContext();
+    const param = useParams();
+    const id = parseInt(param.id);
+    const {userR, appJobAppsR, onSetAppJobAppsR} = useOutletContext();
     const [jobPosting, setJobPosting] = useState(null);
     const [jobApplication, setJobApplication] = useState(null); //=> Should this be a state???
 
     const navigate = useNavigate();
 
     // RBAC
-    if (userAccount) {
-        if (!userAccount.applicant) 
+    if (userR) {
+        if (!userR.applicant) 
             navigate('/');
     } else {
         navigate('/signin');
@@ -22,39 +23,20 @@ function JobApplicationForm() {
     useEffect(() => {
         fetch(`/jobpostings/${id}`)
         .then(r => {
-            if (r.ok)
+            if (r.ok) {
                 r.json().then(data => setJobPosting(data));
-            else {
+                const app = appJobAppsR.find(app => app.job_posting_id === id);
+                if (app) {
+                    setJobApplication(app);
+                    formik.setFieldValue('education', app.education);
+                    formik.setFieldValue('experience', app.experience);
+                    formik.setFieldValue('certificate', app.certificate);
+                }
+            } else {
                 console.log(`Error: Can't find the job posting id: ${id}, r:`, r);
                 navigate('/');
             }
         });
-
-        fetch(`/jobapplications/uid/jpids/${id}`)
-        .then(r => {
-            if (r.ok)
-                r.json().then(data => {
-                    setJobApplication(data);
-                    formik.setFieldValue('education', data.education);
-                    formik.setFieldValue('experience', data.experience);
-                    formik.setFieldValue('certificate', data.certificate);
-                })
-            else {
-                console.log("in JobApplicationForm, First time applying for this job.");
-                // => Error Handling needed....
-                switch(r.status) {
-                    case 404:
-                        console.log('in JobApplicationForm, New Application.');
-                        break;
-                    case 403:
-                        console.log("in JobApplicationForm, the user is an employer, Can't apply for a job.");
-                        break;
-                    case 401:
-                        console.log("in JobApplicationForm, the user hasn't loged in yet. Please, sign in first.");
-                        break;
-                }
-            }
-        })
     }, []);
 
     const formik = useFormik({
@@ -64,20 +46,26 @@ function JobApplicationForm() {
             certificate: '',
         },
         onSubmit: (values) => {
-            let jobAppPromise;
             if (jobApplication) {
-                jobAppPromise = fetch(`/jobapplications/uid/jpids/${jobApplication.job_posting_id}`, {
+                fetch(`/jobapplications/${jobApplication.id}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         ...values,
-                        job_posting_id: jobApplication.job_posting_id,
                     }),
+                })
+                .then(r => {
+                    if (r.ok) {
+                        r.json().then(data => onSetAppJobAppsR(appJobAppsR.map(app => app.id === data.id ? data : app)));
+                        navigate('/');
+                    } else {
+                        // <= Error handling....
+                    }
                 });
             } else {
-                jobAppPromise = fetch('/jobapplications/uid', {
+                fetch('/jobapplications', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -86,28 +74,41 @@ function JobApplicationForm() {
                         ...values,
                         status: 'new',
                         job_posting_id: jobPosting.id,
-                        // applicant_id: userAccount.applicant_id, // => the user must be an applicant, not an employer... RBAC's role.
+                        applicant_id: userR.applicant_id,
+                        // => the user must be an applicant, not an employer... RBAC's role.
                     }),
+                })
+                .then(r => {
+                    if (r.ok) {
+                        r.json().then(data => onSetAppJobAppsR([
+                            ...appJobAppsR,
+                            data
+                        ]));
+                        navigate('/');
+                    } else {
+                        // <= Error handling....
+                    }
                 });
             }
-            jobAppPromise.then(r => {
-                if (r.ok) {
-                    navigate('/')
-                } else {
-                    // => Error Handling needed....
-                    switch(r.status) {
-                        case 404:
-                            console.log('in JobApplicationForm, New Application.');
-                            break;
-                        case 403:
-                            console.log("in JobApplicationForm, the user is an employer, Can't apply for a job.");
-                            break;
-                        case 401:
-                            console.log("in JobApplicationForm, the user hasn't loged in yet. Please, sign in first.");
-                            break;
-                    }
-                }
-            })
+
+            // jobAppPromise.then(r => {
+            //     if (r.ok) {
+            //         navigate('/')
+            //     } else {
+            //         // => Error Handling needed....
+            //         switch(r.status) {
+            //             case 404:
+            //                 console.log('in JobApplicationForm, New Application.');
+            //                 break;
+            //             case 403:
+            //                 console.log("in JobApplicationForm, the user is an employer, Can't apply for a job.");
+            //                 break;
+            //             case 401:
+            //                 console.log("in JobApplicationForm, the user hasn't loged in yet. Please, sign in first.");
+            //                 break;
+            //         }
+            //     }
+            // })
         },
     });
 
@@ -116,26 +117,6 @@ function JobApplicationForm() {
             return null;
 
         return (
-            // <>
-            //     <h3>{jobPosting.title}</h3>
-            //     <ul>
-            //         <li>Company: {jobPosting.employer.name}</li>
-            //         <li>Job Type: {jobPosting.job_type}</li>
-            //         <li>Pay: {jobPosting.pay}/hr</li>
-            //         <li>Remote: {jobPosting.remote}</li>
-            //         <li>Description: <br/>
-            //             {jobPosting.description}
-            //         </li>
-            //         <li>Address: 
-            //             <p>{jobPosting.employer.user.street_1},<br/>
-            //                 {jobPosting.employer.user.street_2},<br/>
-            //                 {jobPosting.employer.user.city}, {jobPosting.employer.state}<br/>
-            //                 {jobPosting.employer.user.zipCode}</p>
-            //         </li>
-            //         <li>Tel: {jobPosting.employer.user.phone}</li>
-            //         <li>Email: {jobPosting.employer.user.email}</li>
-            //     </ul>
-            // </>
             <div style={{display: 'grid', width: '100%', height: '100%', 
                 gridTemplateRows: 'max-content 1fr', padding: '10px', }}>
                 <div style={{overflow: 'auto', padding: '20px', 
@@ -175,33 +156,6 @@ function JobApplicationForm() {
             </div>
         );
     }
-
-{/* <div style={{ display: 'flex', flexFlow: 'column', height: '100%', padding: '10px 20px' }}>
-    <div style={{ flex: '1 1 20%', width: '100%', overflow: 'auto', padding: '20px'}}>
-        <h1>{jobPosting.title}</h1>
-        <p>{jobPosting.employer.name}<br/>
-            {jobPosting.employer.user.city}, {jobPosting.employer.user.state} ({jobPosting.remote})</p>
-    </div>
-    <div style={{ flex: '1 1 80%', width: '100%', overflow: 'auto', padding: '20px 15px 15px 30px'}}>
-        <ul>
-            <li>Job type: {jobPosting.job_type}</li>
-            <li>Pay: {jobPosting.pay}/hr</li>
-            <li>Remote: {jobPosting.remote}</li>
-            <li>Description: <br/>
-                {jobPosting.description}
-            </li>
-            <li>Address: 
-                <p>{jobPosting.employer.user.street_1},<br/>
-                    {jobPosting.employer.user.street_2},<br/>
-                    {jobPosting.employer.user.city}, 
-                    {jobPosting.employer.state}<br/>
-                    {jobPosting.employer.user.zipCode}</p>
-            </li>
-            <li>Tel: {jobPosting.employer.user.phone}</li>
-            <li>Email: {jobPosting.employer.user.email}</li>
-        </ul>
-    </div>
-</div> */}
 
     return (
         <div style={{display: 'grid', width: '100%', height: '100%', 

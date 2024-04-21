@@ -5,11 +5,21 @@ import { CardGroup, Card, CardContent, CardHeader, CardMeta, CardDescription,
     Accordion, AccordionTitle, AccordionContent, Divider } from 'semantic-ui-react';
 
 function MyJobPostings() {
-    const [ myJobPostings, setMyJobPostings ] = useState([]);
     const [ selJobPosting, setSelJobPosting ] = useState(null);
     const [ jobApps, setJobApps ] = useState([]);
     const [ selJobAppId, setSelJobAppId ] = useState(null);
-    const { userAccount } = useOutletContext();
+
+    // <Outlet context={{
+    //     userR: userR,
+    //     onSetUserR: setUserR,
+    //     empJobPostingsR: empJobPostingsR,
+    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
+    //     appJobAppsR: appJobAppsR,
+    //     onSetAppJobAppsR: setAppJobAppsR,
+    //     appFavJobsR: appFavJobsR,
+    //     onSetAppFavJobsR: setAppFavJobsR,
+    //   }} />
+    const { userR, empJobPostingsR, onSetEmpJobPostingsR } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
     const statusCatOptions = [
@@ -20,39 +30,23 @@ function MyJobPostings() {
     
     // RBAC
     const navigate = useNavigate();
-    if (userAccount) {
-        if (!userAccount.employer) 
+    if (userR) {
+        if (!userR.employer) 
             navigate('/');
     } else 
         navigate('/signin')
 
 
     useEffect(() => {
-        fetch('/jobpostings/uid')
-        .then(r => {
-            if (r.ok) 
-                r.json().then(data => {
-                    console.log('MyJobPostings, data: ', data);
-                    setMyJobPostings(data);
-                    // When my job postings is fetched again, I reset my selected job card.
-                    setSelJobPosting(null);
-                })
-            else {
-                // => Error handling needed for HTTP response status 401 & 403
-            }
-        });
-    }, []);
-
-    useEffect(() => {
         if (!selJobPosting)
             return;
 
-        fetch(`/jobapplications/jpids/${selJobPosting.id}`)
+        fetch(`/jobpostings/${selJobPosting.id}`)
         .then(r => {
             if (r.ok) 
                 r.json().then(data => {
-                    console.log('MyJobPostings, job apps for selected job posting', data);
-                    setJobApps(data);
+                    console.log('MyJobPostings, selected job posting', data);
+                    setJobApps(data.job_applications);
                 })
             else {
                 // => Error handling needed for HTTP response status 401 & 403
@@ -122,7 +116,7 @@ function MyJobPostings() {
         .then(r => {
             if (r.ok) {
                 r.json().then(data => {
-                    setMyJobPostings(myJobPostings.map(jp => jp.id === data.id ? data : jp));
+                    onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === data.id ? data : jp));
                     setSelJobPosting(data);
                     setStatusCat([]);
                 })
@@ -172,15 +166,17 @@ function MyJobPostings() {
         })
         .then(r => {
             if (r.ok) {
-                setMyJobPostings(myJobPostings.filter((jp, i) => {
-                    if (jp.id === job.id && selJobPosting && selJobPosting.id === jp.id) {
-                        if (i < myJobPostings.length - 1)
-                            setSelJobPosting(myJobPostings[i+1]);
+                onSetEmpJobPostingsR(empJobPostingsR.filter((jp, i) => {
+                    if (jp.id === job.id && 
+                        selJobPosting && selJobPosting.id === jp.id) {
+                        if (i < empJobPostingsR.length - 1)
+                            setSelJobPosting(empJobPostingsR[i+1]);
                         else if (i > 0)
-                            setSelJobPosting(myJobPostings[i-1]);
-                        else 
+                            setSelJobPosting(empJobPostingsR[i-1]);
+                        else
                             setSelJobPosting(null);
                     }
+
                     return jp.id !== job.id;
                 }));
             } else {
@@ -189,10 +185,10 @@ function MyJobPostings() {
         })
     }
 
-    if (!selJobPosting && myJobPostings.length)
-        setSelJobPosting(myJobPostings[0]);
+    if (!selJobPosting && empJobPostingsR.length)
+        setSelJobPosting(empJobPostingsR[0]);
 
-    const dispJobCards = myJobPostings.map(job => {
+    const dispJobCards = empJobPostingsR.map(job => {
         const cardColor = (selJobPosting && job.id === selJobPosting.id) ? 'aliceblue' : 'white';
         const statusColor = job.status === 'open' ? 'lightskyblue' : (job.status === 'review' ? 'tomato' : 'lightgray');
         const status = job.status === 'open' ? 'Open' : (job.status === 'review' ? 'In review' : 'Closed');
@@ -204,10 +200,10 @@ function MyJobPostings() {
                     <Button basic circular size='mini' compact icon='trash alternate outline' 
                         style={{float: 'right', }} onClick={(e, o) => handleJobPostingDeleteClick(e, o, job)} />
                     <CardHeader>{job.title}</CardHeader>
-                    <CardMeta>{job.employer.name}</CardMeta>
+                    <CardMeta>{userR.employer.name}</CardMeta>
                     <CardMeta>
                         {job.remote !== 'Remote'? 
-                            `${job.employer.user.city}, ${job.employer.user.state}` : null}
+                            `${userR.city}, ${userR.state}` : null}
                     </CardMeta>
                     <CardMeta>
                         {job.remote !== 'On Site' ? job.remote : null}
@@ -299,7 +295,7 @@ function MyJobPostings() {
         );
     });
 
-    console.log('MyJobPostings, myJobPostings: ', myJobPostings);
+    console.log('MyJobPostings, empJobPostingsR: ', empJobPostingsR);
     console.log('MyJobPostings, selJobPosting: ', selJobPosting);
     console.log('MyJobPostings, filterJobApps: ', filterJobApps);
     console.log('MyJobPostings, statusCat: ', statusCat);

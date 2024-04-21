@@ -1,41 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from 'react-router-dom';
 import NavBar from '../components/NavBar';
+import { updateUserInfo } from '../components/commonLib';
+
 
 function App() {
-  const [userAccount, setUserAccount] = useState(null);
-
-  console.log('in App, userAccount: ', userAccount);
+  const [userR, setUserR] = useState(null);
+  // Job postings created by this employer user account
+  const [empJobPostingsR, setEmpJobPostingsR] = useState([]);
+  // Job applications applied by this applicant user account
+  const [appJobAppsR, setAppJobAppsR] = useState([]);
+  // Favorite jobs marked by this applicant user account
+  const [appFavJobsR, setAppFavJobsR] = useState([]);
 
   useEffect(() => {
-    console.log('in App, authentication occur...');
     fetch('/authenticate')
     .then(r => {
       if (r.ok)
-        r.json().then(data => setUserAccount(data));
-      else
-        // => it is added because I can't set userAccount  to null in Signout component without outlet.
-        // => when outlet is applied, I may need to delete this...
-        setUserAccount(null);
-      console.log('r: ', r);
+        r.json().then(data => {
+          updateUserInfo(data, setUserR, setEmpJobPostingsR, setAppJobAppsR, setAppFavJobsR);
+        });
     });
-  }, [])
+  }, []);
+
+  console.log('in App, userR: ', userR);
+  console.log('in App, empJobPostingsR: ', empJobPostingsR);
+  console.log('in App, appJobAppsR: ', appJobAppsR);
+  console.log('in App, appFavJobsR: ', appFavJobsR);
 
   return (
     <div style={{display: 'grid', width: '100%', height: '100%', gridTemplateRows: 'max-content 1fr', }}>
       <header>
-        <NavBar userAccount={userAccount}/>
+        <NavBar userR={userR}/>
       </header>
       <main style={{minWidth: '0', minHeight: '0', }}>
         <Outlet context={{
-          userAccount: userAccount, 
-          onSetUserAccount: setUserAccount,
+          userR: userR,
+          onSetUserR: setUserR,
+          empJobPostingsR: empJobPostingsR,
+          onSetEmpJobPostingsR: setEmpJobPostingsR,
+          appJobAppsR: appJobAppsR,
+          onSetAppJobAppsR: setAppJobAppsR,
+          appFavJobsR: appFavJobsR,
+          onSetAppFavJobsR: setAppFavJobsR,
         }} />
       </main>
     </div>
   );
 }
-
-
 
 export default App;

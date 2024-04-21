@@ -4,8 +4,17 @@ import { ItemGroup, Item, ItemContent, ItemHeader, ItemMeta, ItemExtra,
     Label, Dropdown, Button, IconGroup, Icon, } from 'semantic-ui-react';
 
 function FavoriteJobs() {
-    const { userAccount } = useOutletContext();
-    const [ favoriteJobs, setFavoriteJobs ] = useState([]);
+    // <Outlet context={{
+    //     userR: userR,
+    //     onSetUserR: setUserR,
+    //     empJobPostingsR: empJobPostingsR,
+    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
+    //     appJobAppsR: appJobAppsR,
+    //     onSetAppJobAppsR: setAppJobAppsR,
+    //     appFavJobsR: appFavJobsR,
+    //     onSetAppFavJobsR: setAppFavJobsR,
+    //   }} />
+    const { userR, appFavJobsR, onSetAppFavJobsR, appJobAppsR } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);
 
     const statusCatOptions = [
@@ -18,25 +27,11 @@ function FavoriteJobs() {
 
     //RBAC
     const navigate = useNavigate();
-    if (userAccount) {
-        if (!userAccount.applicant) 
+    if (userR) {
+        if (!userR.applicant) 
             navigate('/')
     } else 
         navigate('/signin');
-
-    useEffect(() => {
-        fetch('/favoritejobs/uid')
-        .then(r => {
-            if (r.ok)
-                r.json().then(data => {
-                    // console.log('favoriteJobs: ', data);
-                    setFavoriteJobs(data);
-                });
-            else {
-                // => Error handling needed for HTTP response status 401 & 403
-            }
-        })
-    }, []);
 
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(fjob) {
@@ -48,13 +43,13 @@ function FavoriteJobs() {
         // console.log('in handleFavoriteDeleteClick, e1: ', e1, ', e2: ', e2);
         e.stopPropagation();
 
-        fetch(`/favoritejobs/uid/${fjob.id}`, {
+        fetch(`/favoritejobs/${fjob.id}`, {
             method: 'DELETE',
         })
         .then(r => {
             if (r.ok) {
-                setFavoriteJobs(favoriteJobs.filter(job => job.id !== fjob.id));
-            } else if (r.status === 403) {
+                onSetAppFavJobsR(appFavJobsR.filter(fj => fj.id !== fjob.id));
+            } else if (r.status === 403) { // <= 수정 필요. 
                 // => It can't be reached. If this popup shows up, then there is a hole for an employer to acess favorites...
                 alert("You are signed in with your employer account. Please, sign in again.")
             } else if (r.status === 401) {
@@ -65,8 +60,8 @@ function FavoriteJobs() {
         })
     }
 
-    const favoriteJobsStatus = favoriteJobs.map(fjob => {
-        const app = fjob.applicant.job_applications.find(app => app.job_posting_id === fjob.job_posting_id);
+    const favoriteJobsStatus = appFavJobsR.map(fjob => {
+        const app = appJobAppsR.find(app => app.job_posting_id === fjob.job_posting_id);
 
         let status;
         if (fjob.job_posting.status === 'open') {

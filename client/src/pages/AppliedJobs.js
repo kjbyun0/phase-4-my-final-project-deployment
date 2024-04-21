@@ -6,8 +6,17 @@ import { ItemGroup, Item, ItemContent, ItemHeader,
 
 
 function AppliedJobs() {
-    const { userAccount } = useOutletContext();
-    const [ appliedJobs, setAppliedJobs ] = useState([]);
+    // <Outlet context={{
+    //     userR: userR,
+    //     onSetUserR: setUserR,
+    //     empJobPostingsR: empJobPostingsR,
+    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
+    //     appJobAppsR: appJobAppsR,
+    //     onSetAppJobAppsR: setAppJobAppsR,
+    //     appFavJobsR: appFavJobsR,
+    //     onSetAppFavJobsR: setAppFavJobsR,
+    //   }} />
+    const { userR, appJobAppsR, onSetAppJobAppsR } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
     const statusCatOptions = [
@@ -19,25 +28,11 @@ function AppliedJobs() {
 
     //RBAC
     const navigate = useNavigate();
-    if (userAccount) {
-        if (!userAccount.applicant) 
+    if (userR) {
+        if (!userR.applicant) 
             navigate('/')
     } else 
         navigate('/signin');
-
-    useEffect(() => {
-        fetch(`/jobapplications/uid`)
-        .then(r => {
-            if (r.ok)
-                r.json().then(data => setAppliedJobs(data));
-            else {
-                // => Error handling needed.
-                // => check if the HTTP response code is 401. if it is the user needs to sign in... redirect to the sign in page.
-            }
-        })
-    }, []);
-
-    console.log('in AppliedJobs, appliedJobs: ', appliedJobs);
 
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(app) {
@@ -49,21 +44,20 @@ function AppliedJobs() {
     function handleAppDeleteClick(e, o, app) {
         e.stopPropagation();
 
-
         fetch(`/jobapplications/${app.id}`, {
             method: 'DELETE',
         })
         .then(r => {
             if (r.ok) {
                 console.log('handleAppDeleteClick, delete successful.');
-                setAppliedJobs(appliedJobs.filter(aJob => aJob.id !== app.id));
+                onSetAppJobAppsR(appJobAppsR.filter(ja => ja.id !== app.id));
             } else {
                 // => Handle Errors.
             }
         })
     }
 
-    const appliedJobsStatus = appliedJobs.map(app => {
+    const appliedJobsStatus = appJobAppsR.map(app => {
         let status;
         if (app.job_posting.status === 'open')
             status = 'Applied';

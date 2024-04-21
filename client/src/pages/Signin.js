@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Form, FormField, Input, Button, Divider } from 'semantic-ui-react';
+import { updateUserInfo } from '../components/commonLib';
 
 function Signin() {
     const [account, setAccount] = useState({
@@ -9,7 +10,7 @@ function Signin() {
         firstTime: true, 
     });
     const navigate = useNavigate();
-    const { onSetUserAccount } = useOutletContext();
+    const { onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR } = useOutletContext();
 
     function handleChange(e) {
         setAccount({
@@ -31,8 +32,8 @@ function Signin() {
         .then(r => {
             if (r.ok) {
                 r.json().then(data => {
-                    console.log('user: ', data);
-                    onSetUserAccount(data);
+                    console.log('in Sign in, user: ', data);
+                    updateUserInfo(data, onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR);
                     navigate('/');
                 });
             } else {

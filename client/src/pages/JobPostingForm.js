@@ -6,12 +6,23 @@ import { Form, FormField, Input, Dropdown, TextArea, Button } from 'semantic-ui-
 
 function JobPostingForm() {
     const [ categories, setCagetories ] = useState([]);
-    const { userAccount } = useOutletContext();
+
+    // <Outlet context={{
+    //     userR: userR,
+    //     onSetUserR: setUserR,
+    //     empJobPostingsR: empJobPostingsR,
+    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
+    //     appJobAppsR: appJobAppsR,
+    //     onSetAppJobAppsR: setAppJobAppsR,
+    //     appFavJobsR: appFavJobsR,
+    //     onSetAppFavJobsR: setAppFavJobsR,
+    //   }} />
+    const { userR, empJobPostingsR, onSetEmpJobPostingsR } = useOutletContext();
 
     // RBAC
     const navigate = useNavigate();
-    if (userAccount) {
-        if (!userAccount.employer) 
+    if (userR) {
+        if (!userR.employer) 
             navigate('/');
     } else 
         navigate('/signin')
@@ -51,6 +62,13 @@ function JobPostingForm() {
             .then(r => {
                 if (r.ok) {
                     alert('New Job Posted');
+                    // empJobPostingsR, onSetEmpJobPostingsR
+                    r.json().then(data => 
+                        onSetEmpJobPostingsR([
+                            ...empJobPostingsR,
+                            data,
+                        ])
+                    )
                     // formik.resetForm();
                 } else
                     alert('Error posting the new job');
@@ -84,6 +102,7 @@ function JobPostingForm() {
                         <label style={{fontSize: '1.1em'}}>Pay:</label>
                         <Input id='pay' name='pay' type='number' value={formik.values.pay} 
                             onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        <label style={{fontSize: '1.1em'}}>&nbsp;&nbsp;/hr</label>
                         {formik.errors.pay && formik.touched.pay && <div style={{ color: 'red', }}>{formik.errors.pay}</div>}
                     </FormField>
                     <FormField inline>
@@ -123,6 +142,3 @@ function JobPostingForm() {
 }
 
 export default JobPostingForm;
-
-// margin: '0 300px 20px'
-// width: '200px'

@@ -6,7 +6,17 @@ import { CardGroup, Card, CardContent, CardHeader, CardMeta, Button,
 function JobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
     const [selJobPosting, setSelJobPosting] = useState(null);
-    const {userAccount} = useOutletContext();
+    // <Outlet context={{
+    //     userR: userR,
+    //     onSetUserR: setUserR,
+    //     empJobPostingsR: empJobPostingsR,
+    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
+    //     appJobAppsR: appJobAppsR,
+    //     onSetAppJobAppsR: setAppJobAppsR,
+    //     appFavJobsR: appFavJobsR,
+    //     onSetAppFavJobsR: setAppFavJobsR,
+    //   }} />
+    const {userR, empJobPostingsR, onSetEmpJobPostingsR, appFavJobsR, onSetAppFavJobsR} = useOutletContext();
     const navigate = useNavigate();
 
     const filterTypes = ['jobTypes', 'remote', 'pay'];
@@ -36,31 +46,21 @@ function JobPostings() {
         ]
     };
 
-    function makeJobPostingState(data, bResetSelJobPosting) {
-        console.log('in JobPostings, makeJobPostingState data before: ', data);
-        console.log('in JobPostings, makeJobPostingState userAccount: ', userAccount);
-        const jps = data.map(job => {
-            return {
-                jobPost: job,
-                favoriteJob: (userAccount ? 
-                            job.favorite_jobs.find(fjob => fjob.applicant_id === userAccount.applicant_id) : 
-                            null),
-            };
-        });
-        console.log('in JobPostings, makeJobPostingState data after: ', jps);
-
-        if (bResetSelJobPosting) 
-            setSelJobPosting(null);
-
-        return jps;
-    }
-
     useEffect(() => {
         fetch('/jobpostings')
         .then(r => r.json())
-        .then(data => setJobPostings(makeJobPostingState(data, true)));
-    }, [userAccount]);
-    // I added userAccount because everyone can view this page without signing in.
+        .then(data => {
+            setJobPostings(data.map(job => {
+                return {
+                    jobPost: job,
+                    favoriteJob: appFavJobsR.find(fjob => fjob.job_posting_id === job.id),
+                };
+            }));
+            setSelJobPosting(null);
+        });
+    }, [userR]);
+
+    // I added userR because everyone can view this page without signing in.
 
     function handleFiltersChange(e, o, type) {
         setFilters({
@@ -72,10 +72,10 @@ function JobPostings() {
     }
 
     function handleApplyClick() {
-        if (userAccount) {
+        if (userR) {
             navigate(`/job_applications/${selJobPosting.jobPost.id}`);
             // => I don't need the codes below anymore because job list displayed in this page are all in open status!!!!!
-            // const app = selJobPosting.jobPost.job_applications.find(app => app.applicant_id === userAccount.applicant_id);
+            // const app = selJobPosting.jobPost.job_applications.find(app => app.applicant_id === userR.applicant_id);
             // if (!app || app.status === 'new')
             //     navigate(`/job_applications/${selJobPosting.jobPost.id}`);
             // else {
@@ -91,18 +91,28 @@ function JobPostings() {
     function handleFavoriteClick(e, o, jobPost) {
         e.stopPropagation();
 
+        if (!userR) {
+            alert("Please, sign in before adding it to your favorite jobs.");
+            navigate('/signin');
+            return;
+        } else if (!userR.applicant) { //<= it never occurs!!!
+            alert("You are signed in with your employer account. Please, sign in again.");
+            return;
+        }
+
         let pms;
         if (jobPost.favoriteJob) {
-            pms = fetch(`/favoritejobs/uid/${jobPost.favoriteJob.id}`, {
+            pms = fetch(`/favoritejobs/${jobPost.favoriteJob.id}`, {
                 method: 'DELETE',
             });
         } else {
-            pms = fetch('/favoritejobs/uid', {
+            pms = fetch('/favoritejobs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    applicant_id: userR.applicant_id,
                     job_posting_id: jobPost.jobPost.id,
                     // I'm not gonna send the applicant_id because server can get it from session.
                 }),
@@ -110,25 +120,41 @@ function JobPostings() {
         }
 
         pms.then(r => {
-            if (r.ok) {                
-                r.json().then(data => {
-                    if (jobPost.favoriteJob) {
-                        setJobPostings(makeJobPostingState(data, false));
-                        if (jobPost.jobPost.id === selJobPosting.jobPost.id) 
-                            setSelJobPosting({
-                                jobPost: jobPost.jobPost,
-                                favoriteJob: undefined,
-                            });
-                    } else {
-                        setJobPostings(makeJobPostingState(data.jobs, false));
+            if (r.ok) {
+                if (jobPost.favoriteJob) {
+                    onSetAppFavJobsR(appFavJobsR.filter(fjob => fjob.id !== jobPost.favoriteJob.id));
+                    setJobPostings(jobPostings.map(job => {
+                        return {
+                            jobPost: job.jobPost,
+                            favoriteJob: job.favoriteJob && job.favoriteJob.id === jobPost.favoriteJob.id ? 
+                                undefined : job.favoriteJob,
+                        };
+                    }));
+                    if (jobPost.jobPost.id === selJobPosting.jobPost.id)
+                        setSelJobPosting({
+                            jobPost: jobPost.jobPost,
+                            favoriteJob: undefined,
+                        });
+                } else {
+                    r.json().then(data => {
+                        onSetAppFavJobsR([
+                            ...appFavJobsR,
+                            data
+                        ]);
+                        setJobPostings(jobPostings.map(job => {
+                            return {
+                                jobPost: job.jobPost,
+                                favoriteJob: job.jobPost.id === data.job_posting_id ? data : job.favoriteJob,
+                            };
+                        }));
                         if (jobPost.jobPost.id === selJobPosting.jobPost.id)
                             setSelJobPosting({
                                 jobPost: jobPost.jobPost,
-                                favoriteJob: data.favorite_job,
+                                favoriteJob: data,
                             });
-                    }
-                });
-            } else if (r.status === 403) {
+                    });
+                }
+            } else if (r.status === 403) { // <= 삭제 검토...
                 alert("You are signed in with your employer account. Please, sign in again.")
             } else if (r.status === 401) {
                 alert("Please, sign in before adding it to your favorite jobs.");
@@ -154,10 +180,11 @@ function JobPostings() {
         })
         .then(r => {
             if (r.ok) {
+                onSetEmpJobPostingsR(empJobPostingsR.filter(jp => jp.id !== job.jobPost.id));
                 setJobPostings(jobPostings.filter((jp, i) => {
                     if (jp.jobPost.id === job.jobPost.id && 
                         selJobPosting && selJobPosting.jobPost.id === jp.jobPost.id) {
-                            if (jp < jobPostings.length - 1)
+                            if (i < jobPostings.length - 1)
                                 setSelJobPosting(jobPostings[i+1]);
                             else if (i > 0)
                                 setSelJobPosting(jobPostings[i-1]);
@@ -174,11 +201,11 @@ function JobPostings() {
     }
 
     function isEmployer() {
-        return userAccount && userAccount.employer;
+        return userR && userR.employer_id;
     }
 
     function isJobByEmployer(job) {
-        return userAccount && userAccount.employer_id === job.jobPost.employer_id;
+        return userR && userR.employer_id === job.jobPost.employer_id;
     }
     
     const filteredJobPostings = jobPostings.filter(job => 
@@ -190,7 +217,7 @@ function JobPostings() {
     if (!selJobPosting && filteredJobPostings.length) 
         setSelJobPosting(filteredJobPostings[0]);
 
-    console.log('in JobPostings, userAccount: ', userAccount);
+    console.log('in JobPostings, userR: ', userR);
     // console.log('jobPostings: ', jobPostings);
     console.log('filteredJobPostings: ', filteredJobPostings);
     console.log('selJobPosting: ', selJobPosting);

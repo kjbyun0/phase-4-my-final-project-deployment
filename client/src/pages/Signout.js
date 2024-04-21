@@ -1,8 +1,9 @@
 import { useOutletContext, Navigate } from 'react-router-dom';
+import { updateUserInfo } from '../components/commonLib';
 
 // => This code need to be changed to nav menu
 function Signout() {
-    const { onSetUserAccount } = useOutletContext();
+    const { onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR } = useOutletContext();
 
     function handleSignout() {
         fetch('/authenticate', { 
@@ -10,7 +11,7 @@ function Signout() {
         })
         .then(r => {
             // The server can't  fail logging out. So, don't need to check the return status.
-            onSetUserAccount(null);
+            updateUserInfo({}, onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR);
         })
     }
 
