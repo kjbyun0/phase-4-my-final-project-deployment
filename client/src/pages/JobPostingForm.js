@@ -19,13 +19,11 @@ function JobPostingForm() {
     //   }} />
     const { userR, empJobPostingsR, onSetEmpJobPostingsR } = useOutletContext();
 
-    // RBAC
     const navigate = useNavigate();
-    if (userR) {
-        if (!userR.employer) 
-            navigate('/');
-    } else 
-        navigate('/signin')
+    useEffect(() => {
+        if (userR && userR.applicant)
+            navigate('/signin');
+    }, [userR]);
 
     // => I need to move this to app.js and share it usig useOutletContext...
     useEffect(() => {
@@ -60,18 +58,18 @@ function JobPostingForm() {
                 body: JSON.stringify(values)
             })
             .then(r => {
-                if (r.ok) {
-                    alert('New Job Posted');
-                    // empJobPostingsR, onSetEmpJobPostingsR
-                    r.json().then(data => 
+                r.json().then(data => {
+                    if (r.ok) {
                         onSetEmpJobPostingsR([
                             ...empJobPostingsR,
                             data,
-                        ])
-                    )
-                    // formik.resetForm();
-                } else
-                    alert('Error posting the new job');
+                        ]);
+                        navigate('/');
+                    } else {
+                        console.log('Server Error - New Job Posting: ', data);
+                        alert(`Server Error - New Job Posting: ${data.message}`);
+                    }
+                });
             });
         },
     });

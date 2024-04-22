@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import { updateUserInfo } from '../components/commonLib';
 
@@ -13,13 +13,31 @@ function App() {
   // Favorite jobs marked by this applicant user account
   const [appFavJobsR, setAppFavJobsR] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetch('/authenticate')
     .then(r => {
-      if (r.ok)
+      if (r.ok) {
         r.json().then(data => {
           updateUserInfo(data, setUserR, setEmpJobPostingsR, setAppJobAppsR, setAppFavJobsR);
         });
+      } else {
+        // console.log('in App, window location: ', window.location);
+        //Access Control
+        const paths = [
+          '/job_applications', 
+          '/applied_jobs',
+          '/favorite_jobs',
+          '/job_posting_form',
+          '/my_job_postings',
+        ];
+        
+        paths.forEach(path => {
+          if (window.location.pathname.includes(path))
+            navigate('/signin');
+        });
+      }
     });
   }, []);
 

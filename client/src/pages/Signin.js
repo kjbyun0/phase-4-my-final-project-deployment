@@ -30,19 +30,19 @@ function Signin() {
             body: JSON.stringify(account),
         })
         .then(r => {
-            if (r.ok) {
-                r.json().then(data => {
+            r.json().then(data => {
+                if (r.ok) {
                     console.log('in Sign in, user: ', data);
                     updateUserInfo(data, onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR);
                     navigate('/');
-                });
-            } else {
-                setAccount({
-                    username: '',
-                    password: '',
-                    firstTime: false,
-                });
-            }
+                } else {
+                    setAccount({
+                        username: '',
+                        password: '',
+                        firstTime: false,
+                    });
+                }
+            });
         });
     }
 

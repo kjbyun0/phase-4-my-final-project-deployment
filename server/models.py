@@ -2,6 +2,7 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
+import re
 
 from config import db, bcrypt
 
@@ -114,18 +115,25 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
     
-    @validates('email', 'phone', 'zip_code')
+    @validates('username', 'email', 'phone', 'zip_code')
     def validate(self, key, value):
+        if key == 'username':
+            if len(value) < 5 or len(value) > 20:
+                raise ValueError('Server validation Error: Invalid username')
         if key == 'email':
-            if '@' not in value:
+            email = r"[A-Za-z]+[A-Za-z0-9]*\.?[A-Za-z0-9]+@[A-Za-z_\-]+\.[A-Za-z]{2,3}"
+            email_regex = re.compile(email)
+            if not email_regex.fullmatch(value):
                 raise ValueError('Server validation Error: Invalid email address')
         elif key == 'phone':
-            if len(value) != 0 and (len(value) != 12 or value.find(')') != 3 or \
-                value.find('-') != 7 or not value[:3].isdecimal() or 
-                not value[4:7].isdecimal() or not value[-4:].isdecimal()):
-                raise ValueError(f'Server validation error: Invalid {key} number')
+            phone_number = r"((([\(]?[0-9]{3,4}[\)]\s?)|([0-9]{3,4}[\-]))[0-9]{3,4}[\-][0-9]{4})|([0-9]{10,12})"
+            phone_regex = re.compile(phone_number)
+            if len(value) and not phone_regex.fullmatch(value):
+                raise ValueError('Server validation error: Invalid phone number')
         elif key == 'zip_code':
-            if len(value) != 5 or not value.isdecimal():
+            zip = r'[0-9]{5}'
+            zip_regex = re.compile(zip)
+            if len(value) and not zip_regex.fullmatch(value):
                 raise ValueError('Server validation error: Invalid zip code')
         return value
 
@@ -193,6 +201,14 @@ class Employer(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Employer {self.id}, {self.name}>'
+    
+    @validates('name')
+    def validate(self, key, value):
+        if key == 'name':
+            if len(value) == 0:
+                raise ValueError('Server validation error: No name')
+        
+        return value
 
  
 class Applicant(db.Model, SerializerMixin): 
@@ -265,13 +281,16 @@ class Applicant(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Applicant {self.id}, {self.first_name}, {self.last_name}>'
     
-    @validates('mobile')
+    @validates('first_name', 'last_name', 'mobile')
     def validate(self, key, value):
-        if key == 'mobile':
-            if len(value) != 0 and (len(value) != 12 or value.find(')') != 3 or \
-                value.find('-') != 7 or not value[:3].isdecimal() or 
-                not value[4:7].isdecimal() or not value[-4:].isdecimal()):
-                raise ValueError(f'Server validation error: Invalid {key} number')
+        if key == 'first_name' or key == 'last_name':
+            if len(value) == 0:
+                raise ValueError(f'Server validation error: No {"first name" if key == "first_name" else "last name"}')
+        elif key == 'mobile':
+            phone_number = r"((([\(]?[0-9]{3,4}[\)]\s?)|([0-9]{3,4}[\-]))[0-9]{3,4}[\-][0-9]{4})|([0-9]{10,12})"
+            phone_regex = re.compile(phone_number)
+            if len(value) and not phone_regex.fullmatch(value):
+                raise ValueError('Server validation error: Invalid mobile number')
         
         return value
 
@@ -389,8 +408,8 @@ class JobPosting(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     pay = db.Column(db.Float, nullable=False)
-    job_type = db.Column(db.String) # => full,partime,contract
-    remote = db.Column(db.String, nullable=False)   # => On-Site, Remote, Hybrid
+    job_type = db.Column(db.String) # => 'Part time', 'Contract', 'Full time'
+    remote = db.Column(db.String, nullable=False)   # => 'On-Site', 'Remote', 'Hybrid'
     status = db.Column(db.String, nullable=False)  # => open, review, close
     # requited skills,
 
@@ -409,6 +428,33 @@ class JobPosting(db.Model, SerializerMixin):
     
     def __repr__(self):
         return f'<JobPosting {self.id} {self.title}>'
+    
+    # title: yup.string().required("Must enter a title"),
+    # pay: yup.number().positive('Must be a positive number'),
+    # description: yup.string().required('Must enter a job description'),
+    @validates('title', 'description', 'pay', 'job_type', 'remote', 'status')
+    def validate(self, key, value):
+        if key == 'title':
+            if len(value) == 0:
+                raise ValueError('Server validation error: No title')
+        elif key == 'description':
+            if len(value) == 0: 
+                raise ValueError('Server validation error: No description')
+        elif key == 'pay':
+            if value <= 0:
+                raise ValueError('Server validation error: Invalid pay')
+        elif key == 'job_type':
+            if value not in ['Part time', 'Contract', 'Full time']:
+                raise ValueError('Server validation error: Invalid job type')
+        elif key == 'remote':
+            if value not in ['On-Site', 'Remote', 'Hybrid']:
+                raise ValueError('Server validation error: Invalid remote')
+        elif key == 'status':
+            if value not in ['open', 'review', 'close']:
+                raise ValueError('Server validation error: Invalid status')
+
+        return value
+
     
 class JobApplication(db.Model, SerializerMixin): 
     __tablename__ = 'job_applications'
@@ -487,6 +533,13 @@ class JobApplication(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<JobApplication {self.id}>'
+    
+    @validates('status')
+    def validate(self, key, value):
+        if key == 'status':
+            if value not in ['new', 'hired', 'declined']:
+                raise ValueError('Server validation error: Invalid status')
+        return value
     
 class FavoriteJob(db.Model, SerializerMixin): 
     __tablename__ = 'favorite_jobs'

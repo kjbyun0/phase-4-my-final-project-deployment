@@ -50,12 +50,8 @@ class Authenticate(Resource):
 class Signup(Resource):
     def post(self):
         account_req_dict = request.get_json()
-        print(f'account_req_dict: {account_req_dict}')
+        # print(f'account_req_dict: {account_req_dict}')
         try:
-            # if this new account is for employer
-            # new_employer = None
-            # if account_req_dict.get('isEmployer'): # => Must be added to Sigup.js in the client side
-            
             if account_req_dict.get('isEmployer'):
                 new_employer = Employer(name = account_req_dict.get('name'))
                 db.session.add(new_employer)
@@ -85,7 +81,7 @@ class Signup(Resource):
             db.session.commit()
         except Exception as exc:
             return make_response({
-                'message': f'{exc}'
+                'message': f'{exc}',
             }, 400)
 
         session['user_id'] = new_user.id
@@ -108,18 +104,24 @@ class JobPostings(Resource):
         new_job_category = JobCategory.query.filter_by(category=new_job_dict.get('category')).first()
         user = User.query.filter_by(id=session['user_id']).first()
         employer = user.employer
-        new_job = JobPosting(
-            title = new_job_dict.get('title'),
-            description = new_job_dict.get('description'),
-            pay = new_job_dict.get('pay'),
-            job_type = new_job_dict.get('job_type'),
-            remote = new_job_dict.get('remote'),
-            status = new_job_dict.get('status'),
-            job_category = new_job_category,
-            employer = employer
-        )
-        db.session.add(new_job)
-        db.session.commit()
+        try:
+            new_job = JobPosting(
+                title = new_job_dict.get('title'),
+                description = new_job_dict.get('description'),
+                pay = new_job_dict.get('pay'),
+                job_type = new_job_dict.get('job_type'),
+                remote = new_job_dict.get('remote'),
+                status = new_job_dict.get('status'),
+                job_category = new_job_category,
+                employer = employer
+            )
+            db.session.add(new_job)
+            db.session.commit()
+        except Exception as exc:
+            return make_response({
+                'message': f'{exc}',
+            }, 400)
+        
         return make_response(new_job.to_dict(), 201)
 
 
@@ -137,10 +139,15 @@ class JobPosting_by_id(Resource):
         request_dict = request.get_json()
         job_posting = JobPosting.query.filter_by(id=id).first()
         if job_posting:
-            for key in request_dict:
-                setattr(job_posting, key, request_dict[key])
-            db.session.add(job_posting)
-            db.session.commit()
+            try: 
+                for key in request_dict:
+                    setattr(job_posting, key, request_dict[key])
+                db.session.add(job_posting)
+                db.session.commit()
+            except Exception as exc:
+                return make_response({
+                    'message': f'{exc}',
+                }, 400)
             return make_response(job_posting.to_dict(), 200)
 
         make_response({
@@ -150,8 +157,13 @@ class JobPosting_by_id(Resource):
     def delete(self, id):
         job_posting = JobPosting.query.filter_by(id=id).first()
         if job_posting:
-            db.session.delete(job_posting)
-            db.session.commit()
+            try: 
+                db.session.delete(job_posting)
+                db.session.commit()
+            except Exception as exc:
+                return make_response({
+                    'message': f'{exc}',
+                }, 400)
             return make_response({}, 204)
         
         return make_response({
@@ -162,18 +174,24 @@ class JobPosting_by_id(Resource):
 class JobApplications(Resource):
     def post(self):
         new_job_app_dict = request.get_json()
-        new_job_app = JobApplication(
-            education = new_job_app_dict.get('education'),
-            experience = new_job_app_dict.get('experience'),
-            certificate = new_job_app_dict.get('certificate'),
-            status = new_job_app_dict.get('status'),
-            job_posting_id = new_job_app_dict.get('job_posting_id'),
-            applicant_id = new_job_app_dict.get('applicant_id')
-            # => It needs to be requested only by an applicant, not by an employer.
-            # => Is it possible not to have job_posting_id and application_id???? need error handling if it happens???
-        )
-        db.session.add(new_job_app)
-        db.session.commit()
+        try:
+            new_job_app = JobApplication(
+                education = new_job_app_dict.get('education'),
+                experience = new_job_app_dict.get('experience'),
+                certificate = new_job_app_dict.get('certificate'),
+                status = new_job_app_dict.get('status'),
+                job_posting_id = new_job_app_dict.get('job_posting_id'),
+                applicant_id = new_job_app_dict.get('applicant_id')
+                # => It needs to be requested only by an applicant, not by an employer.
+                # => Is it possible not to have job_posting_id and application_id???? need error handling if it happens???
+            )
+            db.session.add(new_job_app)
+            db.session.commit()
+        except Exception as exc:
+            return make_response({
+                'message': f'{exc}',
+            }, 400)
+        
         return make_response(new_job_app.to_dict(), 201)
 
 
@@ -182,37 +200,52 @@ class JobApplication_by_id(Resource):
         request_dict = request.get_json()
         app = JobApplication.query.filter_by(id=id).first()
         if app: 
-            for key in request_dict:
-                setattr(app, key, request_dict[key])
-            db.session.add(app)
-            db.session.commit()
+            try: 
+                for key in request_dict:
+                    setattr(app, key, request_dict[key])
+                db.session.add(app)
+                db.session.commit()
+            except Exception as exc:
+                return make_response({
+                    'message': f'{exc}'
+                }, 400)
             return make_response(app.to_dict(), 200)
-        else:
-            return make_response({
-                'message': f'Application {id} not found'
-            }, 404)
+
+        return make_response({
+            'message': f'Application {id} not found'
+        }, 404)
         
     def delete(self, id): 
         app = JobApplication.query.filter_by(id=id).first()
         if app:
-            db.session.delete(app)
-            db.session.commit()
+            try:
+                db.session.delete(app)
+                db.session.commit()
+            except Exception as exc:
+                return make_response({
+                    'message': f'{exc}'
+                }, 400)
             return make_response({}, 204)
-        else:
-            return make_response({
-                'message': f'Application {id} not found'
-            }, 404)
+        
+        return make_response({
+            'message': f'Application {id} not found'
+        }, 404)
 
 
 class FavoriteJobs(Resource):       
     def post(self):
         request_dict = request.get_json()
-        fj = FavoriteJob(
-            applicant_id = request_dict.get('applicant_id'), # <= newly changed.
-            job_posting_id = request_dict.get('job_posting_id')
-        )
-        db.session.add(fj)
-        db.session.commit()
+        try: 
+            fj = FavoriteJob(
+                applicant_id = request_dict.get('applicant_id'), # <= newly changed.
+                job_posting_id = request_dict.get('job_posting_id')
+            )
+            db.session.add(fj)
+            db.session.commit()
+        except Exception as exc:
+            return make_response({
+                'message': f'{exc}',
+            }, 400)
         return make_response(fj.to_dict(), 201)
 
 
@@ -220,13 +253,18 @@ class FavoriteJob_by_id(Resource):
     def delete(self, id):
         fj = FavoriteJob.query.filter_by(id=id).first()
         if fj: 
-            db.session.delete(fj)
-            db.session.commit()
+            try: 
+                db.session.delete(fj)
+                db.session.commit()
+            except Exception as exc:
+                return make_response({
+                    'message': f'{exc}',
+                }, 400)
             return make_response({}, 204)
-        else:
-            return make_response({
-                'message': f'Favorite Job {id} not found'
-            }, 404)
+
+        return make_response({
+            'message': f'Favorite Job {id} not found'
+        }, 404)
 
 
 api.add_resource(Authenticate, '/authenticate')

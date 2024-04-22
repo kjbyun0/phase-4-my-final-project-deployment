@@ -11,31 +11,30 @@ function JobApplicationForm() {
     const [jobApplication, setJobApplication] = useState(null); //=> Should this be a state???
 
     const navigate = useNavigate();
-
-    // RBAC
-    if (userR) {
-        if (!userR.applicant) 
-            navigate('/');
-    } else {
-        navigate('/signin');
-    }
+    useEffect(() => {
+        if (userR && userR.employer)
+            navigate('/signin');
+    }, [userR]);
 
     useEffect(() => {
         fetch(`/jobpostings/${id}`)
         .then(r => {
-            if (r.ok) {
-                r.json().then(data => setJobPosting(data));
-                const app = appJobAppsR.find(app => app.job_posting_id === id);
-                if (app) {
-                    setJobApplication(app);
-                    formik.setFieldValue('education', app.education);
-                    formik.setFieldValue('experience', app.experience);
-                    formik.setFieldValue('certificate', app.certificate);
+            r.json().then(data => {
+                if (r.ok) {
+                    setJobPosting(data);
+                    const app = appJobAppsR.find(app => app.job_posting_id === id);
+                    if (app) {
+                        setJobApplication(app);
+                        formik.setFieldValue('education', app.education);
+                        formik.setFieldValue('experience', app.experience);
+                        formik.setFieldValue('certificate', app.certificate);
+                    }
+                } else {
+                    console.log('Server Error - Fetching Job Posting: ', data);
+                    alert(`Server Error - Fetching Job Posting: ${data.message}`);
+                    navigate('/');
                 }
-            } else {
-                console.log(`Error: Can't find the job posting id: ${id}, r:`, r);
-                navigate('/');
-            }
+            });
         });
     }, []);
 
@@ -57,12 +56,15 @@ function JobApplicationForm() {
                     }),
                 })
                 .then(r => {
-                    if (r.ok) {
-                        r.json().then(data => onSetAppJobAppsR(appJobAppsR.map(app => app.id === data.id ? data : app)));
-                        navigate('/');
-                    } else {
-                        // <= Error handling....
-                    }
+                    r.json().then(data => {
+                        if (r.ok) {
+                            onSetAppJobAppsR(appJobAppsR.map(app => app.id === data.id ? data : app));
+                            navigate('/');
+                        } else {
+                            console.log('Server Error - Updating Job Application: ', data);
+                            alert(`Server Error - Updating Job Application: ${data.message}`);
+                        }
+                    });
                 });
             } else {
                 fetch('/jobapplications', {
@@ -79,36 +81,20 @@ function JobApplicationForm() {
                     }),
                 })
                 .then(r => {
-                    if (r.ok) {
-                        r.json().then(data => onSetAppJobAppsR([
-                            ...appJobAppsR,
-                            data
-                        ]));
-                        navigate('/');
-                    } else {
-                        // <= Error handling....
-                    }
+                    r.json().then(data => {
+                        if (r.ok) {
+                            onSetAppJobAppsR([
+                                ...appJobAppsR,
+                                data
+                            ]);
+                            navigate('/');
+                        } else {
+                            console.log('Server Error - New Job Application: ', data);
+                            alert(`Server Error - New Job Application: ${data.message}`);
+                        }
+                    });
                 });
             }
-
-            // jobAppPromise.then(r => {
-            //     if (r.ok) {
-            //         navigate('/')
-            //     } else {
-            //         // => Error Handling needed....
-            //         switch(r.status) {
-            //             case 404:
-            //                 console.log('in JobApplicationForm, New Application.');
-            //                 break;
-            //             case 403:
-            //                 console.log("in JobApplicationForm, the user is an employer, Can't apply for a job.");
-            //                 break;
-            //             case 401:
-            //                 console.log("in JobApplicationForm, the user hasn't loged in yet. Please, sign in first.");
-            //                 break;
-            //         }
-            //     }
-            // })
         },
     });
 

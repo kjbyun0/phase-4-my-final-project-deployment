@@ -27,30 +27,29 @@ function MyJobPostings() {
         { key: 'hired', text: 'Hired', value: 'hired',},
         { key: 'declined', text: 'Declinded', value: 'declined',},
     ];
-    
-    // RBAC
+
     const navigate = useNavigate();
-    if (userR) {
-        if (!userR.employer) 
-            navigate('/');
-    } else 
-        navigate('/signin')
+    useEffect(() => {
+        if (userR && userR.applicant)
+            navigate('/signin');
+    }, [userR]);
 
-
+    //
     useEffect(() => {
         if (!selJobPosting)
             return;
 
         fetch(`/jobpostings/${selJobPosting.id}`)
         .then(r => {
-            if (r.ok) 
-                r.json().then(data => {
+            r.json().then(data =>{
+                if (r.ok) {
                     console.log('MyJobPostings, selected job posting', data);
                     setJobApps(data.job_applications);
-                })
-            else {
-                // => Error handling needed for HTTP response status 401 & 403
-            }
+                } else {
+                    console.log('Server Error - Fetching Job Posting: ', data);
+                    alert(`Server Error - Fetching Job Posting: ${data.message}`);
+                }
+            });
         });
     }, [selJobPosting]);
 
@@ -83,14 +82,15 @@ function MyJobPostings() {
             })
         })
         .then(r => {
-            if (r.ok)
-                r.json().then(data => {
+            r.json().then(data => {
+                if (r.ok) {
                     setJobApps(jobApps.map(app => app.id === data.id ? data : app));
-                })
-            else {
-                // => Error handling needed for HTTP response status 404
-            }
-        })
+                } else {
+                    console.log('Server Error - Updating Job Application: ', data);
+                    alert(`Server Error - Updating Job Application: ${data.message}`);
+                }
+            });
+        });
     }
 
     async function handleJPStatusChange(jobPosting, status) {
@@ -106,25 +106,20 @@ function MyJobPostings() {
                 status: status
             }),
         })
-        // .then(r => r.json())
-        // .then(data => {
-        //     setMyJobPostings(myJobPostings.map(jp => jp.id === data.id ? data : jp));
-        //     setSelJobPosting(data);
-        //     setStatusCat([]);
-        // })
-        // .catch(e => console.log('in handleJPStatusChange, Error1: ', e));
         .then(r => {
-            if (r.ok) {
-                r.json().then(data => {
+            // <= Don't I need await here???
+            r.json().then(data => {
+                if (r.ok) {
                     onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === data.id ? data : jp));
                     setSelJobPosting(data);
                     setStatusCat([]);
-                })
-            } else {
-            }
+                } else {
+                    console.log('Server Error - Updating Job Posting: ', data);
+                    alert(`Server Error - Updating Job Posting: ${data.message}`);
+                }
+            });
         });
 
-        // => From Here~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (status === 'open') {
             for (let i = 0; i < jobApps.length; i++) {
                 if (jobApps[i].status === 'new')
@@ -140,18 +135,17 @@ function MyJobPostings() {
                         status: 'new',
                     }),
                 })
-                // .then(r => r.json())
-                // .then(data => {
-                //     setJobApps(jobApps.map(app => app.id === data.id ? data : app));
-                // })
-                // .catch(e => console.log('in handleJPStatusChange, Error2: ', e));
                 .then(r => {
-                    if (r.ok) {
-                        r.json().then(data => setJobApps(jobApps.map(app => app.id === data.id ? data : app)));
-                        // => It can be much better to get the entire list of apps after all patch operations!!!!!!!!!
-                    } else {
-                        // => Error handling needed for HTTP response status 404
-                    }
+                    // <= Don't I need await here???
+                    r.json().then(data => {
+                        if (r.ok) {
+                            setJobApps(jobApps.map(app => app.id === data.id ? data : app));
+                            // => It can be much better to get the entire list of apps after all patch operations!!!!!!!!!
+                        } else  {
+                            console.log('Server Error - Updating Job Application: ', data);
+                            alert(`Server Error - Updating Job Application: ${data.message}`);
+                        }
+                    });
                 });
             }
         }
@@ -180,7 +174,10 @@ function MyJobPostings() {
                     return jp.id !== job.id;
                 }));
             } else {
-                // => Error handling needed for HTTP response status 404
+                r.json().then(data => {
+                    console.log('Server Error - Deleting Job Posting: ', data);
+                    alert(`Server Error - Deleting Job Posting: ${data.message}`);
+                });
             }
         })
     }

@@ -4,10 +4,11 @@ import * as yup from 'yup';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Form, FormField, Label, Input, Button, Checkbox, 
     Modal, ModalContent, ModalActions } from 'semantic-ui-react';
+import { updateUserInfo } from '../components/commonLib';
 
 function Signup() {
     const navigate = useNavigate();
-    const { onSetUserAccount } = useOutletContext();
+    const { onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR } = useOutletContext();
     const [ isEmployer, setIsEmployer ] = useState(false);
 
     const formSchema = yup.object().shape({
@@ -17,20 +18,24 @@ function Signup() {
         username: yup.string().required('Must enter a username')
                     .min(5, 'Must be between 5 and 20 characters')
                     .max(20, 'Must be between 5 and 20 characters'),
-        // => add more constraints later. think about making custom constraints
         password: yup.string().required('Must enter a password')
             .min(5, 'Password should be of minimum 5 characters length'),
-        email: yup.string().required('Must enter your email').email('Invalid email format'),
+        email: yup.string().required('Must enter your email').matches(
+            /^[A-Za-z]+[A-Za-z0-9]*\.?[A-Za-z0-9]+@[A-Za-z_\-]+\.[A-Za-z]{2,3}$/,
+            'Invalid email address'
+        ),
         mobile: isEmployer ? '' : yup.string().matches(
-            /^[\(]?([0-9]{3,4}[\-\)]?){2}[0-9]{4}$/,
+            /^((([\(]?[0-9]{3,4}[\)]\s?)|([0-9]{3,4}[\-]))[0-9]{3,4}[\-][0-9]{4})|([0-9]{10,12})$/,
             'Mobile number is not valid'
         ),
         phone: yup.string().matches(
-            /^[\(]?([0-9]{3,4}[\-\)]?){2}[0-9]{4}$/,
+            /^((([\(]?[0-9]{3,4}[\)]\s?)|([0-9]{3,4}[\-]))[0-9]{3,4}[\-][0-9]{4})|([0-9]{10,12})$/,
             'Phone number is not valid'
         ),
-        // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-        // phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
+        zipCode: yup.string().matches(
+            /^[0-9]{5}$/,
+            'Zip code is not valid'            
+        )
     });
 
     const formik = useFormik({
@@ -61,15 +66,15 @@ function Signup() {
                 body: JSON.stringify(values)
             })
             .then(r => {
-                if (r.ok) {
-                    console.log('new account created: ');
-                    r.json().then(data => onSetUserAccount(data));
-                    
-                    navigate('/');
-                } else {
-                    // => add a funciton to display errors and enable submit button.
-                    r.json().then(data => console.log('New Account Server Error: ', data))
-                }
+                r.json().then(data => {
+                    if (r.ok) {
+                        updateUserInfo(data, onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR);
+                        navigate('/');
+                    } else {
+                        console.log('Server Error - New Account: ', data);
+                        alert(`Server Error - New Account: ${data.message}`);
+                    }
+                });
             });
         },
     });
@@ -110,7 +115,7 @@ function Signup() {
                 }
                 <Input id='username' name='username' type='text' placeholder='Username'
                     style={{width: '100%', marginTop: '10px'}}
-                    value={formik.values.username} onChange={formik.handleChange} />
+                    value={formik.values.username} onChange={formik.handleChange} onBlur={formik.handleBlur}/>
                 {formik.errors.username && formik.touched.username && <div style={{ color: 'red'}}>{formik.errors.username}</div>}
                 <Input id='password' name='password' type='password' placeholder='Password'
                     style={{width: '100%', marginTop: '10px'}}
@@ -150,6 +155,7 @@ function Signup() {
                 <Input id='zipCode' name='zipCode' type='text' placeholder='Zip Code' 
                     style={{width: '100%', marginTop: '5px'}}
                     value={formik.values.zipCode} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                {formik.errors.zipCode && formik.touched.zipCode && <div style={{color: 'red'}}>{formik.errors.zipCode}</div>}
 
                 <Button type='submit' size='big' color='green' style={{ width: "40%", margin: '20px 120px 20px' }}>Sign up</Button>
             </Form>

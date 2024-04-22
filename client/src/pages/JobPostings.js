@@ -100,28 +100,12 @@ function JobPostings() {
             return;
         }
 
-        let pms;
         if (jobPost.favoriteJob) {
-            pms = fetch(`/favoritejobs/${jobPost.favoriteJob.id}`, {
+            fetch(`/favoritejobs/${jobPost.favoriteJob.id}`, {
                 method: 'DELETE',
-            });
-        } else {
-            pms = fetch('/favoritejobs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    applicant_id: userR.applicant_id,
-                    job_posting_id: jobPost.jobPost.id,
-                    // I'm not gonna send the applicant_id because server can get it from session.
-                }),
             })
-        }
-
-        pms.then(r => {
-            if (r.ok) {
-                if (jobPost.favoriteJob) {
+            .then(r => {
+                if (r.ok) {
                     onSetAppFavJobsR(appFavJobsR.filter(fjob => fjob.id !== jobPost.favoriteJob.id));
                     setJobPostings(jobPostings.map(job => {
                         return {
@@ -137,6 +121,26 @@ function JobPostings() {
                         });
                 } else {
                     r.json().then(data => {
+                        console.log('Server Error - Deleting Favorite Job: ', data);
+                        alert(`Server Error - Deleting Favorite Job: ${data.message}`);
+                    });
+                }
+            });
+        } else {
+            fetch('/favoritejobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    applicant_id: userR.applicant_id,
+                    job_posting_id: jobPost.jobPost.id,
+                    // I'm not gonna send the applicant_id because server can get it from session.
+                }),
+            })
+            .then(r => {
+                r.json().then(data => {
+                    if (r.ok) {
                         onSetAppFavJobsR([
                             ...appFavJobsR,
                             data
@@ -152,15 +156,13 @@ function JobPostings() {
                                 jobPost: jobPost.jobPost,
                                 favoriteJob: data,
                             });
-                    });
-                }
-            } else if (r.status === 403) { // <= 삭제 검토...
-                alert("You are signed in with your employer account. Please, sign in again.")
-            } else if (r.status === 401) {
-                alert("Please, sign in before adding it to your favorite jobs.");
-                navigate('/signin');
-            }
-        });
+                    } else {
+                        console.log('Server Error - Creating Favorite Job: ', data);
+                        alert(`Server Error - Creating Favorite Job: ${data.message}`);
+                    }
+                });
+            });
+        }
     }
 
     function handleCardClick(job) {
@@ -194,10 +196,12 @@ function JobPostings() {
                     return jp.jobPost.id !== job.jobPost.id;
                 }));
             } else {
-                // => Error handling needed for HTTP response status 404
+                r.json().then(data =>{
+                    console.log('Server Error - Deleting Job Posting: ', data);
+                    alert(`Server Error - Deleting Job Posting: ${data.message}`);
+                });
             }
-        })
-        
+        });
     }
 
     function isEmployer() {

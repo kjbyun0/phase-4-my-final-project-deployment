@@ -36,7 +36,7 @@ const routes = [
                 element: <JobPostingForm />,
             },
             {
-                path: 'my_job_postings',
+                path: '/my_job_postings',
                 element: <MyJobPostings />,
             },
             {

@@ -4,16 +4,6 @@ import { ItemGroup, Item, ItemContent, ItemHeader, ItemMeta, ItemExtra,
     Label, Dropdown, Button, IconGroup, Icon, } from 'semantic-ui-react';
 
 function FavoriteJobs() {
-    // <Outlet context={{
-    //     userR: userR,
-    //     onSetUserR: setUserR,
-    //     empJobPostingsR: empJobPostingsR,
-    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
-    //     appJobAppsR: appJobAppsR,
-    //     onSetAppJobAppsR: setAppJobAppsR,
-    //     appFavJobsR: appFavJobsR,
-    //     onSetAppFavJobsR: setAppFavJobsR,
-    //   }} />
     const { userR, appFavJobsR, onSetAppFavJobsR, appJobAppsR } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);
 
@@ -25,13 +15,12 @@ function FavoriteJobs() {
         { key: 'declinded', text: 'Closed', value: 'Closed',},
     ];
 
-    //RBAC
+    
     const navigate = useNavigate();
-    if (userR) {
-        if (!userR.applicant) 
-            navigate('/')
-    } else 
-        navigate('/signin');
+    useEffect(() => {
+        if (userR && userR.employer)
+            navigate('/signin');
+    }, [userR]);
 
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(fjob) {
@@ -49,15 +38,13 @@ function FavoriteJobs() {
         .then(r => {
             if (r.ok) {
                 onSetAppFavJobsR(appFavJobsR.filter(fj => fj.id !== fjob.id));
-            } else if (r.status === 403) { // <= 수정 필요. 
-                // => It can't be reached. If this popup shows up, then there is a hole for an employer to acess favorites...
-                alert("You are signed in with your employer account. Please, sign in again.")
-            } else if (r.status === 401) {
-                // => It can't be reached because, if not signed up, favorite jobs can't be shown.
-                alert("Please, sign in before adding it to your favorite jobs.");
-                navigate('/signin');
+            } else {
+                r.json().then(data => {
+                    console.log('Server Error - Deleting Favorite Job: ', data);
+                    alert(`Server Error - Deleting Favorite Job: ${data.message}`);
+                });
             }
-        })
+        });
     }
 
     const favoriteJobsStatus = appFavJobsR.map(fjob => {

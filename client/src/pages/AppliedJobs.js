@@ -6,16 +6,6 @@ import { ItemGroup, Item, ItemContent, ItemHeader,
 
 
 function AppliedJobs() {
-    // <Outlet context={{
-    //     userR: userR,
-    //     onSetUserR: setUserR,
-    //     empJobPostingsR: empJobPostingsR,
-    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
-    //     appJobAppsR: appJobAppsR,
-    //     onSetAppJobAppsR: setAppJobAppsR,
-    //     appFavJobsR: appFavJobsR,
-    //     onSetAppFavJobsR: setAppFavJobsR,
-    //   }} />
     const { userR, appJobAppsR, onSetAppJobAppsR } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
@@ -26,13 +16,11 @@ function AppliedJobs() {
         { key: 'closed', text: 'Closed', value: 'Closed',},
     ];
 
-    //RBAC
     const navigate = useNavigate();
-    if (userR) {
-        if (!userR.applicant) 
-            navigate('/')
-    } else 
-        navigate('/signin');
+    useEffect(() => {
+        if (userR && userR.employer)
+            navigate('/signin');
+    }, [userR]);
 
     // => This may be changed... app paramater already has everything to display
     function handleItemClick(app) {
@@ -52,7 +40,10 @@ function AppliedJobs() {
                 console.log('handleAppDeleteClick, delete successful.');
                 onSetAppJobAppsR(appJobAppsR.filter(ja => ja.id !== app.id));
             } else {
-                // => Handle Errors.
+                r.json().then(data => {
+                    console.log('Server Error - Deleting Job Application: ', data);
+                    alert(`Server Error - Deleting Job Application: ${data.message}`);
+                })
             }
         })
     }
