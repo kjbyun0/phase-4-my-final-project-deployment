@@ -8,12 +8,13 @@ import MyJobPostings from './pages/MyJobPostings';
 import Signup from './pages/Signup';
 import Signin from './pages/Signin';
 import Signout from './pages/Signout';
+import ErrorPage from './pages/ErrorPage';
 
 const routes = [
     {
         path: '/',
         element: <App />,
-        // errorElement: 
+        errorElement: <ErrorPage />,
         children: [
             {
                 path: '/',

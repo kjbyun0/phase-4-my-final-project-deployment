@@ -23,7 +23,6 @@ function App() {
           updateUserInfo(data, setUserR, setEmpJobPostingsR, setAppJobAppsR, setAppFavJobsR);
         });
       } else {
-        // console.log('in App, window location: ', window.location);
         //Access Control
         const paths = [
           '/job_applications', 
@@ -32,7 +31,7 @@ function App() {
           '/job_posting_form',
           '/my_job_postings',
         ];
-        
+
         paths.forEach(path => {
           if (window.location.pathname.includes(path))
             navigate('/signin');
