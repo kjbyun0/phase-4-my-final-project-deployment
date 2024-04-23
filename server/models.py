@@ -389,7 +389,7 @@ class JobPosting(db.Model, SerializerMixin):
         '-job_applications.applicant.job_postings',
         '-job_applications.applicant.favorite_job_postings',
 
-        '-favorite_jobs.applicant',
+        '-favorite_jobs',
         # '-favorite_jobs.applicant.user.employer.user',
         # '-favorite_jobs.applicant.user.employer.job_postings',
         # '-favorite_jobs.applicant.user.applicant',
@@ -398,8 +398,8 @@ class JobPosting(db.Model, SerializerMixin):
         # '-favorite_jobs.applicant.favorite_jobs',
         # '-favorite_jobs.applicant.job_postings',
         # '-favorite_jobs.applicant.favorite_job_postings',
+        # '-favorite_jobs.job_posting',
 
-        '-favorite_jobs.job_posting',
         '-applicants',
         '-favorite_applicants',
     )

@@ -5,8 +5,8 @@ import { CardGroup, Card, CardContent, CardHeader, CardMeta, CardDescription,
     Accordion, AccordionTitle, AccordionContent, Divider } from 'semantic-ui-react';
 
 function MyJobPostings() {
+    const [jobPostings, setJobPostings] = useState([]);
     const [ selJobPosting, setSelJobPosting ] = useState(null);
-    const [ jobApps, setJobApps ] = useState([]);
     const [ selJobAppId, setSelJobAppId ] = useState(null);
 
     // <Outlet context={{
@@ -34,24 +34,16 @@ function MyJobPostings() {
             navigate('/signin');
     }, [userR]);
 
-    //
     useEffect(() => {
-        if (!selJobPosting)
+        if (!userR)
             return;
-
-        fetch(`/jobpostings/${selJobPosting.id}`)
-        .then(r => {
-            r.json().then(data =>{
-                if (r.ok) {
-                    console.log('MyJobPostings, selected job posting', data);
-                    setJobApps(data.job_applications);
-                } else {
-                    console.log('Server Error - Fetching Job Posting: ', data);
-                    alert(`Server Error - Fetching Job Posting: ${data.message}`);
-                }
-            });
-        });
-    }, [selJobPosting]);
+        
+        fetch('/jobpostings')
+        .then(r => r.json())
+        .then(data => setJobPostings(
+            data.filter(job => job.employer_id === userR.employer_id)
+        ));
+    }, [userR]);
 
     function handleJobPostingClick(job) {
         // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -84,7 +76,12 @@ function MyJobPostings() {
         .then(r => {
             r.json().then(data => {
                 if (r.ok) {
-                    setJobApps(jobApps.map(app => app.id === data.id ? data : app));
+                    const job = {
+                        ...selJobPosting,
+                        job_applications: selJobPosting.job_applications.map(app => app.id == data.id ? data : app),
+                    };
+                    setSelJobPosting(job);
+                    setJobPostings(jobPostings.map(jp => jp.id === job.id ? job : jp))
                 } else {
                     console.log('Server Error - Updating Job Application: ', data);
                     alert(`Server Error - Updating Job Application: ${data.message}`);
@@ -93,11 +90,12 @@ function MyJobPostings() {
         });
     }
 
-    async function handleJPStatusChange(jobPosting, status) {
-        if (!jobPosting || jobPosting.status === status)
+    async function handleJPStatusChange(status) {
+        if (!selJobPosting || selJobPosting.status === status)
             return;
 
-        await fetch(`/jobpostings/${jobPosting.id}`, {
+        let job = {};
+        await fetch(`/jobpostings/${selJobPosting.id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -106,13 +104,16 @@ function MyJobPostings() {
                 status: status
             }),
         })
-        .then(r => {
+        .then(async r => {
             // <= Don't I need await here???
-            r.json().then(data => {
+            await r.json().then(data => {
                 if (r.ok) {
-                    onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === data.id ? data : jp));
+                    job = {...data};
                     setSelJobPosting(data);
                     setStatusCat([]);
+                    setJobPostings(jobPostings.map(jp => jp.id === data.id ? data : jp));
+                    onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === data.id ? data : jp));
+                    // console.log('in handleJPStatusChange, Pre: ', data);
                 } else {
                     console.log('Server Error - Updating Job Posting: ', data);
                     alert(`Server Error - Updating Job Posting: ${data.message}`);
@@ -121,12 +122,13 @@ function MyJobPostings() {
         });
 
         if (status === 'open') {
-            for (let i = 0; i < jobApps.length; i++) {
-                if (jobApps[i].status === 'new')
+            const apps = job.job_applications;
+            for (let i = 0; i < apps.length; i++) {
+                if (apps[i].status === 'new')
                     continue;
 
-                console.log('in handleJPStatusChange, change app status to new: app: ', jobApps[i]);
-                await fetch(`/jobapplications/${jobApps[i].id}`, {
+                console.log('in handleJPStatusChange, change app status to new: app: ', apps[i]);
+                await fetch(`/jobapplications/${apps[i].id}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -135,12 +137,19 @@ function MyJobPostings() {
                         status: 'new',
                     }),
                 })
-                .then(r => {
+                .then(async r => {
                     // <= Don't I need await here???
-                    r.json().then(data => {
+                    await r.json().then(data => {
                         if (r.ok) {
-                            setJobApps(jobApps.map(app => app.id === data.id ? data : app));
-                            // => It can be much better to get the entire list of apps after all patch operations!!!!!!!!!
+                            apps[i] = data;
+                            const updatedJob = {
+                                ...job,
+                                job_applications: apps,
+                            };
+                            // console.log('in handleJPStatusChange, ', i, ': ', data);
+                            setSelJobPosting(updatedJob);
+                            setJobPostings(jobPostings.map(jp => jp.id === updatedJob.id ? updatedJob : jp));
+                            onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === updatedJob.id ? updatedJob : jp));
                         } else  {
                             console.log('Server Error - Updating Job Application: ', data);
                             alert(`Server Error - Updating Job Application: ${data.message}`);
@@ -160,19 +169,21 @@ function MyJobPostings() {
         })
         .then(r => {
             if (r.ok) {
-                onSetEmpJobPostingsR(empJobPostingsR.filter((jp, i) => {
+                setJobPostings(jobPostings.filter((jp, i) => {
                     if (jp.id === job.id && 
                         selJobPosting && selJobPosting.id === jp.id) {
-                        if (i < empJobPostingsR.length - 1)
-                            setSelJobPosting(empJobPostingsR[i+1]);
+                        if (i < jobPostings.length - 1)
+                            setSelJobPosting(jobPostings[i+1]);
                         else if (i > 0)
-                            setSelJobPosting(empJobPostingsR[i-1]);
+                            setSelJobPosting(jobPostings[i-1]);
                         else
                             setSelJobPosting(null);
                     }
 
                     return jp.id !== job.id;
                 }));
+
+                onSetEmpJobPostingsR(empJobPostingsR.filter(jp => jp.id !== job.id));
             } else {
                 r.json().then(data => {
                     console.log('Server Error - Deleting Job Posting: ', data);
@@ -182,10 +193,10 @@ function MyJobPostings() {
         })
     }
 
-    if (!selJobPosting && empJobPostingsR.length)
-        setSelJobPosting(empJobPostingsR[0]);
+    if (!selJobPosting && jobPostings.length)
+        setSelJobPosting(jobPostings[0]);
 
-    const dispJobCards = empJobPostingsR.map(job => {
+    const dispJobCards = jobPostings.map(job => {
         const cardColor = (selJobPosting && job.id === selJobPosting.id) ? 'aliceblue' : 'white';
         const statusColor = job.status === 'open' ? 'lightskyblue' : (job.status === 'review' ? 'tomato' : 'lightgray');
         const status = job.status === 'open' ? 'Open' : (job.status === 'review' ? 'In review' : 'Closed');
@@ -213,17 +224,17 @@ function MyJobPostings() {
         );
     });
 
-    // const filterJobApps = statusCat.length ? 
-    //     jobApps.filter(app => statusCat.includes(app.status)) : 
-    //     jobApps;
-
+    console.log('MyJobPostings, jobPostings: ', jobPostings);
+    console.log('MyJobPostings, selJobPosting: ', selJobPosting);
+    
+    const apps = selJobPosting ? selJobPosting.job_applications : [];
     const filterJobApps = statusCat.length ? 
-        jobApps.filter(app => statusCat.includes(
+        apps.filter(app => statusCat.includes(
             (selJobPosting && selJobPosting.status === 'close' && app.status === 'new') ? 
             'declined' : 
             app.status)
         ) : 
-        jobApps;
+        apps;
 
     const dispSelJobApps = filterJobApps.map(app => {
         // This case only happens when debugging....
@@ -292,8 +303,6 @@ function MyJobPostings() {
         );
     });
 
-    console.log('MyJobPostings, empJobPostingsR: ', empJobPostingsR);
-    console.log('MyJobPostings, selJobPosting: ', selJobPosting);
     console.log('MyJobPostings, filterJobApps: ', filterJobApps);
     console.log('MyJobPostings, statusCat: ', statusCat);
 
@@ -313,11 +322,11 @@ function MyJobPostings() {
             <div style={{gridArea: 'toolBar', }}>
                 <ButtonGroup style={{margin: '5px 3px', }}>
                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'open')} color='blue'
-                        onClick={() => handleJPStatusChange(selJobPosting, 'open')}>Open</Button>
+                        onClick={() => handleJPStatusChange('open')}>Open</Button>
                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'review')} color='orange'
-                        onClick={() => handleJPStatusChange(selJobPosting, 'review')}>In Review</Button>
+                        onClick={() => handleJPStatusChange('review')}>In Review</Button>
                     <Button basic={!selJobPosting || (selJobPosting && selJobPosting.status !== 'close')} color='grey'
-                        onClick={() => handleJPStatusChange(selJobPosting, 'close')}>Close</Button>
+                        onClick={() => handleJPStatusChange('close')}>Close</Button>
                 </ButtonGroup>
                 <Dropdown style={{float: 'right', }} icon='filter' 
                     labeled button className='icon' 
