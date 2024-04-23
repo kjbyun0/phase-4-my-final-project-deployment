@@ -78,7 +78,7 @@ function MyJobPostings() {
                 if (r.ok) {
                     const job = {
                         ...selJobPosting,
-                        job_applications: selJobPosting.job_applications.map(app => app.id == data.id ? data : app),
+                        job_applications: selJobPosting.job_applications.map(app => app.id === data.id ? data : app),
                     };
                     setSelJobPosting(job);
                     setJobPostings(jobPostings.map(jp => jp.id === job.id ? job : jp))
@@ -311,8 +311,7 @@ function MyJobPostings() {
             gridTemplateColumns: '10% 25% 1fr 10%', 
             gridTemplateRows: 'max-content 1fr', 
             gridTemplateAreas: 
-                "'leftMargin cards toolBar rightMargin' \
-                'leftMargin cards list rightMargin'", }}>
+                "'leftMargin cards toolBar rightMargin' 'leftMargin cards list rightMargin'", }}>
             <div style={{gridArea: 'leftMargin', background: 'lightgray', }} />
             <div style={{gridArea: 'cards', overflow: 'auto', paddingTop: '5px', marginTop: '5px', }}>
                 <CardGroup itemsPerRow={1} centered>

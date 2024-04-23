@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Form, FormField, Label, Input, Button, Checkbox, 
-    Modal, ModalContent, ModalActions } from 'semantic-ui-react';
+import { Form, Input, Button, Checkbox } from 'semantic-ui-react';
 import { updateUserInfo } from '../components/commonLib';
 
 function Signup() {

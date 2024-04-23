@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { CardGroup, Card, CardContent, CardHeader, CardMeta, Button, 
-        Dropdown, Icon } from 'semantic-ui-react';
+        Dropdown, } from 'semantic-ui-react';
 
 function JobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
@@ -319,8 +319,7 @@ function JobPostings() {
             gridTemplateColumns: '10% 25% 1fr 10%',
             gridTemplateRows: 'max-content 1fr', 
             gridTemplateAreas: 
-                "'filterBar filterBar filterBar filterBar' \
-                'leftMargin cards details rightMargin'", }}>
+                "'filterBar filterBar filterBar filterBar' 'leftMargin cards details rightMargin'", }}>
             <div style={{gridArea: 'filterBar', margin: '0 5%' }}>
                 {
                     filterTypes.map((type, i) => 

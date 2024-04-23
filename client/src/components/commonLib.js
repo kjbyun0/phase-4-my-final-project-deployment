@@ -1,7 +1,7 @@
 
 
 function updateUserInfo(userData, setUserR, setEmpJobPostingsR, setAppJobAppsR, setAppFavJobsR) {
-  const {applicant, employer, ... userRemainings} = userData;
+  const {applicant, employer, ...userRemainings} = userData;
   const {job_applications, favorite_jobs, ...appRemainings} = userData.applicant ? userData.applicant : {};
   const {job_postings, ...empRemainings} = userData.employer ? userData.employer : {};
 

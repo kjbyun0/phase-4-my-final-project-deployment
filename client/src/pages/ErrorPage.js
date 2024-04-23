@@ -1,7 +1,4 @@
-import { useEffect } from 'react';
-import { useRouteError } from 'react-router-dom';
-import NavBar from '../components/NavBar';
-import { updateUserInfo } from '../components/commonLib';
+import { useRouteError } from 'react-router-dom';;
 
 function ErrorPage() {
     const error = useRouteError();

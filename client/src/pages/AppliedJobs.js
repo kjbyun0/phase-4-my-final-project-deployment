@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ItemGroup, Item, ItemContent, ItemHeader, 
-    ItemMeta, ItemDescription, ItemExtra, Label,
+    ItemMeta, ItemExtra, Label,
     Dropdown, Button } from 'semantic-ui-react';
 
 
@@ -70,7 +70,7 @@ function AppliedJobs() {
                                 appliedJobsStatus;
 
     const dispFilteredAppliedJobsStatus = filterAppliedJobsStatus.map(app => {
-        let statusIcon, statusColor;
+        let statusIcon='', statusColor='';
         switch(app.status) {
             case 'Applied':
                 statusIcon = 'pin'; statusColor = 'lightblue';
@@ -93,9 +93,6 @@ function AppliedJobs() {
                 <ItemContent>
                     <ItemHeader>{app.job_posting.title}</ItemHeader>
                     <ItemMeta>{app.job_posting.employer.name}</ItemMeta>
-                    {/* <ItemDescription>Job type: {app.job_posting.job_category}</ItemDescription>
-                    <ItemDescription>Pay: {app.job_posting.pay}/hr</ItemDescription>
-                    <ItemDescription>Remote: {app.job_posting.remote}</ItemDescription> */}
                     <ItemExtra>
                         <Label style={{background: statusColor,}} icon={statusIcon} content={app.status} />
                     </ItemExtra>
@@ -118,8 +115,7 @@ function AppliedJobs() {
             gridTemplateColumns: '20% 1fr 20%', 
             gridTemplateRows: 'max-content 1fr', 
             gridTemplateAreas: 
-                "'leftMargin filterBar rightMargin' \
-                'leftMargin list rightMargin'", }}>
+                "'leftMargin filterBar rightMargin' 'leftMargin list rightMargin'", }}>
             <div style={{gridArea: 'leftMargin', background: 'lightgray', }} />
             <div style={{gridArea: 'filterBar', margin: '5px 0', }}>
                 <Dropdown style={{ float: 'right', }} icon='filter' 

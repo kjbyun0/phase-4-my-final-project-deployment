@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ItemGroup, Item, ItemContent, ItemHeader, ItemMeta, ItemExtra, 
-    Label, Dropdown, Button, IconGroup, Icon, } from 'semantic-ui-react';
+    Label, Dropdown, Button, } from 'semantic-ui-react';
 
 function FavoriteJobs() {
     const { userR, appFavJobsR, onSetAppFavJobsR, appJobAppsR } = useOutletContext();
@@ -72,7 +72,7 @@ function FavoriteJobs() {
         favoriteJobsStatus.filter(fjob => statusCat.includes(fjob.status));
 
     const dispFilteredFavoriteJobs = filterFavoriteJobs.map(fjob => {
-        let statusIcon, statusColor;
+        let statusIcon='', statusColor='';
         switch (fjob.status) {
             case 'Open':
                 statusIcon = 'info circle'; statusColor = 'dodgerblue';
@@ -115,8 +115,7 @@ function FavoriteJobs() {
             gridTemplateColumns: '20% 1fr 20%', 
             gridTemplateRows: 'max-content 1fr', 
             gridTemplateAreas: 
-                "'leftMargin filterBar rightMargin' \
-                'leftMargin list rightMargin'"}}>
+                "'leftMargin filterBar rightMargin' 'leftMargin list rightMargin'"}}>
             <div style={{gridArea: 'leftMargin', background: 'lightgray', }} />
             <div style={{gridArea: 'filterBar', margin: '5px 0', }}>
                 <Dropdown style={{ float: 'right', }} icon='filter' 
