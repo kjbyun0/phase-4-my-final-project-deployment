@@ -150,7 +150,7 @@ class JobPosting_by_id(Resource):
                 }, 400)
             return make_response(job_posting.to_dict(), 200)
 
-        make_response({
+        return make_response({
             'message': f'Job Post {id} not found'
         }, 404)
     
