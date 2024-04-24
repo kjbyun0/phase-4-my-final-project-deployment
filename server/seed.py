@@ -15,13 +15,13 @@ if __name__ == '__main__':
     with app.app_context():
         print("Starting seed...")
         # Seed code goes here!
-        User.query.delete()
-        Employer.query.delete()
-        Applicant.query.delete()
-        JobCategory.query.delete()
-        JobPosting.query.delete()
-        JobApplication.query.delete()
         FavoriteJob.query.delete()
+        JobApplication.query.delete()
+        JobPosting.query.delete()
+        User.query.delete()
+        Applicant.query.delete()
+        Employer.query.delete()
+        JobCategory.query.delete()
         db.session.commit()
 
         users = []
@@ -105,31 +105,4 @@ if __name__ == '__main__':
                 applicant = applicants[0]
             ))
         db.session.add_all(job_applications)
-
-        favorite_jobs = []
-        favorite_jobs.append(FavoriteJob(
-            applicant_id = 2,
-            job_posting_id = 1
-        ))
-        favorite_jobs.append(FavoriteJob(
-            applicant_id = 2,
-            job_posting_id = 2
-        ))
-        favorite_jobs.append(FavoriteJob(
-            applicant_id = 2,
-            job_posting_id = 3
-        ))
-        favorite_jobs.append(FavoriteJob(
-            applicant_id = 3,
-            job_posting_id = 1
-        ))
-        favorite_jobs.append(FavoriteJob(
-            applicant_id = 3,
-            job_posting_id = 3
-        ))
-        favorite_jobs.append(FavoriteJob(
-            applicant_id = 3,
-            job_posting_id = 4
-        ))
-        db.session.add_all(favorite_jobs)
         db.session.commit()
