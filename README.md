@@ -18,14 +18,12 @@ The frontend application is developed using react and semantic ui react, and the
  . $ npm run start --prefix client
 
 ## Demo
-![](https://github.com/kjbyun0/phase-2-my-final-project-frontend/blob/main/ForREADME.gif)
-
+![](https://github.com/kjbyun0/phase-4-my-final-project/blob/main/ForREADME.gif)
 
 ## Credits
 I reviewed linkedin, indeed, and glassdoor to refer to their presentation styles
 
 ### Deployment
-
 - Frontend: [https://p4-project.onrender.com/](https://p4-project.onrender.com/)
 - Backend: [https://kjbyun0-phase2-backend.onrender.com](https://kjbyun0-phase2-backend.onrender.com) + add a path 
 
