@@ -7,21 +7,21 @@ The frontend application is developed using react and semantic ui react, and the
 
 ## Installation
 - Clone this project repository, https://github.com/kjbyun0/phase-4-my-final-project
-- Flask App(Backend): 
- . $ pipenv install && pipenv shell
- . $ cd server
- . $ flask db upgrade
- . $ python seed.py
- . $ python app.py
-- React(Frontend): 
- . $ npm install --prefix client
- . $ npm run start --prefix client
+- Flask App(Backend): <br>
+ . $ pipenv install && pipenv shell<br>
+ . $ cd server<br>
+ . $ flask db upgrade<br>
+ . $ python seed.py<br>
+ . $ python app.py<br>
+- React(Frontend): <br>
+ . $ npm install --prefix client<br>
+ . $ npm run start --prefix client<br>
 
 ## Demo
 ![](https://github.com/kjbyun0/phase-4-my-final-project/blob/main/ForREADME.gif)
 
 ## Credits
-I reviewed linkedin, indeed, and glassdoor to refer to their presentation styles
+I reviewed linkedin, indeed, and glassdoor and applied some of their page designs.
 
 ### Deployment
 - Frontend: [https://p4-project.onrender.com/](https://p4-project.onrender.com/)
