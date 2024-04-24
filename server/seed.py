@@ -40,8 +40,8 @@ if __name__ == '__main__':
                 ))
             
             users.append(User(
-                username = f'test{i}',
-                password_hash = f'test{i}',
+                username = f'empl{i}' if i < 5 else f'appl{i}',
+                password_hash = f'empl{i}' if i < 5 else f'appl{i}',
                 email = f'test{i}@gmail.com',
                 phone = f'{i%10}{i%10}{i%10})000-0000',
                 street_1 = f'{i%10}{i%10}{i%10}{i%10}{i%10} Westwood Blvd',
