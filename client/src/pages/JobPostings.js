@@ -121,8 +121,13 @@ function JobPostings() {
                         });
                 } else {
                     r.json().then(data => {
-                        console.log('Server Error - Deleting Favorite Job: ', data);
-                        alert(`Server Error - Deleting Favorite Job: ${data.message}`);
+                        if (r.status === 401 || r.status === 403) {
+                            console.log(data);
+                            alert(data.message);
+                        } else {
+                            console.log('Server Error - Deleting Favorite Job: ', data);
+                            alert(`Server Error - Deleting Favorite Job: ${data.message}`);
+                        }
                     });
                 }
             });
@@ -156,6 +161,9 @@ function JobPostings() {
                                 jobPost: jobPost.jobPost,
                                 favoriteJob: data,
                             });
+                    } else if (r.status === 401 || r.status === 403) {
+                        console.log(data);
+                        alert(data.message);
                     } else {
                         console.log('Server Error - Creating Favorite Job: ', data);
                         alert(`Server Error - Creating Favorite Job: ${data.message}`);
@@ -197,8 +205,13 @@ function JobPostings() {
                 }));
             } else {
                 r.json().then(data =>{
-                    console.log('Server Error - Deleting Job Posting: ', data);
-                    alert(`Server Error - Deleting Job Posting: ${data.message}`);
+                    if (r.status === 401 || r.status === 403) {
+                        console.log(data);
+                        alert(data.message);
+                    } else {
+                        console.log('Server Error - Deleting Job Posting: ', data);
+                        alert(`Server Error - Deleting Job Posting: ${data.message}`);
+                    }
                 });
             }
         });

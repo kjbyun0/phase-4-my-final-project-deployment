@@ -65,6 +65,9 @@ function JobPostingForm() {
                             data,
                         ]);
                         navigate('/');
+                    } else if (r.status === 401 || r.status === 403) {
+                        console.log(data);
+                        alert(data.message);
                     } else {
                         console.log('Server Error - New Job Posting: ', data);
                         alert(`Server Error - New Job Posting: ${data.message}`);

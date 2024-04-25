@@ -82,6 +82,9 @@ function MyJobPostings() {
                     };
                     setSelJobPosting(job);
                     setJobPostings(jobPostings.map(jp => jp.id === job.id ? job : jp))
+                } else if (r.status === 401 || r.status === 403) {
+                    console.log(data);
+                    alert(data.message);
                 } else {
                     console.log('Server Error - Updating Job Application: ', data);
                     alert(`Server Error - Updating Job Application: ${data.message}`);
@@ -114,6 +117,9 @@ function MyJobPostings() {
                     setJobPostings(jobPostings.map(jp => jp.id === data.id ? data : jp));
                     onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === data.id ? data : jp));
                     // console.log('in handleJPStatusChange, Pre: ', data);
+                } else if (r.status === 401 || r.status === 403) {
+                    console.log(data);
+                    alert(data.message);
                 } else {
                     console.log('Server Error - Updating Job Posting: ', data);
                     alert(`Server Error - Updating Job Posting: ${data.message}`);
@@ -150,7 +156,10 @@ function MyJobPostings() {
                             setSelJobPosting(updatedJob);
                             setJobPostings(jobPostings.map(jp => jp.id === updatedJob.id ? updatedJob : jp));
                             onSetEmpJobPostingsR(empJobPostingsR.map(jp => jp.id === updatedJob.id ? updatedJob : jp));
-                        } else  {
+                        } else if (r.status === 401 || r.status === 403) {
+                            console.log(data);
+                            alert(data.message);
+                        } else {
                             console.log('Server Error - Updating Job Application: ', data);
                             alert(`Server Error - Updating Job Application: ${data.message}`);
                         }
@@ -186,8 +195,13 @@ function MyJobPostings() {
                 onSetEmpJobPostingsR(empJobPostingsR.filter(jp => jp.id !== job.id));
             } else {
                 r.json().then(data => {
-                    console.log('Server Error - Deleting Job Posting: ', data);
-                    alert(`Server Error - Deleting Job Posting: ${data.message}`);
+                    if (r.status === 401 || r.status === 403) {
+                        console.log(data);
+                        alert(data.message);
+                    } else {
+                        console.log('Server Error - Deleting Job Posting: ', data);
+                        alert(`Server Error - Deleting Job Posting: ${data.message}`);
+                    }
                 });
             }
         })

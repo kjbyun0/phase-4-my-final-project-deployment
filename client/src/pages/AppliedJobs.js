@@ -41,9 +41,14 @@ function AppliedJobs() {
                 onSetAppJobAppsR(appJobAppsR.filter(ja => ja.id !== app.id));
             } else {
                 r.json().then(data => {
-                    console.log('Server Error - Deleting Job Application: ', data);
-                    alert(`Server Error - Deleting Job Application: ${data.message}`);
-                })
+                    if (r.status === 401 || r.status === 403) {
+                        console.log(data);
+                        alert(data.message);
+                    } else {
+                        console.log('Server Error - Deleting Job Application: ', data);
+                        alert(`Server Error - Deleting Job Application: ${data.message}`);
+                    }
+                });
             }
         })
     }

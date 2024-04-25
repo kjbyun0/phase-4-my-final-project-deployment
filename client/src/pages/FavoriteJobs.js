@@ -40,8 +40,13 @@ function FavoriteJobs() {
                 onSetAppFavJobsR(appFavJobsR.filter(fj => fj.id !== fjob.id));
             } else {
                 r.json().then(data => {
-                    console.log('Server Error - Deleting Favorite Job: ', data);
-                    alert(`Server Error - Deleting Favorite Job: ${data.message}`);
+                    if (r.status === 401 || r.status === 403) {
+                        console.log(data);
+                        alert(data.message);
+                    } else {
+                        console.log('Server Error - Deleting Favorite Job: ', data);
+                        alert(`Server Error - Deleting Favorite Job: ${data.message}`);
+                    }
                 });
             }
         });

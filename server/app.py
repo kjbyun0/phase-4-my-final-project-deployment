@@ -23,9 +23,9 @@ def index():
 class Authenticate(Resource):
     # login
     def post(self):
-        signin_dict = request.get_json()
-        user = User.query.filter_by(username=signin_dict.get('username')).first()
-        if user and user.authenticate(signin_dict.get('password')):
+        req = request.get_json()
+        user = User.query.filter_by(username=req.get('username')).first()
+        if user and user.authenticate(req.get('password')):
             session['user_id'] = user.id
             return make_response(user.to_dict(), 200)
         return make_response({
@@ -49,33 +49,33 @@ class Authenticate(Resource):
 
 class Signup(Resource):
     def post(self):
-        account_req_dict = request.get_json()
+        req = request.get_json()
         # print(f'account_req_dict: {account_req_dict}')
         try:
-            if account_req_dict.get('isEmployer'):
-                new_employer = Employer(name = account_req_dict.get('name'))
+            if req.get('isEmployer'):
+                new_employer = Employer(name = req.get('name'))
                 db.session.add(new_employer)
             else:
                 new_applicant = Applicant(
-                    first_name = account_req_dict.get('firstName'),
-                    last_name = account_req_dict.get('lastName'),
-                    mobile = account_req_dict.get('mobile')
+                    first_name = req.get('firstName'),
+                    last_name = req.get('lastName'),
+                    mobile = req.get('mobile')
                 )
                 db.session.add(new_applicant)
 
             new_user = User(
-                username = account_req_dict.get('username'),
-                password_hash = account_req_dict.get('password'),
-                email = account_req_dict.get('email'),
-                phone = account_req_dict.get('phone'),
-                street_1 = account_req_dict.get('street1'),
-                street_2 = account_req_dict.get('street2'),
-                city = account_req_dict.get('city'),
-                state = account_req_dict.get('state'),
-                zip_code = account_req_dict.get('zipCode'),
+                username = req.get('username'),
+                password_hash = req.get('password'),
+                email = req.get('email'),
+                phone = req.get('phone'),
+                street_1 = req.get('street1'),
+                street_2 = req.get('street2'),
+                city = req.get('city'),
+                state = req.get('state'),
+                zip_code = req.get('zipCode'),
 
-                employer = new_employer if account_req_dict.get('isEmployer') else None,
-                applicant = new_applicant if not account_req_dict.get('isEmployer') else None
+                employer = new_employer if req.get('isEmployer') else None,
+                applicant = new_applicant if not req.get('isEmployer') else None
             )
             db.session.add(new_user)
             db.session.commit()
@@ -94,6 +94,13 @@ class JobCategories(Resource):
         return make_response(job_categories, 200)
     
     def post(self):
+        # Allow this operation only when user is login
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.employer:
+            return make_response({
+                'message': 'Need to sign in with your employer account',
+            }, 401 if not user else 403)
+        
         req = request.get_json()
         try: 
             cat = JobCategory(
@@ -115,20 +122,24 @@ class JobPostings(Resource):
         return make_response(job_postings, 200)
     
     def post(self):
-        new_job_dict = request.get_json()
-        new_job_category = JobCategory.query.filter_by(category=new_job_dict.get('category')).first()
-        user = User.query.filter_by(id=session['user_id']).first()
-        employer = user.employer
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.employer:
+            return make_response({
+                'message': 'Need to sign in with your employer account',
+            }, 401 if not user else 403)
+
+        req = request.get_json()
+        new_job_category = JobCategory.query.filter_by(category=req.get('category')).first()
         try:
             new_job = JobPosting(
-                title = new_job_dict.get('title'),
-                description = new_job_dict.get('description'),
-                pay = new_job_dict.get('pay'),
-                job_type = new_job_dict.get('job_type'),
-                remote = new_job_dict.get('remote'),
-                status = new_job_dict.get('status'),
+                title = req.get('title'),
+                description = req.get('description'),
+                pay = req.get('pay'),
+                job_type = req.get('job_type'),
+                remote = req.get('remote'),
+                status = req.get('status'),
                 job_category = new_job_category,
-                employer = employer
+                employer = user.employer
             )
             db.session.add(new_job)
             db.session.commit()
@@ -151,12 +162,18 @@ class JobPosting_by_id(Resource):
         }, 404)
     
     def patch(self, id):
-        request_dict = request.get_json()
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.employer:
+            return make_response({
+                'message': 'Need to sign in with your employer account',
+            }, 401 if not user else 403)
+
+        req = request.get_json()
         job_posting = JobPosting.query.filter_by(id=id).first()
         if job_posting:
             try: 
-                for key in request_dict:
-                    setattr(job_posting, key, request_dict[key])
+                for key in req:
+                    setattr(job_posting, key, req[key])
                 db.session.add(job_posting)
                 db.session.commit()
             except Exception as exc:
@@ -170,6 +187,12 @@ class JobPosting_by_id(Resource):
         }, 404)
     
     def delete(self, id):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.employer:
+            return make_response({
+                'message': 'Need to sign in with your employer account',
+            }, 401 if not user else 403)
+
         job_posting = JobPosting.query.filter_by(id=id).first()
         if job_posting:
             try: 
@@ -188,21 +211,31 @@ class JobPosting_by_id(Resource):
 
 class JobApplications(Resource):
     def get(self):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user:
+            return make_response({
+                'message': 'Need to sign in',
+            }, 401)
+
         job_apps = [job_app.to_dict() for job_app in JobApplication.query.all()]
         return make_response(job_apps, 200)
 
     def post(self):
-        new_job_app_dict = request.get_json()
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.applicant:
+            return make_response({
+                'message': 'Need to sign in with your applicant account',
+            }, 401 if not user else 403)
+
+        req = request.get_json()
         try:
             new_job_app = JobApplication(
-                education = new_job_app_dict.get('education'),
-                experience = new_job_app_dict.get('experience'),
-                certificate = new_job_app_dict.get('certificate'),
-                status = new_job_app_dict.get('status'),
-                job_posting_id = new_job_app_dict.get('job_posting_id'),
-                applicant_id = new_job_app_dict.get('applicant_id')
-                # => It needs to be requested only by an applicant, not by an employer.
-                # => Is it possible not to have job_posting_id and application_id???? need error handling if it happens???
+                education = req.get('education'),
+                experience = req.get('experience'),
+                certificate = req.get('certificate'),
+                status = req.get('status'),
+                job_posting_id = req.get('job_posting_id'),
+                applicant_id = req.get('applicant_id')
             )
             db.session.add(new_job_app)
             db.session.commit()
@@ -216,12 +249,18 @@ class JobApplications(Resource):
 
 class JobApplication_by_id(Resource):
     def patch(self, id):
-        request_dict = request.get_json()
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user:
+            return make_response({
+                'message': 'Need to sign in with your applicant account',
+            }, 401)
+
+        req = request.get_json()
         app = JobApplication.query.filter_by(id=id).first()
         if app: 
             try: 
-                for key in request_dict:
-                    setattr(app, key, request_dict[key])
+                for key in req:
+                    setattr(app, key, req[key])
                 db.session.add(app)
                 db.session.commit()
             except Exception as exc:
@@ -235,6 +274,12 @@ class JobApplication_by_id(Resource):
         }, 404)
         
     def delete(self, id): 
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.applicant:
+            return make_response({
+                'message': 'Need to sign in with your applicant account',
+            }, 401 if not user else 403)
+        
         app = JobApplication.query.filter_by(id=id).first()
         if app:
             try:
@@ -251,17 +296,29 @@ class JobApplication_by_id(Resource):
         }, 404)
 
 
-class FavoriteJobs(Resource):    
+class FavoriteJobs(Resource):
     def get(self):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.applicant:
+            return make_response({
+                'message': 'Need to sign in with your applicant account',
+            }, 401 if not user else 403)
+
         fjobs = [fjob.to_dict() for fjob in FavoriteJob.query.all()]
         return make_response(fjobs, 200)
 
     def post(self):
-        request_dict = request.get_json()
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.applicant:
+            return make_response({
+                'message': 'Need to sign in with your applicant account',
+            }, 401 if not user else 403)
+        
+        req = request.get_json()
         try: 
             fj = FavoriteJob(
-                applicant_id = request_dict.get('applicant_id'), # <= newly changed.
-                job_posting_id = request_dict.get('job_posting_id')
+                applicant_id = req.get('applicant_id'), # <= newly changed.
+                job_posting_id = req.get('job_posting_id')
             )
             db.session.add(fj)
             db.session.commit()
@@ -274,6 +331,12 @@ class FavoriteJobs(Resource):
 
 class FavoriteJob_by_id(Resource):
     def delete(self, id):
+        user = User.query.filter_by(id=session.get('user_id')).first()
+        if not user or not user.applicant:
+            return make_response({
+                'message': 'Need to sign in with your applicant account',
+            }, 401 if not user else 403)
+
         fj = FavoriteJob.query.filter_by(id=id).first()
         if fj: 
             try: 

@@ -60,6 +60,9 @@ function JobApplicationForm() {
                         if (r.ok) {
                             onSetAppJobAppsR(appJobAppsR.map(app => app.id === data.id ? data : app));
                             navigate('/');
+                        } else if (r.status === 401 || r.status === 403) {
+                            console.log(data);
+                            alert(data.message);
                         } else {
                             console.log('Server Error - Updating Job Application: ', data);
                             alert(`Server Error - Updating Job Application: ${data.message}`);
@@ -88,6 +91,9 @@ function JobApplicationForm() {
                                 data
                             ]);
                             navigate('/');
+                        } else if (r.status === 401 || r.status === 403) {
+                            console.log(data);
+                            alert(data.message);
                         } else {
                             console.log('Server Error - New Job Application: ', data);
                             alert(`Server Error - New Job Application: ${data.message}`);
