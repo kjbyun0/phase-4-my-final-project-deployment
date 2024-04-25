@@ -301,9 +301,9 @@ class JobCategory(db.Model, SerializerMixin):
     # serialize_rules = ('-job_postings.job_category',)
 
     serialize_rules = (
-        '-job_postings.job_category',
-
-        '-job_postings.employer',
+        '-job_postings',
+        # '-job_postings.job_category',
+        # '-job_postings.employer',
         # '-job_postings.employer.user.employer',
         # '-job_postings.employer.user.applicant.user',
         # '-job_postings.employer.user.applicant.job_applications.job_posting',
@@ -313,8 +313,6 @@ class JobCategory(db.Model, SerializerMixin):
         # '-job_postings.employer.user.applicant.job_postings',
         # '-job_postings.employer.user.applicant.favorite_job_postings',
         # '-job_postings.employer.job_postings',
-
-        '-job_postings.job_applications',
         # '-job_postings.job_applications.job_posting',
         # '-job_postings.job_applications.applicant.user.employer.user',
         # '-job_postings.job_applications.applicant.user.employer.job_postings',
@@ -324,8 +322,6 @@ class JobCategory(db.Model, SerializerMixin):
         # '-job_postings.job_applications.applicant.favorite_jobs.job_posting',
         # '-job_postings.job_applications.applicant.job_postings',
         # '-job_postings.job_applications.applicant.favorite_job_postings',
-
-        '-job_postings.favorite_jobs',
         # '-job_postings.favorite_jobs.applicant.user.employer.user',
         # '-job_postings.favorite_jobs.applicant.user.employer.job_postings',
         # '-job_postings.favorite_jobs.applicant.user.applicant',
@@ -336,9 +332,8 @@ class JobCategory(db.Model, SerializerMixin):
         # '-job_postings.favorite_jobs.applicant.job_postings',
         # '-job_postings.favorite_jobs.applicant.favorite_job_postings',
         # '-job_postings.favorite_jobs.job_posting',
-
-        '-job_postings.applicants',
-        '-job_postings.favorite_applicants',
+        # '-job_postings.applicants',
+        # '-job_postings.favorite_applicants',
     )
 
     id = db.Column(db.Integer, primary_key=True)

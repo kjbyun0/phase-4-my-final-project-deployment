@@ -92,6 +92,21 @@ class JobCategories(Resource):
     def get(self):
         job_categories = [job_category.to_dict() for job_category in JobCategory.query.all()]
         return make_response(job_categories, 200)
+    
+    def post(self):
+        req = request.get_json()
+        try: 
+            cat = JobCategory(
+                category = req.get('category')
+            )
+            db.session.add(cat)
+            db.session.commit()
+        except Exception as exc:
+            return make_response({
+                'message': f'{exc}',
+            }, 400)
+        
+        return make_response({}, 201)
 
 
 class JobPostings(Resource):
@@ -172,6 +187,10 @@ class JobPosting_by_id(Resource):
 
 
 class JobApplications(Resource):
+    def get(self):
+        job_apps = [job_app.to_dict() for job_app in JobApplication.query.all()]
+        return make_response(job_apps, 200)
+
     def post(self):
         new_job_app_dict = request.get_json()
         try:
@@ -232,7 +251,11 @@ class JobApplication_by_id(Resource):
         }, 404)
 
 
-class FavoriteJobs(Resource):       
+class FavoriteJobs(Resource):    
+    def get(self):
+        fjobs = [fjob.to_dict() for fjob in FavoriteJob.query.all()]
+        return make_response(fjobs, 200)
+
     def post(self):
         request_dict = request.get_json()
         try: 
