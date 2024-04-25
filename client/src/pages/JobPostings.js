@@ -156,13 +156,13 @@ function JobPostings() {
 
     function handleCardClick(job) {
         if (selJobPosting.jobPost.id !== job.jobPost.id) {
-            console.log("in handleCardClick, selJobPosting: ", selJobPosting, ", job: ", job);
+            // console.log("in handleCardClick, selJobPosting: ", selJobPosting, ", job: ", job);
             setSelJobPosting(job);
         }
     }
 
     function handleJobPostingDeleteClick(e, o, job) {
-        console.log('in handleJobPostingDeleteClick, ');
+        // console.log('in handleJobPostingDeleteClick, ');
         e.stopPropagation();
 
         fetch(`/jobpostings/${job.jobPost.id}`, {
@@ -214,10 +214,10 @@ function JobPostings() {
     if (!selJobPosting && filteredJobPostings.length) 
         setSelJobPosting(filteredJobPostings[0]);
 
-    console.log('in JobPostings, userR: ', userR);
-    // console.log('jobPostings: ', jobPostings);
-    console.log('filteredJobPostings: ', filteredJobPostings);
-    console.log('selJobPosting: ', selJobPosting);
+    // console.log('in JobPostings, userR: ', userR);
+    // // console.log('jobPostings: ', jobPostings);
+    // console.log('filteredJobPostings: ', filteredJobPostings);
+    // console.log('selJobPosting: ', selJobPosting);
 
     const dispJobCards = filteredJobPostings.map(job => {
         const cardColor = (selJobPosting && job.jobPost.id === selJobPosting.jobPost.id) ? 'aliceblue' :  'white';

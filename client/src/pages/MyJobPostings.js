@@ -36,14 +36,14 @@ function MyJobPostings() {
 
     function handleJobPostingClick(job) {
         if (selJobPosting.id !== job.id) {
-            console.log("in handleJobPostingClick, selJobPosting: ", selJobPosting, ", job: ", job);
+            // console.log("in handleJobPostingClick, selJobPosting: ", selJobPosting, ", job: ", job);
             setSelJobPosting(job);
             setSelJobAppId(null);
         }
     }
 
     function handleAppClick(e, {index}) {
-        console.log('Accordion, e: ', e, ', index: ', index);
+        // console.log('Accordion, e: ', e, ', index: ', index);
         if (selJobAppId === index) 
             setSelJobAppId(null);
         else
@@ -51,7 +51,7 @@ function MyJobPostings() {
     }
 
     function handleAppDecisionClick(app, isHire) {
-        console.log('handleAppDecisionClick, app: ', app, ', isHire: ', isHire);
+        // console.log('handleAppDecisionClick, app: ', app, ', isHire: ', isHire);
         fetch(`/jobapplications/${app.id}`, {
             method: 'PATCH',
             headers: {
@@ -120,7 +120,7 @@ function MyJobPostings() {
                 if (apps[i].status === 'new')
                     continue;
 
-                console.log('in handleJPStatusChange, change app status to new: app: ', apps[i]);
+                // console.log('in handleJPStatusChange, change app status to new: app: ', apps[i]);
                 await fetch(`/jobapplications/${apps[i].id}`, {
                     method: 'PATCH',
                     headers: {
@@ -224,8 +224,8 @@ function MyJobPostings() {
         );
     });
 
-    console.log('MyJobPostings, jobPostings: ', jobPostings);
-    console.log('MyJobPostings, selJobPosting: ', selJobPosting);
+    // console.log('MyJobPostings, jobPostings: ', jobPostings);
+    // console.log('MyJobPostings, selJobPosting: ', selJobPosting);
     
     const apps = selJobPosting ? selJobPosting.job_applications : [];
     const filterJobApps = statusCat.length ? 
@@ -302,8 +302,8 @@ function MyJobPostings() {
         );
     });
 
-    console.log('MyJobPostings, filterJobApps: ', filterJobApps);
-    console.log('MyJobPostings, statusCat: ', statusCat);
+    // console.log('MyJobPostings, filterJobApps: ', filterJobApps);
+    // console.log('MyJobPostings, statusCat: ', statusCat);
 
     return (
         <div style={{display: 'grid', width: '100%', height: '100%', 

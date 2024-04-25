@@ -67,7 +67,7 @@ function FavoriteJobs() {
             status: status,
         });
     });
-    console.log("in FavoriteJobs, favoriteJobsStatus: ", favoriteJobsStatus);
+    // console.log("in FavoriteJobs, favoriteJobsStatus: ", favoriteJobsStatus);
 
     const filterFavoriteJobs = 
         statusCat.length === 0 ? 

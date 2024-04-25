@@ -40,10 +40,10 @@ function App() {
     });
   }, []);
 
-  console.log('in App, userR: ', userR);
-  console.log('in App, empJobPostingsR: ', empJobPostingsR);
-  console.log('in App, appJobAppsR: ', appJobAppsR);
-  console.log('in App, appFavJobsR: ', appFavJobsR);
+  // console.log('in App, userR: ', userR);
+  // console.log('in App, empJobPostingsR: ', empJobPostingsR);
+  // console.log('in App, appJobAppsR: ', appJobAppsR);
+  // console.log('in App, appFavJobsR: ', appFavJobsR);
 
   return (
     <div style={{display: 'grid', width: '100%', height: '100%', gridTemplateRows: 'max-content 1fr', }}>

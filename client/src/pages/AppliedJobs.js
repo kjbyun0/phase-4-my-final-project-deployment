@@ -23,7 +23,7 @@ function AppliedJobs() {
     }, [userR]);
 
     function handleItemClick(app) {
-        console.log('app: ', app);
+        // console.log('app: ', app);
         if (app.status === 'Applied')
             navigate(`/job_applications/${app.job_posting.id}`)
     }
@@ -36,7 +36,7 @@ function AppliedJobs() {
         })
         .then(r => {
             if (r.ok) {
-                console.log('handleAppDeleteClick, delete successful.');
+                // console.log('handleAppDeleteClick, delete successful.');
                 onSetAppJobAppsR(appJobAppsR.filter(ja => ja.id !== app.id));
             } else {
                 r.json().then(data => {
@@ -112,7 +112,7 @@ function AppliedJobs() {
         );
     });
 
-    console.log('in AppliedJobs, dispFilteredAppliedJobs: ', dispFilteredAppliedJobsStatus);
+    // console.log('in AppliedJobs, dispFilteredAppliedJobs: ', dispFilteredAppliedJobsStatus);
 
     return (
         <div style={{display: 'grid', width: '100%', height: '100%', 

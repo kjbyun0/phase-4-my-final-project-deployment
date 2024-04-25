@@ -15,9 +15,9 @@ class User(db.Model, SerializerMixin):
         '-employer.user', 
         '-employer.job_postings.job_category.job_postings',
         '-employer.job_postings.employer',
-        '-employer.job_postings.job_applications.job_posting',
-
-        '-employer.job_postings.job_applications.applicant',
+        '-employer.job_postings.job_applications',
+        # '-employer.job_postings.job_applications.job_posting',
+        # '-employer.job_postings.job_applications.applicant',
         # '-employer.job_postings.job_applications.applicant.user',
         # '-employer.job_postings.job_applications.applicant.job_applications',
         # '-employer.job_postings.job_applications.applicant.favorite_jobs.applicant',
