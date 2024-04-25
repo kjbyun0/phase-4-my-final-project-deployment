@@ -8,17 +8,6 @@ function MyJobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
     const [ selJobPosting, setSelJobPosting ] = useState(null);
     const [ selJobAppId, setSelJobAppId ] = useState(null);
-
-    // <Outlet context={{
-    //     userR: userR,
-    //     onSetUserR: setUserR,
-    //     empJobPostingsR: empJobPostingsR,
-    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
-    //     appJobAppsR: appJobAppsR,
-    //     onSetAppJobAppsR: setAppJobAppsR,
-    //     appFavJobsR: appFavJobsR,
-    //     onSetAppFavJobsR: setAppFavJobsR,
-    //   }} />
     const { userR, empJobPostingsR, onSetEmpJobPostingsR } = useOutletContext();
     const [ statusCat, setStatusCat ] = useState([]);     // app.status options: new, accepted, rejected
 
@@ -46,7 +35,6 @@ function MyJobPostings() {
     }, [userR]);
 
     function handleJobPostingClick(job) {
-        // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
         if (selJobPosting.id !== job.id) {
             console.log("in handleJobPostingClick, selJobPosting: ", selJobPosting, ", job: ", job);
             setSelJobPosting(job);
@@ -108,7 +96,6 @@ function MyJobPostings() {
             }),
         })
         .then(async r => {
-            // <= Don't I need await here???
             await r.json().then(data => {
                 if (r.ok) {
                     job = {...data};
@@ -144,7 +131,6 @@ function MyJobPostings() {
                     }),
                 })
                 .then(async r => {
-                    // <= Don't I need await here???
                     await r.json().then(data => {
                         if (r.ok) {
                             apps[i] = data;
@@ -251,7 +237,6 @@ function MyJobPostings() {
         apps;
 
     const dispSelJobApps = filterJobApps.map(app => {
-        // This case only happens when debugging....
         if (!selJobPosting)
             return null;
 

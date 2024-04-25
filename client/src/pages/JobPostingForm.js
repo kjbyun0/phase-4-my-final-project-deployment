@@ -6,17 +6,6 @@ import { Form, FormField, Input, Dropdown, TextArea, Button } from 'semantic-ui-
 
 function JobPostingForm() {
     const [ categories, setCagetories ] = useState([]);
-
-    // <Outlet context={{
-    //     userR: userR,
-    //     onSetUserR: setUserR,
-    //     empJobPostingsR: empJobPostingsR,
-    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
-    //     appJobAppsR: appJobAppsR,
-    //     onSetAppJobAppsR: setAppJobAppsR,
-    //     appFavJobsR: appFavJobsR,
-    //     onSetAppFavJobsR: setAppFavJobsR,
-    //   }} />
     const { userR, empJobPostingsR, onSetEmpJobPostingsR } = useOutletContext();
 
     const navigate = useNavigate();
@@ -25,11 +14,13 @@ function JobPostingForm() {
             navigate('/signin');
     }, [userR]);
 
-    // => I need to move this to app.js and share it usig useOutletContext...
     useEffect(() => {
         fetch('/jobcategories')
         .then(r => r.json())
-        .then(data => setCagetories(data))
+        .then(data => {
+            setCagetories(data)
+            formik.setFieldValue('category', data.length ? data[0].category : '');
+        });
     }, []);
 
     const formSchema = yup.object().shape({
@@ -41,7 +32,7 @@ function JobPostingForm() {
     const formik = useFormik({
         initialValues: {
             title: '',
-            category: 'Cleaner', // => temporary hard coding initialization....
+            category: '',
             description: '',
             pay: 0.0,
             job_type: 'Full time',
@@ -89,7 +80,7 @@ function JobPostingForm() {
                         {formik.errors.title && formik.touched.title && <div style={{ color: 'red', }}>{formik.errors.title}</div>}
                     </FormField>
                     <FormField inline>
-                        <label style={{fontSize: '1.1em'}}>Job Category:</label>
+                        <label style={{fontSize: '1.1em', margin: '0 15px 0 0', }}>Job Category:</label>
                         <Dropdown selection search value={formik.values.category} 
                             onChange={(e, selVal) => formik.setFieldValue('category', selVal.value)}  
                             options={categories.map(category => ({

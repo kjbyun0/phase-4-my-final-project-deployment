@@ -6,16 +6,6 @@ import { CardGroup, Card, CardContent, CardHeader, CardMeta, Button,
 function JobPostings() {
     const [jobPostings, setJobPostings] = useState([]);
     const [selJobPosting, setSelJobPosting] = useState(null);
-    // <Outlet context={{
-    //     userR: userR,
-    //     onSetUserR: setUserR,
-    //     empJobPostingsR: empJobPostingsR,
-    //     onSetEmpJobPostingsR: setEmpJobPostingsR,
-    //     appJobAppsR: appJobAppsR,
-    //     onSetAppJobAppsR: setAppJobAppsR,
-    //     appFavJobsR: appFavJobsR,
-    //     onSetAppFavJobsR: setAppFavJobsR,
-    //   }} />
     const {userR, empJobPostingsR, onSetEmpJobPostingsR, appFavJobsR, onSetAppFavJobsR} = useOutletContext();
     const navigate = useNavigate();
 
@@ -74,15 +64,7 @@ function JobPostings() {
     function handleApplyClick() {
         if (userR) {
             navigate(`/job_applications/${selJobPosting.jobPost.id}`);
-            // => I don't need the codes below anymore because job list displayed in this page are all in open status!!!!!
-            // const app = selJobPosting.jobPost.job_applications.find(app => app.applicant_id === userR.applicant_id);
-            // if (!app || app.status === 'new')
-            //     navigate(`/job_applications/${selJobPosting.jobPost.id}`);
-            // else {
-            //     alert("Your application was reviewed. Please, check the result.");
-            // } 
         } else {
-            // => Semantic ui react의 Confirm을 사용하는 것 고려...
             alert("Please, sign in before applying for a job.");
             navigate('/signin');
         }
@@ -95,7 +77,7 @@ function JobPostings() {
             alert("Please, sign in before adding it to your favorite jobs.");
             navigate('/signin');
             return;
-        } else if (!userR.applicant) { //<= it never occurs!!!
+        } else if (!userR.applicant) {
             alert("You are signed in with your employer account. Please, sign in again.");
             return;
         }
@@ -140,7 +122,6 @@ function JobPostings() {
                 body: JSON.stringify({
                     applicant_id: userR.applicant_id,
                     job_posting_id: jobPost.jobPost.id,
-                    // I'm not gonna send the applicant_id because server can get it from session.
                 }),
             })
             .then(r => {
@@ -174,7 +155,6 @@ function JobPostings() {
     }
 
     function handleCardClick(job) {
-        // => Why do I need this condition??? I need to figure it out!!!!!!!!!!!!!!!!!!!!!!!!!
         if (selJobPosting.jobPost.id !== job.jobPost.id) {
             console.log("in handleCardClick, selJobPosting: ", selJobPosting, ", job: ", job);
             setSelJobPosting(job);

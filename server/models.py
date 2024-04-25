@@ -10,10 +10,6 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    # serialize_rules = ('-_password_hash', 
-    #                    '-employer.user', '-employer.job_postings', 
-    #                    '-applicant.user', '-applicant.job_applications', '-applicant.favorite_jobs',)
-    
     serialize_rules = (
         '-_password_hash', 
         '-employer.user', 
@@ -141,8 +137,6 @@ class User(db.Model, SerializerMixin):
 class Employer(db.Model, SerializerMixin):
     __tablename__ = 'employers'
 
-    # serialize_rules = ('-user.employer', '-job_postings.employer',)
-
     serialize_rules = (
         '-user.employer',
 
@@ -213,8 +207,6 @@ class Employer(db.Model, SerializerMixin):
  
 class Applicant(db.Model, SerializerMixin): 
     __tablename__ = 'applicants'
-    
-    # serialize_rules = ('-user.applicant', '-job_applications.applicant', '-favorite_jobs.applicant',)
 
     seriaize_rules = (
         '-user.employer',
@@ -349,11 +341,6 @@ class JobCategory(db.Model, SerializerMixin):
 class JobPosting(db.Model, SerializerMixin):
     __tablename__ = 'job_postings'
 
-    # serialize_rules = ('-job_category.job_postings', 
-    #                    '-employer.job_postings', 
-    #                    '-job_appliacations.job_posting', '-job_applications.applicant', 
-    #                    '-favorite_jobs.job_posting', '-favorite_jobs.applicant',)
-
     serialize_rules = (
         '-job_category.job_postings',
         '-employer.user.employer',
@@ -424,9 +411,6 @@ class JobPosting(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<JobPosting {self.id} {self.title}>'
     
-    # title: yup.string().required("Must enter a title"),
-    # pay: yup.number().positive('Must be a positive number'),
-    # description: yup.string().required('Must enter a job description'),
     @validates('title', 'description', 'pay', 'job_type', 'remote', 'status')
     def validate(self, key, value):
         if key == 'title':
@@ -453,10 +437,6 @@ class JobPosting(db.Model, SerializerMixin):
     
 class JobApplication(db.Model, SerializerMixin): 
     __tablename__ = 'job_applications'
-
-    # serialize_rules = ('-job_posting.job_applications', '-job_posting.favorite_jobs'
-    #                    '-applicant.job_applications', '-applicant.favorite_jobs',)
-    # serialize_rules = ('-job_posting.job_applications', '-applicant.job_applications', ) <= This one was used.
 
     serialize_rules = (
         '-job_posting.job_category.job_postings',
@@ -517,7 +497,6 @@ class JobApplication(db.Model, SerializerMixin):
     education = db.Column(db.String)
     experience = db.Column(db.String)
     certificate = db.Column(db.String)
-    # => consider adding a column for more things to talk abut...
     status = db.Column(db.String, nullable=False)   # => new, hired, declined
 
     job_posting_id = db.Column(db.Integer, db.ForeignKey('job_postings.id'))
@@ -538,8 +517,6 @@ class JobApplication(db.Model, SerializerMixin):
     
 class FavoriteJob(db.Model, SerializerMixin): 
     __tablename__ = 'favorite_jobs'
-
-    # serialize_rules = ('-applicant.favorite_jobs', '-job_posting.favorite_jobs',)
 
     serialize_rules = (
         '-applicant.user.employer',

@@ -22,7 +22,6 @@ function AppliedJobs() {
             navigate('/signin');
     }, [userR]);
 
-    // => This may be changed... app paramater already has everything to display
     function handleItemClick(app) {
         console.log('app: ', app);
         if (app.status === 'Applied')

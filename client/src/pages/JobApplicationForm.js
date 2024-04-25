@@ -8,7 +8,7 @@ function JobApplicationForm() {
     const id = parseInt(param.id);
     const {userR, appJobAppsR, onSetAppJobAppsR} = useOutletContext();
     const [jobPosting, setJobPosting] = useState(null);
-    const [jobApplication, setJobApplication] = useState(null); //=> Should this be a state???
+    const [jobApplication, setJobApplication] = useState(null);
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -80,7 +80,6 @@ function JobApplicationForm() {
                         status: 'new',
                         job_posting_id: jobPosting.id,
                         applicant_id: userR.applicant_id,
-                        // => the user must be an applicant, not an employer... RBAC's role.
                     }),
                 })
                 .then(r => {

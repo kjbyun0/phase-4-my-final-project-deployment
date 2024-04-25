@@ -22,14 +22,12 @@ function FavoriteJobs() {
             navigate('/signin');
     }, [userR]);
 
-    // => This may be changed... app paramater already has everything to display
     function handleItemClick(fjob) {
         if (fjob.status === 'Open' || fjob.status === 'Applied') 
             navigate(`/job_applications/${fjob.job_posting_id}`)
     }
 
     function handleFavoriteDeleteClick(e, o, fjob) {
-        // console.log('in handleFavoriteDeleteClick, e1: ', e1, ', e2: ', e2);
         e.stopPropagation();
 
         fetch(`/favoritejobs/${fjob.id}`, {
