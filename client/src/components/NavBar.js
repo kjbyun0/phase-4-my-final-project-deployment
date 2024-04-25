@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 
 function NavBar({ userR }) {
-    console.log('in NavBar, userR: ', userR);
+    // console.log('in NavBar, userR: ', userR);
     return (
         <nav>
             <NavLink to='/' className='nav-link nav-link-first'>{userR && userR.employer ? 'All Postings' : 'Jobs'}</NavLink>

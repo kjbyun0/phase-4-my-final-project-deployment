@@ -56,7 +56,7 @@ function Signup() {
         },
         validationSchema: formSchema,
         onSubmit: (values) => {
-            console.log('values: ', values);
+            // console.log('values: ', values);
             fetch('/signup', {
                 method: 'POST',
                 headers: {

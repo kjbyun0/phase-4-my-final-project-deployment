@@ -32,7 +32,7 @@ function Signin() {
         .then(r => {
             r.json().then(data => {
                 if (r.ok) {
-                    console.log('in Sign in, user: ', data);
+                    // console.log('in Sign in, user: ', data);
                     updateUserInfo(data, onSetUserR, onSetEmpJobPostingsR, onSetAppJobAppsR, onSetAppFavJobsR);
                     navigate('/');
                 } else {
