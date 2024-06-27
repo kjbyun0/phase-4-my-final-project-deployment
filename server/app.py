@@ -16,7 +16,8 @@ app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 # Views go here!
 
 @app.route('/')
-def index():
+@app.route('/<int:id>')
+def index(id=0):
     return '<h1>Project Server</h1>'
 
 
