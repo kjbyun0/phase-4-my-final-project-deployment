@@ -16,6 +16,8 @@ faker = "*"
 flask-bcrypt = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
+python-dotenv = "*"
+honcho = "*"
 
 [requires]
 python_full_version = "3.8.13"

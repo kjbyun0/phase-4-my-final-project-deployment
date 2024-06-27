@@ -10,6 +10,8 @@ from sqlalchemy import MetaData
 from flask_bcrypt import Bcrypt
 
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Local imports
 
