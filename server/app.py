@@ -3,7 +3,7 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, session, make_response
+from flask import request, session, make_response, render_template
 from flask_restful import Resource
 
 # Local imports
@@ -15,10 +15,13 @@ app.secret_key = b'>\x87\x1fJ\xb80\xd6v\xb5\x9d\x8e\x80u\xc2\x1bp'
 
 # Views go here!
 
+# @app.route('/')
+# def index(id=0):
+#     return '<h1>Project Server</h1>'
 @app.route('/')
 @app.route('/<int:id>')
 def index(id=0):
-    return '<h1>Project Server</h1>'
+    return render_template("index.html")
 
 
 class Authenticate(Resource):
